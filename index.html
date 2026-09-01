@@ -82,6 +82,8 @@ function leadToDb(o){
     proximo_seguimiento:o.nextFollow||null,
     fecha_instalacion:o.installDate||null,
     comision:o.commission||0,
+estado_comision:o.estadoComision||'pendiente',
+
     notas:o.notes||null,
     actualizado_en:new Date().toISOString()
   };
