@@ -7,6 +7,31 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}.hidden{display:none!important}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}aside{background:linear-gradient(180deg,var(--n),#061426);color:white;padding:20px 14px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand span{display:block;font-size:11px;letter-spacing:2px;color:#7fdfff}nav button{width:100%;border:0;background:transparent;color:#cbd9e8;text-align:left;padding:12px;border-radius:12px;margin:3px 0;cursor:pointer}nav button.active,nav button:hover{background:rgba(0,184,255,.15);color:#fff}main{padding:22px;max-width:1450px;width:100%;margin:auto}header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1{margin:0;font-size:27px}header p{margin:5px 0 0;color:var(--m)}.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l)}.danger-btn{background:#fff1f2;color:#b4232d;border:1px solid #fecdd3}.grid{display:grid;gap:15px}.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:16px}.card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:17px;box-shadow:0 10px 30px rgba(4,35,66,.06)}.kpi small{color:var(--m)}.kpi strong{display:block;font-size:29px;margin-top:8px}.two{grid-template-columns:1.3fr .7fr}.section{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section h2{margin:0;font-size:18px}.pipeline{display:flex;gap:8px;overflow:auto}.stage{min-width:160px;background:#f7fbff;border:1px solid var(--l);border-radius:13px;padding:12px}.stage strong{display:block;font-size:24px;margin:7px 0}.table-wrap{overflow:auto;border:1px solid var(--l);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:11px;border-bottom:1px solid var(--l);font-size:13px;text-align:left}th{background:#f2f7fc}.badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:#eef6ff;font-size:12px;font-weight:700}.ok{background:#eaf8f1;color:#08774b}.warn{background:#fff5df;color:#996000}.danger{background:#feecec;color:#b4232d}.whats{display:inline-block;text-decoration:none;background:#e9fbf2;color:#087a49;border:1px solid #bdebd5;padding:7px 10px;border-radius:10px;font-weight:700}.view{display:none}.view.active{display:block}.empty{padding:25px;text-align:center;color:var(--m)}.modal{position:fixed;inset:0;background:rgba(1,15,29,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}.modal.open{display:flex}.modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:20px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-size:12px;color:#52647a;font-weight:700}input,select,textarea{padding:11px;border:1px solid #cfdceb;border-radius:11px;width:100%}textarea{min-height:75px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.toolbar input{max-width:320px}.toolbar select{max-width:220px}.bulkbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:12px;border:1px solid #c6eaff;background:#f3fbff;border-radius:13px}.bulkbar .btn:disabled{opacity:.5;cursor:not-allowed}.bulk-status{font-size:12px;color:#52647a;font-weight:700}.checkcell{width:42px;text-align:center}.checkcell input{width:18px;height:18px;cursor:pointer}.notice{padding:12px;background:#eef8ff;border:1px solid #c6eaff;border-radius:12px;color:#27577a;font-size:13px}.statusbar{font-size:12px;color:#d2e9ff;margin-top:16px;line-height:1.5}.login-page{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top right,#0f7cff33,transparent 35%),linear-gradient(135deg,#061426,#0b2d52)}.login-card{width:min(440px,100%);background:white;border-radius:22px;padding:28px;box-shadow:0 25px 70px #0005}.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}.login-card h1{font-size:24px}.login-card p{color:var(--m)}.login-card label{margin:12px 0}.login-error{min-height:20px;color:#b4232d;font-size:13px;margin-top:10px}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a36a;margin-right:6px}.sync-dot.off{background:#e5484d}.loader{opacity:.65;pointer-events:none}@media(max-width:950px){.app{grid-template-columns:1fr}aside{height:auto;position:static}nav{display:flex;overflow:auto}nav button{width:auto;white-space:nowrap}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}main{padding:14px}}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.kpis{grid-template-columns:1fr 1fr}}
+
+.chat-layout{display:grid;grid-template-columns:320px 1fr;gap:14px;min-height:620px}
+.chat-list{border:1px solid var(--l);border-radius:16px;background:#fff;overflow:hidden}
+.chat-list-head{padding:12px;border-bottom:1px solid var(--l);background:#f7fbff}
+.chat-list-head input{max-width:none}
+.chat-contacts{max-height:560px;overflow:auto}
+.chat-contact{width:100%;border:0;border-bottom:1px solid var(--l);background:#fff;padding:13px;text-align:left;cursor:pointer}
+.chat-contact:hover,.chat-contact.active{background:#eef8ff}
+.chat-contact b,.chat-contact small,.chat-contact span{display:block}
+.chat-contact small{color:var(--m);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-contact span{font-size:11px;color:var(--m);margin-top:4px}
+.chat-panel{border:1px solid var(--l);border-radius:16px;background:#edf3f7;display:flex;flex-direction:column;min-width:0}
+.chat-head{padding:14px 16px;background:#fff;border-bottom:1px solid var(--l);border-radius:16px 16px 0 0}
+.chat-head b,.chat-head small{display:block}.chat-head small{color:var(--m);margin-top:3px}
+.chat-messages{flex:1;min-height:430px;max-height:520px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:9px}
+.bubble{max-width:78%;padding:10px 12px;border-radius:14px;background:#fff;box-shadow:0 1px 2px #0001;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble.in{align-self:flex-start;border-top-left-radius:4px}
+.bubble.out{align-self:flex-end;background:#d9fdd3;border-top-right-radius:4px}
+.bubble small{display:block;color:#6c7b8d;font-size:10px;margin-top:5px;text-align:right}
+.chat-compose{padding:12px;background:#fff;border-top:1px solid var(--l);border-radius:0 0 16px 16px;display:flex;gap:9px}
+.chat-compose textarea{min-height:46px;max-height:120px;resize:vertical}
+.chat-compose button{align-self:flex-end}
+.chat-empty{padding:24px;color:var(--m);text-align:center}
+@media(max-width:850px){.chat-layout{grid-template-columns:1fr}.chat-contacts{max-height:260px}.chat-messages{min-height:360px}}
+
 </style>
 </head>
 <body>
@@ -24,12 +49,52 @@
 <div id="crmApp" class="app hidden">
 <aside>
   <div class="brand"><div class="logo">M</div><div><b>MIRED<span style="color:#00b8ff">360</span></b><span>SERVICIOS · CRM</span></div></div>
-  <nav><button class="active" data-view="dashboard">📊 Dashboard</button><button data-view="prospectos">👥 Prospectos</button><button data-view="seguimientos">📅 Seguimientos</button><button data-view="ventas">💰 Ventas</button><button data-view="publicidad">📣 Publicidad</button><button data-view="config">⚙️ Configuración</button></nav>
+  <nav><button class="active" data-view="dashboard">📊 Dashboard</button><button data-view="prospectos">👥 Prospectos</button><button data-view="conversaciones">💬 WhatsApp</button><button data-view="seguimientos">📅 Seguimientos</button><button data-view="ventas">💰 Ventas</button><button data-view="publicidad">📣 Publicidad</button><button data-view="config">⚙️ Configuración</button></nav>
   <div class="statusbar"><span id="syncDot" class="sync-dot"></span><span id="syncText">Conectado a Supabase</span><br><span id="userLabel"></span></div>
 </aside>
 <main>
 <section class="view active" id="dashboard"><header><div><h1>Panel comercial</h1><p>Controle prospectos, seguimientos, ventas e instalaciones.</p></div><div><button class="btn ghost" id="exportBtn">Exportar CSV</button> <button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button></div></header><div class="grid kpis"><div class="card kpi"><small>Prospectos</small><strong id="kPros">0</strong></div><div class="card kpi"><small>Seguimientos hoy</small><strong id="kFollow">0</strong></div><div class="card kpi"><small>Ventas</small><strong id="kSales">0</strong></div><div class="card kpi"><small>Instalados</small><strong id="kInstalled">0</strong></div></div><div class="card" style="margin-bottom:15px"><div class="section"><h2>Embudo comercial</h2></div><div class="pipeline" id="pipeline"></div></div><div class="grid two"><div class="card"><div class="section"><h2>Prospectos recientes</h2><button class="btn ghost" onclick="showView('prospectos')">Ver todos</button></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Ciudad</th><th>Origen</th><th>Estado</th><th>WhatsApp</th></tr></thead><tbody id="recentRows"></tbody></table></div></div><div class="card"><div class="section"><h2>Seguimientos próximos</h2></div><div id="followBox"></div></div></div></section>
 <section class="view" id="prospectos"><header><div><h1>Prospectos</h1><p>Base central de clientes potenciales.</p></div><button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button></header><div class="card"><div class="toolbar"><input id="searchLead" placeholder="Buscar nombre, teléfono, ciudad..."><select id="filterStatus"><option value="">Todos los estados</option></select></div><div class="bulkbar"><button class="btn primary" id="bulkWhatsBtn" onclick="sendSelectedWhatsApp()" disabled>📣 Enviar WhatsApp (0)</button><button class="btn ghost" id="clearSelectionBtn" onclick="clearLeadSelection()" disabled>Limpiar selección</button><span class="bulk-status" id="bulkStatus">Seleccione los prospectos autorizados para recibir la plantilla aprobada.</span></div><div class="table-wrap"><table><thead><tr><th class="checkcell"><input type="checkbox" id="selectVisibleLeads" title="Seleccionar visibles"></th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Ciudad/Barrio</th><th>Origen</th><th>Producto</th><th>Estado</th><th>Seguimiento</th><th>WhatsApp</th><th></th></tr></thead><tbody id="leadRows"></tbody></table></div></div></section>
+
+<section class="view" id="conversaciones">
+<header>
+  <div>
+    <h1>WhatsApp</h1>
+    <p>Bandeja de conversaciones del número conectado a WhatsApp Cloud API.</p>
+  </div>
+  <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
+</header>
+<div class="notice" style="margin-bottom:12px">
+  <b>Atención:</b> puedes responder con texto libre dentro de la ventana de atención de 24 horas después del último mensaje del cliente. Fuera de esa ventana, inicia la conversación con una plantilla aprobada.
+</div>
+<div class="chat-layout">
+  <div class="chat-list">
+    <div class="chat-list-head">
+      <input id="chatSearch" placeholder="Buscar nombre o teléfono...">
+    </div>
+    <div class="chat-contacts" id="chatContacts">
+      <div class="chat-empty">Cargando conversaciones...</div>
+    </div>
+  </div>
+
+  <div class="chat-panel">
+    <div class="chat-head" id="chatHead">
+      <b>Selecciona una conversación</b>
+      <small>Los mensajes entrantes aparecerán aquí.</small>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-empty">Selecciona un contacto para ver el historial.</div>
+    </div>
+
+    <div class="chat-compose">
+      <textarea id="replyText" placeholder="Escribe tu respuesta..." disabled></textarea>
+      <button class="btn primary" id="replyBtn" onclick="sendChatReply()" disabled>Enviar</button>
+    </div>
+  </div>
+</div>
+</section>
+
 <section class="view" id="seguimientos"><header><div><h1>Seguimientos</h1><p>Lo que debe atender hoy y después.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estado</th><th>Nota</th><th>WhatsApp</th></tr></thead><tbody id="followRows"></tbody></table></div></div></section>
 <section class="view" id="ventas"><header><div><h1>Ventas</h1><p>Negocios cerrados e instalaciones.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Plan</th><th>Valor</th><th>Estado</th><th>Instalación</th><th>Comisión</th></tr></thead><tbody id="salesRows"></tbody></table></div></div></section>
 <section class="view" id="publicidad"><header><div><h1>Publicidad</h1><p>Registre inversión y mida resultados.</p></div></header><div class="grid two"><div class="card"><h2>Resumen</h2><p>Inversión: <b id="adSpend">$0</b></p><p>Ventas atribuidas: <b id="adSales">0</b></p></div><div class="card"><h2>Registrar campaña</h2><div class="form-grid"><label>Nombre<input id="adName"></label><label>Canal<select id="adChannel"><option>Facebook</option><option>Instagram</option><option>Google</option><option>Orgánico</option><option>Otro</option></select></label><label>Inversión<input id="adAmount" type="number"></label><label>Fecha<input id="adDate" type="date"></label><div class="full"><button class="btn primary" onclick="addAd()">Guardar campaña</button></div></div></div></div><div class="card" style="margin-top:15px"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Campaña</th><th>Canal</th><th>Inversión</th></tr></thead><tbody id="adRows"></tbody></table></div></div></section>
@@ -53,6 +118,9 @@ const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',ma
 let leads=[];
 let ads=JSON.parse(localStorage.getItem('mired360_ads_v1')||'[]');
 let currentUser=null;
+let waMessages=[];
+let activeChatPhone='';
+let messageSubscription=null;
 
 function dbToLead(r){
   return {
@@ -103,7 +171,13 @@ async function loginCRM(){
   await enterCRM(data.user);
 }
 
-async function logoutCRM(){await supabaseClient.auth.signOut();currentUser=null;leads=[];$('crmApp').classList.add('hidden');$('loginPage').classList.remove('hidden');}
+async function logoutCRM(){
+  if(messageSubscription){await supabaseClient.removeChannel(messageSubscription);messageSubscription=null;}
+  await supabaseClient.auth.signOut();
+  currentUser=null;leads=[];waMessages=[];activeChatPhone='';
+  $('crmApp').classList.add('hidden');
+  $('loginPage').classList.remove('hidden');
+}
 
 async function enterCRM(user){
   currentUser=user;
@@ -111,6 +185,8 @@ async function enterCRM(user){
   $('loginPage').classList.add('hidden');
   $('crmApp').classList.remove('hidden');
   await loadLeads();
+  await loadMessages(false);
+  startMessageRealtime();
 }
 
 async function loadLeads(){
@@ -125,7 +201,11 @@ async function loadLeads(){
 function setSync(text,ok){$('syncText').textContent=text;$('syncDot').classList.toggle('off',!ok);}
 function wa(p,n){p=(p||'').replace(/\D/g,'');if(p.length===10)p='57'+p;return'https://wa.me/'+p+'?text='+encodeURIComponent('Hola '+(n||'')+', te escribimos de MIRED360SERVICIOS para continuar con tu solicitud.');}
 function badge(s){let c=s==='Instalado'?'ok':s==='No interesado'?'danger':(s==='Seguimiento'||s==='Pendiente instalación'?'warn':'');return`<span class="badge ${c}">${s}</span>`;}
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));}
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+  if(id==='conversaciones')loadMessages(false);
+}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
 
 function openLead(id){
@@ -199,6 +279,133 @@ function updateBulkControls(){
   }
 }
 
+
+function escapeHtml(v){
+  return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function formatMsgTime(v){
+  if(!v)return '';
+  const d=new Date(v);
+  return isNaN(d)?String(v):d.toLocaleString('es-CO',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+function leadForPhone(phone){
+  const p=normalizeWhatsNumber(phone);
+  return leads.find(l=>normalizeWhatsNumber(l.phone)===p);
+}
+async function loadMessages(showAlert=false){
+  if(!currentUser)return;
+  const {data,error}=await supabaseClient
+    .from('whatsapp_mensajes')
+    .select('*')
+    .order('creado_en',{ascending:true})
+    .limit(3000);
+
+  if(error){
+    if(showAlert)alert('No se pudieron cargar las conversaciones. '+error.message);
+    const box=$('chatContacts');
+    if(box)box.innerHTML='<div class="chat-empty">No se pudieron cargar los mensajes.</div>';
+    return;
+  }
+  waMessages=data||[];
+  renderChatContacts();
+  if(activeChatPhone)renderActiveChat();
+}
+function groupedChats(){
+  const map=new Map();
+  for(const m of waMessages){
+    const phone=normalizeWhatsNumber(m.telefono);
+    if(!phone)continue;
+    if(!map.has(phone))map.set(phone,[]);
+    map.get(phone).push(m);
+  }
+  return [...map.entries()].map(([phone,msgs])=>{
+    msgs.sort((a,b)=>new Date(a.creado_en)-new Date(b.creado_en));
+    const last=msgs[msgs.length-1];
+    const lead=leadForPhone(phone);
+    const name=lead?.name||last.nombre||phone;
+    return {phone,name,msgs,last};
+  }).sort((a,b)=>new Date(b.last.creado_en)-new Date(a.last.creado_en));
+}
+function renderChatContacts(){
+  const box=$('chatContacts'); if(!box)return;
+  const q=($('chatSearch')?.value||'').toLowerCase();
+  const groups=groupedChats().filter(g=>(g.name+' '+g.phone).toLowerCase().includes(q));
+  box.innerHTML=groups.map(g=>{
+    const active=g.phone===activeChatPhone?' active':'';
+    const preview=g.last.texto||('['+(g.last.tipo||'mensaje')+']');
+    return `<button class="chat-contact${active}" onclick="openChat('${g.phone}')">
+      <b>${escapeHtml(g.name)}</b>
+      <small>${escapeHtml(preview)}</small>
+      <span>${escapeHtml(g.phone)} · ${formatMsgTime(g.last.creado_en)}</span>
+    </button>`;
+  }).join('')||'<div class="chat-empty">No hay conversaciones todavía.</div>';
+}
+function openChat(phone){
+  activeChatPhone=normalizeWhatsNumber(phone);
+  renderChatContacts();
+  renderActiveChat();
+}
+function renderActiveChat(){
+  const panel=$('chatMessages'),head=$('chatHead'),input=$('replyText'),btn=$('replyBtn');
+  if(!panel||!head)return;
+  const group=groupedChats().find(g=>g.phone===activeChatPhone);
+  if(!group){
+    head.innerHTML='<b>Selecciona una conversación</b><small>Los mensajes entrantes aparecerán aquí.</small>';
+    panel.innerHTML='<div class="chat-empty">Sin mensajes.</div>';
+    input.disabled=true;btn.disabled=true;
+    return;
+  }
+  head.innerHTML=`<b>${escapeHtml(group.name)}</b><small>${escapeHtml(group.phone)}</small>`;
+  panel.innerHTML=group.msgs.map(m=>{
+    const dir=m.direccion==='saliente'?'out':'in';
+    const text=m.texto||('['+(m.tipo||'mensaje')+']');
+    const st=m.estado&&m.direccion==='saliente'?' · '+m.estado:'';
+    return `<div class="bubble ${dir}">${escapeHtml(text)}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
+  }).join('');
+  input.disabled=false;btn.disabled=false;
+  setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
+}
+async function sendChatReply(){
+  const text=$('replyText').value.trim();
+  if(!activeChatPhone||!text)return;
+  const btn=$('replyBtn');
+  btn.disabled=true;
+  btn.textContent='Enviando...';
+
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  const authToken=session?.access_token||SUPABASE_KEY;
+
+  try{
+    const response=await fetch(WHATSAPP_SEND_URL,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+authToken,
+        'apikey':SUPABASE_KEY
+      },
+      body:JSON.stringify({to:activeChatPhone,text})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data?.messages?.length){
+      throw new Error(data?.error?.message||data?.error||'No se pudo enviar');
+    }
+    $('replyText').value='';
+    await loadMessages(false);
+  }catch(e){
+    alert('No se pudo enviar la respuesta. '+String(e.message||e));
+  }finally{
+    btn.disabled=false;
+    btn.textContent='Enviar';
+  }
+}
+function startMessageRealtime(){
+  if(messageSubscription||!currentUser)return;
+  messageSubscription=supabaseClient
+    .channel('mired360-whatsapp-mensajes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'whatsapp_mensajes'},()=>loadMessages(false))
+    .subscribe();
+}
+
 function toggleLeadSelection(id,checked){
   id=String(id);
   if(checked)selectedLeadIds.add(id);else selectedLeadIds.delete(id);
@@ -270,6 +477,8 @@ function renderLeadTable(){
 
 $('searchLead').oninput=renderLeadTable;
 $('filterStatus').onchange=renderLeadTable;
+$('chatSearch').oninput=renderChatContacts;
+$('replyText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatReply();}});
 $('selectVisibleLeads').onchange=e=>toggleVisibleLeads(e.target.checked);
 function addAd(){if(!$('adName').value.trim()||!$('adAmount').value)return alert('Ingrese nombre e inversión');ads.unshift({id:Date.now(),name:$('adName').value.trim(),channel:$('adChannel').value,amount:Number($('adAmount').value),date:$('adDate').value||today()});localStorage.setItem('mired360_ads_v1',JSON.stringify(ads));$('adName').value='';$('adAmount').value='';renderAds();}
 function renderAds(){$('adRows').innerHTML=ads.map(a=>`<tr><td>${a.date}</td><td>${a.name}</td><td>${a.channel}</td><td>${money(a.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No hay campañas.</td></tr>';$('adSpend').textContent=money(ads.reduce((s,a)=>s+a.amount,0));$('adSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)&&['Facebook Ads','Instagram Ads','Google Ads'].includes(l.origin)).length;}
@@ -309,3 +518,4 @@ renderAds();
 </script>
 </body>
 </html>
+
