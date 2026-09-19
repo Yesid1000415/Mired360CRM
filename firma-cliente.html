@@ -3,18 +3,17 @@ const U='https://lpiusomsuswdcraoozdn.supabase.co',K='sb_publishable_ZFjdUsgyfSx
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));const money=v=>v==null?'No especificado':'$'+Number(v).toLocaleString('es-CO');
 function item(a,b){return '<div class="item"><small>'+esc(a)+'</small><b>'+esc(b||'No especificado')+'</b></div>'}
 async function load(){if(!num||!token){fail('El enlace no es válido.');return} $('num').textContent=num;
- const {data,error}=await sb.from('autorizaciones').select('*').eq('numero_constancia',num).maybeSingle();if(error||!data){fail('No fue posible abrir esta solicitud.');return}
- if(!(data.observaciones||'').includes('[TOKEN-FIRMA:'+token+']')){fail('Este enlace no corresponde a la solicitud.');return}
- if(data.autorizacion!=='PENDIENTE_CLIENTE'){fail('Esta autorización ya fue respondida y el enlace quedó cerrado.');return} row=data;
+ const {data,error}=await sb.rpc('ver_autorizacion_cliente',{p_numero:num,p_token:token});if(error||!data){fail('No fue posible abrir esta solicitud o el enlace ya fue utilizado.');return} row=data;
  $('detail').innerHTML=item('Nombre',row.nombre_cliente)+item('Cédula',row.cedula)+item('Ciudad',row.ciudad)+item('Tipo de servicio',row.tipo_servicio)+item('Tecnología',row.tecnologia)+item('Velocidad',row.velocidad)+item('Descripción completa del plan',row.descripcion_plan)+item('Beneficios incluidos',row.beneficios)+item('Adicionales',row.adicionales)+item('Valor comercial mensual',money(row.valor_comercial))+item('Promoción',row.promocion)+item('Valor durante la promoción',money(row.valor_promocional))+item('Duración promoción',row.duracion_promocion)+item('Valor después de promoción',money(row.valor_despues_promocion))+item('Asesor',row.asesor);
  $('state').hidden=true;$('content').hidden=false;setupSig();
 }
 function fail(m){$('state').innerHTML='<b class="error">'+esc(m)+'</b>'}
 function setupSig(){c=$('signature');ctx=c.getContext('2d');const ratio=Math.max(devicePixelRatio||1,1),r=c.getBoundingClientRect();c.width=r.width*ratio;c.height=r.height*ratio;ctx.setTransform(ratio,0,0,ratio,0,0);ctx.lineWidth=2;ctx.lineCap='round';let d=false;const p=e=>{let t=e.touches?e.touches[0]:e,r=c.getBoundingClientRect();return{x:t.clientX-r.left,y:t.clientY-r.top}};const st=e=>{e.preventDefault();d=true;let z=p(e);ctx.beginPath();ctx.moveTo(z.x,z.y)},mv=e=>{if(!d)return;e.preventDefault();let z=p(e);ctx.lineTo(z.x,z.y);ctx.stroke();signed=true},en=()=>d=false;['mousedown','touchstart'].forEach(x=>c.addEventListener(x,st,{passive:false}));['mousemove','touchmove'].forEach(x=>c.addEventListener(x,mv,{passive:false}));['mouseup','mouseleave','touchend'].forEach(x=>c.addEventListener(x,en))}
 function clearSignature(){ctx.clearRect(0,0,c.width,c.height);signed=false}
-async function confirmAuth(){let a=document.querySelector('input[name=auth]:checked');if(!a){alert('Seleccione SÍ o NO.');return}if(a.value==='SI'&&!signed){alert('Para autorizar, debe firmar.');return}let b=$('confirm');b.disabled=true;b.textContent='Guardando...';let clean=(row.observaciones||'').replace('[TOKEN-FIRMA:'+token+']','').trim()||null;
- const {error}=await sb.from('autorizaciones').update({autorizacion:a.value,firma:a.value==='SI'?c.toDataURL('image/png'):null,observaciones:clean,actualizado_en:new Date().toISOString()}).eq('id',row.id).eq('autorizacion','PENDIENTE_CLIENTE');
- if(error){b.disabled=false;b.textContent='Confirmar autorización';alert('No fue posible registrar la respuesta. '+error.message);return}
+async function confirmAuth(){let a=document.querySelector('input[name=auth]:checked');if(!a){alert('Seleccione SÍ o NO.');return}if(a.value==='SI'&&!signed){alert('Para autorizar, debe firmar.');return}let b=$('confirm');b.disabled=true;b.textContent='Guardando...';
+ const firma=a.value==='SI'?c.toDataURL('image/png'):null;
+ const {data,error}=await sb.rpc('firmar_autorizacion_cliente',{p_numero:num,p_token:token,p_autorizacion:a.value,p_firma:firma});
+ if(error||data!==true){b.disabled=false;b.textContent='Confirmar autorización';alert('No fue posible registrar la respuesta. El enlace puede haber sido utilizado o vencido.');return}
  $('content').hidden=true;$('state').hidden=false;$('state').innerHTML='<h2 class="ok">Respuesta registrada correctamente</h2><p>Constancia <b>'+esc(num)+'</b>.</p><p>Ya puede cerrar esta página.</p>';
 }
 load();</script></body></html>
