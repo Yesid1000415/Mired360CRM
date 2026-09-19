@@ -56,7 +56,7 @@
 
 <section class="card foot">Esta constancia es un registro de la información comercial suministrada durante la gestión de venta. No reemplaza los documentos, términos, condiciones o contratos que correspondan al operador del servicio. Los datos personales deben tratarse conforme a las autorizaciones y políticas aplicables.</section>
 
-<div class="actions"><button class="btn primary" onclick="finish()">Confirmar y generar constancia</button><button class="btn ghost" onclick="window.print()">Imprimir / Guardar PDF</button><button class="btn ghost danger" onclick="resetForm()">Nueva autorización</button></div>
+<div class="actions"><button class="btn primary" onclick="finish()">Confirmar y generar constancia</button><button class="btn ghost" onclick="prepareRemote()">📲 Enviar al cliente por WhatsApp</button><button class="btn ghost" onclick="window.print()">Imprimir / Guardar PDF</button><button class="btn ghost danger" onclick="resetForm()">Nueva autorización</button></div>
 </div>
 <script>
 const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
@@ -86,6 +86,24 @@ function move(e){if(!drawing)return;e.preventDefault();const p=point(e);ctx.line
 function end(){drawing=false}
 ['mousedown','touchstart'].forEach(x=>c.addEventListener(x,start,{passive:false}));['mousemove','touchmove'].forEach(x=>c.addEventListener(x,move,{passive:false}));['mouseup','mouseleave','touchend'].forEach(x=>c.addEventListener(x,end));
 function clearSignature(){ctx.clearRect(0,0,c.width,c.height);signed=false}
+function draftPayload(){
+ return {numero_constancia:$('recordId').textContent,ciudad:valRaw('city'),fecha:valRaw('date'),nombre_cliente:valRaw('name'),cedula:valRaw('doc'),telefono:valRaw('phone'),correo:valRaw('email'),asesor:valRaw('advisor'),codigo_asesor:valRaw('advisorCode'),tipo_servicio:valRaw('service'),tecnologia:valRaw('tech'),velocidad:valRaw('speed'),descripcion_plan:valRaw('plan'),beneficios:valRaw('benefits'),adicionales:valRaw('extras'),valor_comercial:numRaw('commercial'),promocion:valRaw('promo'),valor_promocional:numRaw('promoValue'),duracion_promocion:valRaw('promoDuration'),valor_despues_promocion:numRaw('afterValue'),observaciones:valRaw('notes')};
+}
+async function prepareRemote(){
+ const required=[['city','Ciudad'],['name','Nombre'],['doc','Cédula'],['phone','Teléfono'],['service','Tipo de servicio'],['plan','Descripción del plan']];
+ for(const [id,label] of required){if(!$(id).value.trim()){alert('Falta completar: '+label);$(id).focus();return}}
+ const {data:{session}}=await supabaseClient.auth.getSession();if(!session?.user){alert('Debe iniciar sesión en el CRM.');return}
+ const p=draftPayload(), token=crypto.randomUUID().replaceAll('-','')+Date.now().toString(36);
+ const row={...p,user_id:session.user.id,autorizacion:'PENDIENTE_CLIENTE',firma:null,estado_auditoria:'Pendiente',observaciones:p.observaciones? p.observaciones+'\n[TOKEN-FIRMA:'+token+']':'[TOKEN-FIRMA:'+token+']',actualizado_en:new Date().toISOString()};
+ const btn=event.currentTarget;btn.disabled=true;btn.textContent='Preparando enlace...';
+ const {error}=await supabaseClient.from('autorizaciones').insert(row);btn.disabled=false;btn.textContent='📲 Enviar al cliente por WhatsApp';
+ if(error){alert('No se pudo preparar la autorización: '+error.message);return}
+ const link=new URL('firma-cliente.html',location.href);link.searchParams.set('n',p.numero_constancia);link.searchParams.set('t',token);
+ const msg='Hola '+(p.nombre_cliente||'')+'. Para continuar con su solicitud, por favor revise cuidadosamente las condiciones registradas y autorice desde este enlace: '+link.href+'\n\nConstancia: '+p.numero_constancia;
+ window.open('https://wa.me/57'+String(p.telefono||'').replace(/\D/g,'').replace(/^57/,'')+'?text='+encodeURIComponent(msg),'_blank');
+ alert('Solicitud preparada. El cliente recibirá un enlace para revisar y firmar desde su propio celular.');
+ location.reload();
+}
 async function finish(){
  const required=[['city','Ciudad'],['name','Nombre'],['doc','Cédula'],['service','Tipo de servicio'],['plan','Descripción del plan']];
  for(const [id,label] of required){if(!$(id).value.trim()){alert('Falta completar: '+label);$(id).focus();return}}
