@@ -49,7 +49,7 @@
 <div id="crmApp" class="app hidden">
 <aside>
   <div class="brand"><div class="logo">M</div><div><b>MIRED<span style="color:#00b8ff">360</span></b><span>SERVICIOS · CRM</span></div></div>
-  <nav><button class="active" data-view="dashboard">📊 Dashboard</button><button data-view="prospectos">👥 Prospectos</button><button data-view="conversaciones">💬 WhatsApp</button><button data-view="seguimientos">📅 Seguimientos</button><button data-view="ventas">💰 Ventas</button><button data-view="publicidad">📣 Publicidad</button><button data-view="config">⚙️ Configuración</button></nav>
+  <nav><button class="active" data-view="dashboard">📊 Dashboard</button><button data-view="prospectos">👥 Prospectos</button><button data-view="conversaciones">💬 WhatsApp</button><button data-view="seguimientos">📅 Seguimientos</button><button data-view="ventas">💰 Ventas</button><button data-view="autorizaciones">✍️ Autorizaciones</button><button data-view="publicidad">📣 Publicidad</button><button data-view="config">⚙️ Configuración</button></nav>
   <div class="statusbar"><span id="syncDot" class="sync-dot"></span><span id="syncText">Conectado a Supabase</span><br><span id="userLabel"></span></div>
 </aside>
 <main>
@@ -97,6 +97,7 @@
 
 <section class="view" id="seguimientos"><header><div><h1>Seguimientos</h1><p>Lo que debe atender hoy y después.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estado</th><th>Nota</th><th>WhatsApp</th></tr></thead><tbody id="followRows"></tbody></table></div></div></section>
 <section class="view" id="ventas"><header><div><h1>Ventas</h1><p>Negocios cerrados e instalaciones.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Plan</th><th>Valor</th><th>Estado</th><th>Instalación</th><th>Comisión</th></tr></thead><tbody id="salesRows"></tbody></table></div></div></section>
+<section class="view" id="autorizaciones"><header><div><h1>Autorizaciones</h1><p>Constancias firmadas y control de auditoría de ventas.</p></div><div><a class="btn primary" href="autorizacion.html" target="_blank" style="text-decoration:none">+ Nueva autorización</a> <button class="btn ghost" onclick="loadAuthorizations()">↻ Actualizar</button></div></header><div class="card"><div class="toolbar"><input id="authSearch" placeholder="Buscar cliente, cédula, teléfono, asesor o constancia..." oninput="renderAuthorizations()"><select id="authStatus" onchange="renderAuthorizations()"><option value="">Todos los estados</option><option>Pendiente</option><option>Auditado</option><option>Novedad</option></select></div><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Constancia</th><th>Cliente</th><th>Cédula</th><th>Teléfono</th><th>Plan</th><th>Valor</th><th>Asesor</th><th>Autorizó</th><th>Auditoría</th><th>Firma</th></tr></thead><tbody id="authRows"><tr><td colspan="11" class="empty">Cargando autorizaciones...</td></tr></tbody></table></div></div></section>
 <section class="view" id="publicidad"><header><div><h1>Publicidad</h1><p>Registre inversión y mida resultados.</p></div></header><div class="grid two"><div class="card"><h2>Resumen</h2><p>Inversión: <b id="adSpend">$0</b></p><p>Ventas atribuidas: <b id="adSales">0</b></p></div><div class="card"><h2>Registrar campaña</h2><div class="form-grid"><label>Nombre<input id="adName"></label><label>Canal<select id="adChannel"><option>Facebook</option><option>Instagram</option><option>Google</option><option>Orgánico</option><option>Otro</option></select></label><label>Inversión<input id="adAmount" type="number"></label><label>Fecha<input id="adDate" type="date"></label><div class="full"><button class="btn primary" onclick="addAd()">Guardar campaña</button></div></div></div></div><div class="card" style="margin-top:15px"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Campaña</th><th>Canal</th><th>Inversión</th></tr></thead><tbody id="adRows"></tbody></table></div></div></section>
 <section class="view" id="config"><header><div><h1>Configuración</h1><p>Cuenta, sincronización y respaldo.</p></div></header><div class="grid two"><div class="card"><label>Nombre comercial<input id="businessName" value="MIRED360SERVICIOS"></label><br><label>WhatsApp principal<input id="businessPhone" value="573133938312"></label><br><button class="btn primary" onclick="saveSettings()">Guardar</button><br><br><button class="btn ghost" onclick="migrateLocalLeads()">Migrar prospectos locales a Supabase</button><br><br><button class="btn danger-btn" onclick="logoutCRM()">Cerrar sesión</button></div><div class="card"><div class="notice"><b>Prospectos:</b> se guardan en Supabase. La sección Publicidad y la configuración general siguen guardándose localmente en este navegador por ahora.</div></div></div></section>
 </main>
@@ -121,6 +122,7 @@ let currentUser=null;
 let waMessages=[];
 let activeChatPhone='';
 let messageSubscription=null;
+let authorizations=[];
 
 function dbToLead(r){
   return {
@@ -205,8 +207,36 @@ function showView(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
   if(id==='conversaciones')loadMessages(false);
+  if(id==='autorizaciones')loadAuthorizations();
 }
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+
+async function loadAuthorizations(){
+  if(!currentUser)return;
+  const {data,error}=await supabaseClient.from('autorizaciones').select('*').order('creado_en',{ascending:false});
+  if(error){$('authRows').innerHTML='<tr><td colspan="11" class="empty">No se pudieron cargar las autorizaciones: '+escapeHtml(error.message)+'</td></tr>';return}
+  authorizations=data||[];renderAuthorizations();
+}
+function renderAuthorizations(){
+  const box=$('authRows');if(!box)return;
+  const q=($('authSearch')?.value||'').toLowerCase(),st=$('authStatus')?.value||'';
+  const a=authorizations.filter(x=>{
+    const hay=[x.numero_constancia,x.nombre_cliente,x.cedula,x.telefono,x.asesor,x.descripcion_plan].join(' ').toLowerCase();
+    return (!q||hay.includes(q))&&(!st||x.estado_auditoria===st);
+  });
+  box.innerHTML=a.map(x=>`<tr><td>${escapeHtml(x.fecha||'')}</td><td><b>${escapeHtml(x.numero_constancia||'')}</b></td><td>${escapeHtml(x.nombre_cliente||'')}</td><td>${escapeHtml(x.cedula||'')}</td><td>${escapeHtml(x.telefono||'')}</td><td>${escapeHtml(x.descripcion_plan||'')}</td><td>${money(x.valor_comercial||0)}</td><td>${escapeHtml(x.asesor||'')}</td><td>${escapeHtml(x.autorizacion||'')}</td><td><select onchange="setAuditStatus('${x.id}',this.value)"><option ${x.estado_auditoria==='Pendiente'?'selected':''}>Pendiente</option><option ${x.estado_auditoria==='Auditado'?'selected':''}>Auditado</option><option ${x.estado_auditoria==='Novedad'?'selected':''}>Novedad</option></select></td><td>${x.firma?'<button class="btn ghost" onclick="showSignature(\''+x.id+'\')">Ver</button>':'-'}</td></tr>`).join('')||'<tr><td colspan="11" class="empty">No hay autorizaciones para mostrar.</td></tr>';
+}
+async function setAuditStatus(id,status){
+ const changes={estado_auditoria:status,actualizado_en:new Date().toISOString(),fecha_auditoria:status==='Auditado'?new Date().toISOString():null};
+ const {error}=await supabaseClient.from('autorizaciones').update(changes).eq('id',id);
+ if(error){alert('No se pudo actualizar: '+error.message);return}
+ const x=authorizations.find(a=>String(a.id)===String(id));if(x)Object.assign(x,changes);
+ renderAuthorizations();
+}
+function showSignature(id){
+ const x=authorizations.find(a=>String(a.id)===String(id));if(!x?.firma)return;
+ const w=window.open('','_blank','width=700,height=450');w.document.write('<title>Firma '+escapeHtml(x.numero_constancia||'')+'</title><body style="font-family:Arial;padding:25px"><h2>Firma del usuario</h2><p>'+escapeHtml(x.nombre_cliente||'')+' · '+escapeHtml(x.numero_constancia||'')+'</p><img style="max-width:100%;border:1px solid #ccc" src="'+x.firma+'"></body>');
+}
 
 function openLead(id){
   const x=id?leads.find(l=>l.id===id):null;
