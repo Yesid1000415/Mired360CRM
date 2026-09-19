@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Autorización de venta · MIRED360SERVICIOS</title>
+<title>Autorización de venta · MIRED360SERVICIOS</title>\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--az:#082b52;--cl:#0f7cff;--bg:#f4f7fb;--tx:#17263a;--mut:#64748b;--bd:#d8e2ee;--ok:#087a49;--red:#b4232d}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--tx)}.wrap{max-width:860px;margin:auto;padding:18px}.head{background:linear-gradient(135deg,#061a33,#0f4c81);color:#fff;border-radius:20px;padding:22px;margin-bottom:15px}.head h1{margin:0 0 5px;font-size:25px}.head p{margin:0;color:#d8ecff}.card{background:#fff;border:1px solid var(--bd);border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 8px 25px #082b5210}.card h2{font-size:17px;margin:0 0 14px;color:var(--az)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-size:12px;font-weight:700;color:#52647a}input,select,textarea{width:100%;padding:12px;border:1px solid #cbd8e6;border-radius:11px;font:inherit;background:#fff}textarea{min-height:82px;resize:vertical}.checks{display:flex;gap:12px;flex-wrap:wrap}.check{display:flex;gap:7px;align-items:center;font-size:14px}.check input{width:auto}.notice{padding:13px;border-radius:12px;background:#eef7ff;border:1px solid #c8e4ff;line-height:1.5;font-size:13px}.audit{background:#fff8e8;border-color:#f2d58a}.summary{background:#f8fbff;border:2px solid #cfe4fa}.summary b{color:var(--az)}.auth{display:grid;grid-template-columns:1fr 1fr;gap:10px}.auth label{display:flex;align-items:center;gap:9px;border:1px solid var(--bd);border-radius:12px;padding:13px;font-size:14px}.auth input{width:auto}.sig{border:1px dashed #94a3b8;border-radius:12px;background:#fff;touch-action:none;width:100%;height:170px}.actions{display:flex;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:#f4f7fbeF;padding:12px 0}.btn{border:0;border-radius:12px;padding:13px 16px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,#0f7cff,#00a8e8);color:#fff}.ghost{background:#fff;border:1px solid var(--bd)}.danger{color:var(--red)}.foot{font-size:11px;color:var(--mut);line-height:1.45}.id{font-weight:800;color:#0f7cff}.required:after{content:" *";color:#d92d20}@media(max-width:650px){.grid,.auth{grid-template-columns:1fr}.full{grid-column:auto}.wrap{padding:10px}.head{border-radius:15px}.card{padding:14px}}@media print{body{background:#fff}.wrap{max-width:none;padding:0}.head{background:#fff!important;color:#000;border:1px solid #bbb}.head p{color:#333}.actions,.no-print{display:none!important}.card{box-shadow:none;break-inside:avoid;margin:8px 0;padding:12px}.sig{height:120px}}
@@ -59,6 +59,9 @@
 <div class="actions"><button class="btn primary" onclick="finish()">Confirmar y generar constancia</button><button class="btn ghost" onclick="window.print()">Imprimir / Guardar PDF</button><button class="btn ghost danger" onclick="resetForm()">Nueva autorización</button></div>
 </div>
 <script>
+const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
+const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
 function makeId(){const d=new Date(),p=n=>String(n).padStart(2,'0');return 'M360-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+String(Date.now()).slice(-6)}
 $('recordId').textContent=makeId();$('date').value=new Date().toISOString().slice(0,10);
@@ -83,14 +86,36 @@ function move(e){if(!drawing)return;e.preventDefault();const p=point(e);ctx.line
 function end(){drawing=false}
 ['mousedown','touchstart'].forEach(x=>c.addEventListener(x,start,{passive:false}));['mousemove','touchmove'].forEach(x=>c.addEventListener(x,move,{passive:false}));['mouseup','mouseleave','touchend'].forEach(x=>c.addEventListener(x,end));
 function clearSignature(){ctx.clearRect(0,0,c.width,c.height);signed=false}
-function finish(){
+async function finish(){
  const required=[['city','Ciudad'],['name','Nombre'],['doc','Cédula'],['service','Tipo de servicio'],['plan','Descripción del plan']];
  for(const [id,label] of required){if(!$(id).value.trim()){alert('Falta completar: '+label);$(id).focus();return}}
  const auth=document.querySelector('input[name="auth"]:checked');if(!auth){alert('El usuario debe seleccionar SÍ o NO en la autorización.');return}
  if(auth.value==='SI'&&!signed){alert('Para una autorización afirmativa, solicite la firma del usuario.');return}
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session?.user){
+   alert('Para guardar la autorización debe iniciar sesión en el CRM primero. Abra el CRM, inicie sesión y vuelva a esta autorización.');
+   return;
+ }
  renderSummary();
- alert('Constancia validada. Revise el resumen y use “Imprimir / Guardar PDF” para conservar una copia.');
+ const num=$('recordId').textContent;
+ const row={
+   user_id:session.user.id,numero_constancia:num,ciudad:valRaw('city'),fecha:valRaw('date'),
+   nombre_cliente:valRaw('name'),cedula:valRaw('doc'),telefono:valRaw('phone'),correo:valRaw('email'),
+   asesor:valRaw('advisor'),codigo_asesor:valRaw('advisorCode'),tipo_servicio:valRaw('service'),
+   tecnologia:valRaw('tech'),velocidad:valRaw('speed'),descripcion_plan:valRaw('plan'),
+   beneficios:valRaw('benefits'),adicionales:valRaw('extras'),valor_comercial:numRaw('commercial'),
+   promocion:valRaw('promo'),valor_promocional:numRaw('promoValue'),duracion_promocion:valRaw('promoDuration'),
+   valor_despues_promocion:numRaw('afterValue'),observaciones:valRaw('notes'),autorizacion:auth.value,
+   firma:signed?c.toDataURL('image/png'):null,estado_auditoria:'Pendiente',actualizado_en:new Date().toISOString()
+ };
+ const btn=document.querySelector('.actions .primary');btn.disabled=true;btn.textContent='Guardando...';
+ const {error}=await supabaseClient.from('autorizaciones').insert(row);
+ btn.disabled=false;btn.textContent='Confirmar y generar constancia';
+ if(error){alert('No se pudo guardar la autorización. '+error.message);return}
+ alert('Autorización guardada correctamente en el CRM. Número: '+num);
  window.print();
 }
+function valRaw(id){const v=$(id).value.trim();return v||null}
+function numRaw(id){const n=String($(id).value||'').replace(/[^0-9]/g,'');return n?Number(n):null}
 function resetForm(){if(!confirm('¿Iniciar una nueva autorización? Se limpiarán los datos actuales.'))return;document.querySelectorAll('input:not([type=radio]),textarea').forEach(x=>x.value='');document.querySelectorAll('input[type=radio]').forEach(x=>x.checked=false);document.querySelectorAll('select').forEach(x=>x.selectedIndex=0);$('date').value=new Date().toISOString().slice(0,10);$('recordId').textContent=makeId();clearSignature();renderSummary();scrollTo(0,0)}
 </script></body></html>
