@@ -94,7 +94,7 @@ async function prepareRemote(){
  for(const [id,label] of required){if(!$(id).value.trim()){alert('Falta completar: '+label);$(id).focus();return}}
  const {data:{session}}=await supabaseClient.auth.getSession();if(!session?.user){alert('Debe iniciar sesión en el CRM.');return}
  const p=draftPayload(), token=crypto.randomUUID().replaceAll('-','')+Date.now().toString(36);
- const row={...p,user_id:session.user.id,autorizacion:'PENDIENTE_CLIENTE',firma:null,estado_auditoria:'Pendiente',observaciones:p.observaciones? p.observaciones+'\n[TOKEN-FIRMA:'+token+']':'[TOKEN-FIRMA:'+token+']',actualizado_en:new Date().toISOString()};
+ const row={...p,user_id:session.user.id,autorizacion:'PENDIENTE_CLIENTE',firma:null,firma_token:token,estado_auditoria:'Pendiente',actualizado_en:new Date().toISOString()};
  const btn=event.currentTarget;btn.disabled=true;btn.textContent='Preparando enlace...';
  const {error}=await supabaseClient.from('autorizaciones').insert(row);btn.disabled=false;btn.textContent='📲 Enviar al cliente por WhatsApp';
  if(error){alert('No se pudo preparar la autorización: '+error.message);return}
