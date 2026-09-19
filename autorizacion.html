@@ -16,7 +16,7 @@
 <label class="required">Fecha<input id="date" type="date"></label>
 <label class="required">Nombre completo del usuario<input id="name" autocomplete="name"></label>
 <label class="required">Cédula<input id="doc" inputmode="numeric"></label>
-<label>Teléfono<input id="phone" inputmode="tel"></label>
+<label class="required">Dirección completa<input id="address" placeholder="Ej. Carrera 6 # 12A-48, torre/apto si aplica"></label>\n<label class="required">Barrio o conjunto<input id="neighborhood" placeholder="Ej. Balcones de Madrid"></label>\n<label>Teléfono<input id="phone" inputmode="tel"></label>
 <label>Correo<input id="email" type="email"></label>
 <label>Nombre del asesor<input id="advisor"></label>
 <label>Código del asesor<input id="advisorCode"></label>
@@ -87,10 +87,10 @@ function end(){drawing=false}
 ['mousedown','touchstart'].forEach(x=>c.addEventListener(x,start,{passive:false}));['mousemove','touchmove'].forEach(x=>c.addEventListener(x,move,{passive:false}));['mouseup','mouseleave','touchend'].forEach(x=>c.addEventListener(x,end));
 function clearSignature(){ctx.clearRect(0,0,c.width,c.height);signed=false}
 function draftPayload(){
- return {numero_constancia:$('recordId').textContent,ciudad:valRaw('city'),fecha:valRaw('date'),nombre_cliente:valRaw('name'),cedula:valRaw('doc'),telefono:valRaw('phone'),correo:valRaw('email'),asesor:valRaw('advisor'),codigo_asesor:valRaw('advisorCode'),tipo_servicio:valRaw('service'),tecnologia:valRaw('tech'),velocidad:valRaw('speed'),descripcion_plan:valRaw('plan'),beneficios:valRaw('benefits'),adicionales:valRaw('extras'),valor_comercial:numRaw('commercial'),promocion:valRaw('promo'),valor_promocional:numRaw('promoValue'),duracion_promocion:valRaw('promoDuration'),valor_despues_promocion:numRaw('afterValue'),observaciones:valRaw('notes')};
+ return {numero_constancia:$('recordId').textContent,ciudad:valRaw('city'),fecha:valRaw('date'),nombre_cliente:valRaw('name'),cedula:valRaw('doc'),telefono:valRaw('phone'),correo:valRaw('email'),direccion:valRaw('address'),barrio_conjunto:valRaw('neighborhood'),asesor:valRaw('advisor'),codigo_asesor:valRaw('advisorCode'),tipo_servicio:valRaw('service'),tecnologia:valRaw('tech'),velocidad:valRaw('speed'),descripcion_plan:valRaw('plan'),beneficios:valRaw('benefits'),adicionales:valRaw('extras'),valor_comercial:numRaw('commercial'),promocion:valRaw('promo'),valor_promocional:numRaw('promoValue'),duracion_promocion:valRaw('promoDuration'),valor_despues_promocion:numRaw('afterValue'),observaciones:valRaw('notes')};
 }
 async function prepareRemote(){
- const required=[['city','Ciudad'],['name','Nombre'],['doc','Cédula'],['phone','Teléfono'],['service','Tipo de servicio'],['plan','Descripción del plan']];
+ const required=[['city','Ciudad'],['name','Nombre'],['doc','Cédula'],['address','Dirección completa'],['neighborhood','Barrio o conjunto'],['phone','Teléfono'],['service','Tipo de servicio'],['plan','Descripción del plan']];
  for(const [id,label] of required){if(!$(id).value.trim()){alert('Falta completar: '+label);$(id).focus();return}}
  const {data:{session}}=await supabaseClient.auth.getSession();if(!session?.user){alert('Debe iniciar sesión en el CRM.');return}
  const p=draftPayload(), token=crypto.randomUUID().replaceAll('-','')+Date.now().toString(36);
@@ -105,7 +105,7 @@ async function prepareRemote(){
  location.reload();
 }
 async function finish(){
- const required=[['city','Ciudad'],['name','Nombre'],['doc','Cédula'],['service','Tipo de servicio'],['plan','Descripción del plan']];
+ const required=[['city','Ciudad'],['name','Nombre'],['doc','Cédula'],['address','Dirección completa'],['neighborhood','Barrio o conjunto'],['service','Tipo de servicio'],['plan','Descripción del plan']];
  for(const [id,label] of required){if(!$(id).value.trim()){alert('Falta completar: '+label);$(id).focus();return}}
  const auth=document.querySelector('input[name="auth"]:checked');if(!auth){alert('El usuario debe seleccionar SÍ o NO en la autorización.');return}
  if(auth.value==='SI'&&!signed){alert('Para una autorización afirmativa, solicite la firma del usuario.');return}
