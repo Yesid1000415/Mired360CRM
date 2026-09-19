@@ -213,7 +213,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showView(b.data
 
 async function loadAuthorizations(){
   if(!currentUser)return;
-  const {data,error}=await supabaseClient.from('autorizaciones').select('*').order('creado_en',{ascending:false});
+  const {data,error}=await supabaseClient.from('autorizaciones').select('*').order('fecha',{ascending:false});
   if(error){$('authRows').innerHTML='<tr><td colspan="11" class="empty">No se pudieron cargar las autorizaciones: '+escapeHtml(error.message)+'</td></tr>';return}
   authorizations=data||[];renderAuthorizations();
 }
