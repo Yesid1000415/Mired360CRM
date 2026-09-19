@@ -224,7 +224,7 @@ function renderAuthorizations(){
     const hay=[x.numero_constancia,x.nombre_cliente,x.cedula,x.telefono,x.asesor,x.descripcion_plan].join(' ').toLowerCase();
     return (!q||hay.includes(q))&&(!st||x.estado_auditoria===st);
   });
-  box.innerHTML=a.map(x=>`<tr><td>${escapeHtml(x.fecha||'')}</td><td><b>${escapeHtml(x.numero_constancia||'')}</b></td><td>${escapeHtml(x.nombre_cliente||'')}</td><td>${escapeHtml(x.telefono||'')}</td><td title="${escapeHtml(x.descripcion_plan||'')}">${escapeHtml(shortText(x.descripcion_plan||'',55))}</td><td>${money(x.valor_comercial||0)}</td><td>${escapeHtml(x.asesor||'')}</td><td><select onchange="setAuditStatus('${x.id}',this.value)"><option ${x.estado_auditoria==='Pendiente'?'selected':''}>Pendiente</option><option ${x.estado_auditoria==='Auditado'?'selected':''}>Auditado</option><option ${x.estado_auditoria==='Novedad'?'selected':''}>Novedad</option></select></td><td style="white-space:nowrap"><button class="btn ghost" onclick="showAuthorization('${x.id}')">Ver detalle</button> <button class="btn primary" onclick="downloadAuthorization('${x.id}')">Descargar</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">No hay autorizaciones para mostrar.</td></tr>';
+  box.innerHTML=a.map(x=>`<tr><td>${escapeHtml(x.fecha||'')}</td><td><b>${escapeHtml(x.numero_constancia||'')}</b></td><td>${escapeHtml(x.nombre_cliente||'')}</td><td>${escapeHtml(x.telefono||'')}</td><td title="${escapeHtml(x.descripcion_plan||'')}">${escapeHtml(shortText(x.descripcion_plan||'',55))}</td><td>${money(x.valor_comercial||0)}</td><td>${escapeHtml(x.asesor||'')}</td><td><span class="badge ${x.estado_auditoria==='Auditado'?'ok':x.estado_auditoria==='Novedad'?'danger':'warn'}">${escapeHtml(x.estado_auditoria||'Pendiente')}</span></td><td style="white-space:nowrap"><button class="btn ghost" onclick="showAuthorization('${x.id}')">Ver detalle</button> <button class="btn primary" onclick="downloadAuthorization('${x.id}')">Descargar</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">No hay autorizaciones para mostrar.</td></tr>';
 }
 function shortText(t,n){t=String(t||'');return t.length>n?t.slice(0,n-1)+'…':t}
 function authDocument(x,autoPrint=false){
@@ -239,13 +239,6 @@ function showAuthorization(id){
 function downloadAuthorization(id){
  const x=authorizations.find(a=>String(a.id)===String(id));if(!x)return;
  const w=window.open('','_blank');w.document.open();w.document.write(authDocument(x,true));w.document.close();
-}
-async function setAuditStatus(id,status){
- const changes={estado_auditoria:status,actualizado_en:new Date().toISOString(),fecha_auditoria:status==='Auditado'?new Date().toISOString():null};
- const {error}=await supabaseClient.from('autorizaciones').update(changes).eq('id',id);
- if(error){alert('No se pudo actualizar: '+error.message);return}
- const x=authorizations.find(a=>String(a.id)===String(id));if(x)Object.assign(x,changes);
- renderAuthorizations();
 }
 function showSignature(id){
  const x=authorizations.find(a=>String(a.id)===String(id));if(!x?.firma)return;
