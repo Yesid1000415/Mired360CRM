@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Presentación del proyecto MIRED360CRM: gestión comercial, autorizaciones electrónicas y portal de asesores.">
+<title>MIRED360CRM · Presentación del proyecto</title>
+<style>
+:root{--nav:#071d36;--blue:#0f7cff;--cyan:#00a8e8;--bg:#f4f7fb;--text:#17263a;--mut:#64748b;--bd:#d9e4ef;--ok:#087a49}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+.wrap{max-width:1050px;margin:auto;padding:22px}.hero{background:linear-gradient(135deg,#061a33,#0d4d82);color:white;border-radius:26px;padding:42px 34px;margin:18px 0;box-shadow:0 18px 45px #082b5220}
+.brand{font-weight:900;letter-spacing:.4px;color:#9fd7ff}.hero h1{font-size:clamp(30px,5vw,52px);line-height:1.05;margin:15px 0}.hero p{max-width:760px;color:#dceeff;font-size:18px}
+.pill{display:inline-block;background:#ffffff18;border:1px solid #ffffff35;border-radius:999px;padding:7px 12px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{background:#fff;border:1px solid var(--bd);border-radius:19px;padding:22px;box-shadow:0 8px 24px #082b520c}.card h2,.card h3{color:#082b52;margin-top:0}.icon{font-size:29px;margin-bottom:9px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.step{background:#fff;border:1px solid var(--bd);border-radius:17px;padding:18px}.num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e8f3ff;color:#0f65c8;font-weight:900}
+.section{margin:34px 0}.section>h2{text-align:center;color:#082b52;font-size:28px}.lead{text-align:center;color:var(--mut);max-width:780px;margin:-8px auto 22px}
+.highlight{background:#eaf7f1;border:1px solid #bce3d0;border-radius:18px;padding:20px}.highlight strong{color:var(--ok)}
+.footer{text-align:center;color:var(--mut);font-size:13px;padding:24px}.tag{font-size:12px;font-weight:800;color:#0f65c8;background:#eaf4ff;padding:5px 8px;border-radius:8px}
+@media(max-width:760px){.wrap{padding:12px}.hero{padding:28px 20px;border-radius:19px}.grid,.flow{grid-template-columns:1fr}.hero p{font-size:16px}}
+</style></head>
+<body><main class="wrap">
+<section class="hero"><div class="brand">MIRED360SERVICIOS</div><span class="pill">Proyecto de transformación y control comercial</span><h1>MIRED360CRM</h1><p>Una solución digital desarrollada para organizar la gestión comercial, respaldar la información entregada al cliente y facilitar el trabajo de los asesores desde un mismo ecosistema.</p></section>
+
+<section class="section"><h2>¿Qué resuelve el proyecto?</h2><p class="lead">Centraliza tareas que normalmente quedan repartidas entre formularios, mensajes y registros independientes, buscando una operación más organizada y trazable.</p>
+<div class="grid">
+<article class="card"><div class="icon">📋</div><h3>Gestión comercial</h3><p>Registro estructurado de los datos necesarios para la gestión de una solicitud, incluyendo cliente, ubicación, asesor, servicio, plan y condiciones comerciales.</p></article>
+<article class="card"><div class="icon">✍️</div><h3>Autorización electrónica</h3><p>Generación de una constancia única con la información comercial suministrada y la decisión del cliente, con posibilidad de firma en pantalla.</p></article>
+<article class="card"><div class="icon">📲</div><h3>Firma por WhatsApp</h3><p>El asesor prepara la gestión y puede enviar un enlace individual para que el cliente revise la información y autorice desde su propio celular.</p></article>
+<article class="card"><div class="icon">🔒</div><h3>Control de acceso</h3><p>El proyecto utiliza autenticación y permisos de base de datos. Las autorizaciones registradas se diseñaron para no ser editadas desde el acceso normal de los asesores.</p></article>
+<article class="card"><div class="icon">📄</div><h3>Constancias consultables</h3><p>Cada gestión genera un número de constancia y puede conservarse para consulta y generación posterior de una copia imprimible o PDF.</p></article>
+<article class="card"><div class="icon">👥</div><h3>Portal de asesores</h3><p>Se implementó un acceso operativo separado del panel administrativo para que cada asesor trabaje con las funciones necesarias sin abrir el CRM completo.</p></article>
+</div></section>
+
+<section class="section"><h2>Flujo de una autorización</h2><div class="flow">
+<div class="step"><div class="num">1</div><h3>Registro</h3><p>El asesor diligencia datos del cliente, dirección, barrio/conjunto, estrato y condiciones de la venta.</p></div>
+<div class="step"><div class="num">2</div><h3>Revisión</h3><p>La información del servicio, valores, promociones y beneficios queda presentada para revisión.</p></div>
+<div class="step"><div class="num">3</div><h3>Autorización</h3><p>El cliente responde y firma presencialmente o recibe un enlace individual por WhatsApp.</p></div>
+<div class="step"><div class="num">4</div><h3>Respaldo</h3><p>La constancia queda registrada para posterior consulta y descarga desde el entorno autorizado.</p></div>
+</div></section>
+
+<section class="section"><div class="highlight"><span class="tag">OBJETIVO</span><h2>Menos duplicidad, más organización</h2><p>La evolución del proyecto busca que el asesor capture la información una sola vez y que esa misma gestión alimente el proceso comercial y su respaldo electrónico, evitando tener que diligenciar por separado una plantilla y luego repetir la información en el CRM.</p></div></section>
+
+<section class="section"><h2>Estado actual</h2><p class="lead">El flujo principal ya se encuentra operativo: creación de autorizaciones, firma presencial, envío de enlace al cliente por WhatsApp, firma remota, almacenamiento y consulta de constancias. El portal individual de asesores se encuentra preparado para la incorporación de usuarios.</p></section>
+
+<footer class="footer"><strong>MIRED360CRM · MIRED360SERVICIOS</strong><br>Presentación informativa del proyecto. La constancia comercial no sustituye los documentos, términos o contratos propios del operador del servicio.</footer>
+</main></body></html>
