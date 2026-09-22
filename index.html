@@ -225,7 +225,7 @@ function showView(id){
   if(id==='comisiones')loadCommissionClaims();
   if(id==='usuarios')loadAdvisorUsers();
 }
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.link){window.location.assign(b.dataset.link);return;}if(b.dataset.view)showView(b.dataset.view);});
 
 async function loadAuthorizations(){
   if(!currentUser)return;
