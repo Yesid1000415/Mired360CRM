@@ -52,7 +52,7 @@
 <div id="crmApp" class="app hidden">
 <aside>
   <div class="brand"><div class="logo">M</div><div><b>MIRED<span style="color:#00b8ff">360</span></b><span>SERVICIOS · CRM</span></div></div>
-  <nav><button class="active" data-view="dashboard">📊 Dashboard</button><button data-view="prospectos">👥 Prospectos</button><button data-view="conversaciones">💬 WhatsApp</button><button data-view="seguimientos">📅 Seguimientos</button><button data-view="ventas">💰 Ventas</button><button data-view="autorizaciones">✍️ Autorizaciones</button><button data-view="comisiones">💵 Cobro comisiones</button><button data-view="usuarios">🔐 Usuarios asesores</button><button type="button" onclick="window.location.href='reclutamiento.html'">🎯 Reclutamiento</button><button data-view="publicidad">📣 Publicidad</button><button data-view="config">⚙️ Configuración</button></nav>
+  <nav><button class="active" data-view="dashboard">📊 Dashboard</button><button data-view="prospectos">👥 Prospectos</button><button data-view="conversaciones">💬 WhatsApp</button><button data-view="seguimientos">📅 Seguimientos</button><button data-view="ventas">💰 Ventas</button><button data-view="autorizaciones">✍️ Autorizaciones</button><button data-view="comisiones">💵 Cobro comisiones</button><button data-view="usuarios">🔐 Usuarios asesores</button><button type="button" data-link="reclutamiento.html">🎯 Reclutamiento</button><button data-view="publicidad">📣 Publicidad</button><button data-view="config">⚙️ Configuración</button></nav>
   <div class="statusbar"><span id="syncDot" class="sync-dot"></span><span id="syncText">Conectado a Supabase</span><br><span id="userLabel"></span></div>
 </aside>
 <main>
@@ -734,6 +734,7 @@ $('filterStatus').onchange=renderLeadTable;
 $('chatSearch').oninput=renderChatContacts;
 $('replyText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatReply();}});
 $('selectVisibleLeads').onchange=e=>toggleVisibleLeads(e.target.checked);
+document.querySelectorAll('nav button[data-link]').forEach(b=>b.addEventListener('click',e=>{e.stopImmediatePropagation();window.location.href=b.dataset.link;}));
 function addAd(){if(!$('adName').value.trim()||!$('adAmount').value)return alert('Ingrese nombre e inversión');ads.unshift({id:Date.now(),name:$('adName').value.trim(),channel:$('adChannel').value,amount:Number($('adAmount').value),date:$('adDate').value||today()});localStorage.setItem('mired360_ads_v1',JSON.stringify(ads));$('adName').value='';$('adAmount').value='';renderAds();}
 function renderAds(){$('adRows').innerHTML=ads.map(a=>`<tr><td>${a.date}</td><td>${a.name}</td><td>${a.channel}</td><td>${money(a.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No hay campañas.</td></tr>';$('adSpend').textContent=money(ads.reduce((s,a)=>s+a.amount,0));$('adSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)&&['Facebook Ads','Instagram Ads','Google Ads'].includes(l.origin)).length;}
 function saveSettings(){let phone=normalizeWhatsNumber($('businessPhone').value);$('businessPhone').value=phone;localStorage.setItem('mired360_settings_v1',JSON.stringify({businessName:$('businessName').value,businessPhone:phone}));alert('Configuración guardada');}
