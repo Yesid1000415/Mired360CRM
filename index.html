@@ -458,17 +458,54 @@ function renderActiveChat(){
   input.disabled=false;btn.disabled=false;
   setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
 }
+function chatWindowOpen(phone){
+  const p=normalizeWhatsNumber(phone);
+  const lastInbound=waMessages
+    .filter(m=>normalizeWhatsNumber(m.telefono)===p&&m.direccion!=='saliente')
+    .sort((a,b)=>new Date(b.creado_en)-new Date(a.creado_en))[0];
+  if(!lastInbound?.creado_en)return false;
+  return (Date.now()-new Date(lastInbound.creado_en).getTime()) < 24*60*60*1000;
+}
+
+async function sendApprovedTemplate(phone){
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  const authToken=session?.access_token||SUPABASE_KEY;
+  const response=await fetch(WHATSAPP_SEND_URL,{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+authToken,
+      'apikey':SUPABASE_KEY
+    },
+    body:JSON.stringify({to:normalizeWhatsNumber(phone)})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data?.messages?.length){
+    throw new Error(data?.error?.message||data?.error||'No se pudo enviar la plantilla aprobada');
+  }
+  return data;
+}
+
 async function sendChatReply(){
   const text=$('replyText').value.trim();
   if(!activeChatPhone||!text)return;
   const btn=$('replyBtn');
   btn.disabled=true;
-  btn.textContent='Enviando...';
-
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  const authToken=session?.access_token||SUPABASE_KEY;
 
   try{
+    if(!chatWindowOpen(activeChatPhone)){
+      btn.textContent='Enviando plantilla...';
+      const ok=confirm('Han pasado más de 24 horas desde el último mensaje del cliente. WhatsApp no permite enviar texto libre.\n\nSe enviará la plantilla aprobada mired360_validar_cobertura para reabrir el contacto. Cuando el cliente responda, podrás escribir normalmente.\n\n¿Enviar plantilla ahora?');
+      if(!ok)return;
+      await sendApprovedTemplate(activeChatPhone);
+      alert('Plantilla enviada correctamente. El texto que escribiste NO se envió. Cuando el cliente responda, se abrirá nuevamente la ventana de 24 horas.');
+      await loadMessages(false);
+      return;
+    }
+
+    btn.textContent='Enviando...';
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    const authToken=session?.access_token||SUPABASE_KEY;
     const response=await fetch(WHATSAPP_SEND_URL,{
       method:'POST',
       headers:{
@@ -485,7 +522,7 @@ async function sendChatReply(){
     $('replyText').value='';
     await loadMessages(false);
   }catch(e){
-    alert('No se pudo enviar la respuesta. '+String(e.message||e));
+    alert('No se pudo enviar. '+String(e.message||e));
   }finally{
     btn.disabled=false;
     btn.textContent='Enviar';
