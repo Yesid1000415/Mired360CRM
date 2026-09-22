@@ -6,6 +6,7 @@
 <title>CRM MIRED360SERVICIOS · WhatsApp API</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}.hidden{display:none!important}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}aside{background:linear-gradient(180deg,var(--n),#061426);color:white;padding:20px 14px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand span{display:block;font-size:11px;letter-spacing:2px;color:#7fdfff}nav button{width:100%;border:0;background:transparent;color:#cbd9e8;text-align:left;padding:12px;border-radius:12px;margin:3px 0;cursor:pointer}nav button.active,nav button:hover{background:rgba(0,184,255,.15);color:#fff}main{padding:22px;max-width:1450px;width:100%;margin:auto}header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1{margin:0;font-size:27px}header p{margin:5px 0 0;color:var(--m)}.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l)}.danger-btn{background:#fff1f2;color:#b4232d;border:1px solid #fecdd3}.grid{display:grid;gap:15px}.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:16px}.card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:17px;box-shadow:0 10px 30px rgba(4,35,66,.06)}.kpi small{color:var(--m)}.kpi strong{display:block;font-size:29px;margin-top:8px}.two{grid-template-columns:1.3fr .7fr}.section{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section h2{margin:0;font-size:18px}.pipeline{display:flex;gap:8px;overflow:auto}.stage{min-width:160px;background:#f7fbff;border:1px solid var(--l);border-radius:13px;padding:12px}.stage strong{display:block;font-size:24px;margin:7px 0}.table-wrap{overflow:auto;border:1px solid var(--l);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:11px;border-bottom:1px solid var(--l);font-size:13px;text-align:left}th{background:#f2f7fc}.badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:#eef6ff;font-size:12px;font-weight:700}.ok{background:#eaf8f1;color:#08774b}.warn{background:#fff5df;color:#996000}.danger{background:#feecec;color:#b4232d}.whats{display:inline-block;text-decoration:none;background:#e9fbf2;color:#087a49;border:1px solid #bdebd5;padding:7px 10px;border-radius:10px;font-weight:700}.view{display:none}.view.active{display:block}.empty{padding:25px;text-align:center;color:var(--m)}.modal{position:fixed;inset:0;background:rgba(1,15,29,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}.modal.open{display:flex}.modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:20px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-size:12px;color:#52647a;font-weight:700}input,select,textarea{padding:11px;border:1px solid #cfdceb;border-radius:11px;width:100%}textarea{min-height:75px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.toolbar input{max-width:320px}.toolbar select{max-width:220px}.bulkbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:12px;border:1px solid #c6eaff;background:#f3fbff;border-radius:13px}.bulkbar .btn:disabled{opacity:.5;cursor:not-allowed}.bulk-status{font-size:12px;color:#52647a;font-weight:700}.checkcell{width:42px;text-align:center}.checkcell input{width:18px;height:18px;cursor:pointer}.notice{padding:12px;background:#eef8ff;border:1px solid #c6eaff;border-radius:12px;color:#27577a;font-size:13px}.statusbar{font-size:12px;color:#d2e9ff;margin-top:16px;line-height:1.5}.login-page{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top right,#0f7cff33,transparent 35%),linear-gradient(135deg,#061426,#0b2d52)}.login-card{width:min(440px,100%);background:white;border-radius:22px;padding:28px;box-shadow:0 25px 70px #0005}.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}.login-card h1{font-size:24px}.login-card p{color:var(--m)}.login-card label{margin:12px 0}.login-error{min-height:20px;color:#b4232d;font-size:13px;margin-top:10px}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a36a;margin-right:6px}.sync-dot.off{background:#e5484d}.loader{opacity:.65;pointer-events:none}@media(max-width:950px){.app{grid-template-columns:1fr}aside{height:auto;position:static}nav{display:flex;overflow:auto}nav button{width:auto;white-space:nowrap}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}main{padding:14px}}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.kpis{grid-template-columns:1fr 1fr}}
@@ -66,6 +67,8 @@
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" onclick="startDirectWhatsApp()">+ Nuevo WhatsApp</button>
+    <button class="btn ghost" onclick="document.getElementById('waExcelFile').click()">📄 Importar Excel</button>
+    <input id="waExcelFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importWhatsAppExcel(this.files[0]);this.value=''">
     <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
   </div>
 </header>
@@ -476,6 +479,89 @@ async function startDirectWhatsApp(){
     alert('No se pudo iniciar el WhatsApp. '+String(e.message||e));
   }
 }
+let waImportQueue=[];
+let waImportRunning=false;
+
+function extractPhonesFromWorkbook(workbook){
+  const phones=[];
+  for(const sheetName of workbook.SheetNames){
+    const sheet=workbook.Sheets[sheetName];
+    const rows=XLSX.utils.sheet_to_json(sheet,{header:1,raw:false,defval:''});
+    for(const row of rows){
+      for(const cell of row){
+        const raw=String(cell||'').trim();
+        if(!raw)continue;
+        const normalized=normalizeWhatsNumber(raw);
+        if(/^57\d{10}$/.test(normalized))phones.push(normalized);
+      }
+    }
+  }
+  return phones;
+}
+
+async function importWhatsAppExcel(file){
+  if(!file)return;
+  if(typeof XLSX==='undefined')return alert('No se pudo cargar el lector de Excel. Actualiza la página e inténtalo nuevamente.');
+  try{
+    const buffer=await file.arrayBuffer();
+    const workbook=XLSX.read(buffer,{type:'array'});
+    const extracted=extractPhonesFromWorkbook(workbook);
+    const unique=[...new Set(extracted)];
+    const duplicates=extracted.length-unique.length;
+    const existingChats=new Set(groupedChats().map(g=>g.phone));
+    const eligible=unique.filter(p=>!existingChats.has(p));
+    const already=unique.length-eligible.length;
+
+    if(!unique.length){
+      alert('No encontré números celulares colombianos válidos en el archivo. Puedes usar un Excel con una sola columna llamada Teléfono.');
+      return;
+    }
+
+    const msg='Archivo revisado.\n\n'+
+      'Números válidos únicos: '+unique.length+'\n'+
+      'Duplicados eliminados: '+duplicates+'\n'+
+      'Con conversación existente: '+already+'\n'+
+      'Listos para plantilla: '+eligible.length+'\n\n'+
+      'Solo se enviará la plantilla aprobada mired360_validar_cobertura. No se crearán prospectos.\n\n'+
+      'Continúa únicamente si estos contactos autorizaron recibir comunicaciones por WhatsApp.\n\n¿Preparar el envío?';
+    if(!confirm(msg))return;
+    if(!eligible.length)return alert('No hay números nuevos para enviar.');
+
+    waImportQueue=eligible;
+    await runWhatsAppImport();
+  }catch(e){
+    alert('No se pudo leer el archivo. '+String(e.message||e));
+  }
+}
+
+async function runWhatsAppImport(){
+  if(waImportRunning||!waImportQueue.length)return;
+  waImportRunning=true;
+  let ok=0,fail=0;
+  const failed=[];
+  try{
+    for(let i=0;i<waImportQueue.length;i++){
+      const phone=waImportQueue[i];
+      const proceed= i===0 ? confirm('Se enviarán '+waImportQueue.length+' plantillas aprobadas.\n\nEl proceso será secuencial y mostrará el resultado al terminar. ¿Iniciar ahora?') : true;
+      if(!proceed)break;
+      try{
+        await sendApprovedTemplate(phone);
+        ok++;
+      }catch(e){
+        fail++;
+        failed.push(phone);
+      }
+      // Pausa técnica para evitar solicitudes simultáneas; no pretende eludir límites de WhatsApp.
+      if(i<waImportQueue.length-1)await new Promise(r=>setTimeout(r,750));
+    }
+    alert('Envío terminado.\n\nEnviados: '+ok+'\nFallidos: '+fail+(failed.length?'\n\nFallidos: '+failed.slice(0,20).join(', '):''));
+    await loadMessages(false);
+  }finally{
+    waImportQueue=[];
+    waImportRunning=false;
+  }
+}
+
 function renderActiveChat(){
   const panel=$('chatMessages'),head=$('chatHead'),input=$('replyText'),btn=$('replyBtn');
   if(!panel||!head)return;
