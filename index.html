@@ -64,7 +64,10 @@
     <h1>WhatsApp</h1>
     <p>Bandeja de conversaciones del número conectado a WhatsApp Cloud API.</p>
   </div>
-  <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn primary" onclick="startDirectWhatsApp()">+ Nuevo WhatsApp</button>
+    <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
+  </div>
 </header>
 <div class="notice" style="margin-bottom:12px">
   <b>Atención:</b> puedes responder con texto libre dentro de la ventana de atención de 24 horas después del último mensaje del cliente. Fuera de esa ventana, inicia la conversación con una plantilla aprobada.
@@ -437,6 +440,41 @@ function openChat(phone){
   activeChatPhone=normalizeWhatsNumber(phone);
   renderChatContacts();
   renderActiveChat();
+}
+
+async function startDirectWhatsApp(){
+  const raw=prompt('Escribe el número de WhatsApp del contacto.\n\nEjemplo: 3001234567');
+  if(raw===null)return;
+  const phone=normalizeWhatsNumber(raw);
+  if(!/^57\d{10}$/.test(phone)){
+    alert('Número no válido. Para Colombia escribe los 10 dígitos del celular, por ejemplo: 3001234567.');
+    return;
+  }
+
+  const existing=groupedChats().find(g=>g.phone===phone);
+  if(existing){
+    openChat(phone);
+    if(chatWindowOpen(phone)){
+      alert('Este número ya tiene una conversación y está dentro de la ventana de 24 horas. Puedes escribirle directamente.');
+    }else{
+      alert('Este número ya tiene conversación, pero está fuera de la ventana de 24 horas. Para volver a contactarlo se debe usar la plantilla aprobada.');
+    }
+    return;
+  }
+
+  const ok=confirm('Este número no tiene una conversación activa en el CRM.\n\nPara iniciar el contacto, WhatsApp exige una plantilla aprobada. Se enviará mired360_validar_cobertura.\n\nNo es necesario crear un prospecto ni llenar otros datos.\n\n¿Enviar ahora?');
+  if(!ok)return;
+
+  try{
+    await sendApprovedTemplate(phone);
+    activeChatPhone=phone;
+    alert('Plantilla enviada correctamente. No se creó ningún prospecto. Cuando la persona responda, la conversación aparecerá aquí y podrás escribir normalmente.');
+    await new Promise(r=>setTimeout(r,800));
+    await loadMessages(false);
+    if(groupedChats().some(g=>g.phone===phone))openChat(phone);
+  }catch(e){
+    alert('No se pudo iniciar el WhatsApp. '+String(e.message||e));
+  }
 }
 function renderActiveChat(){
   const panel=$('chatMessages'),head=$('chatHead'),input=$('replyText'),btn=$('replyBtn');
