@@ -6,7 +6,7 @@
 <div id="app" hidden><header><div style="max-width:1250px;margin:auto"><h1 style="margin:0">Red Comercial 360</h1><p>Reclutamiento, activación y productividad de asesores independientes</p><div class="actions"><a class="btn ghost" href="index.html" style="text-decoration:none;color:#132238">← CRM principal</a><button class="btn ghost" onclick="logout()">Cerrar sesión</button></div></div></header><main class="wrap">
 <div class="grid" id="kpis"></div>
 <div class="card"><h2>Registrar candidato</h2><div class="form"><input id="nombre" placeholder="Nombre y apellidos"><input id="telefono" placeholder="Celular"><input id="ciudad" placeholder="Ciudad"><select id="experiencia"><option value="">Experiencia comercial</option><option>Sin experiencia</option><option>Menos de 1 año</option><option>1 a 3 años</option><option>Más de 3 años</option></select><input id="vendido" placeholder="¿Qué ha vendido?"><select id="canal"><option value="">Canal preferido</option><option>Calle / TAT</option><option>Redes sociales</option><option>Referidos</option><option>Mixto</option></select><select id="origen"><option>Facebook Ads</option><option>WhatsApp</option><option>Referido</option><option>Orgánico</option><option>Otro</option></select><input id="meta" type="number" min="0" placeholder="Ventas que cree lograr por semana"><textarea class="full" id="notas" placeholder="Observaciones"></textarea><div class="full"><button class="btn primary" onclick="guardar()">Guardar candidato</button></div></div></div>
-<div class="card"><div class="toolbar"><input id="buscar" placeholder="Buscar nombre, teléfono o ciudad" oninput="render()"><select id="filtro" onchange="render()"><option value="">Todos los estados</option><option>Nuevo</option><option>Contactado</option><option>Preseleccionado</option><option>En activación</option><option>Asesor activo</option><option>Productor</option><option>Alto productor</option><option>Inactivo</option><option>Descartado</option></select><button class="btn ghost" onclick="cargar()">↻ Actualizar</button></div><div class="table"><table><thead><tr><th>Ingreso</th><th>Candidato</th><th>Ciudad</th><th>Experiencia</th><th>Canal</th><th>Origen</th><th>Estado</th><th>Prospectos</th><th>Instalados</th><th>Acción</th></tr></thead><tbody id="rows"></tbody></table></div></div>
+<div class="card"><div class="toolbar"><input id="buscar" placeholder="Buscar nombre, teléfono o ciudad" oninput="render()"><select id="filtro" onchange="render()"><option value="">Todos los estados</option><option>Nuevo</option><option>Contactado</option><option>Preseleccionado</option><option>En activación</option><option>Asesor activo</option><option>Productor</option><option>Alto productor</option><option>Inactivo</option><option>Descartado</option></select><button class="btn ghost" onclick="cargar()">↻ Actualizar</button></div><div class="table"><table><thead><tr><th>Ingreso</th><th>Candidato</th><th>Ciudad</th><th>Experiencia</th><th>Canal</th><th>Origen</th><th>Estado</th><th>Activación</th><th>Prospectos</th><th>Instalados</th><th>Acción</th></tr></thead><tbody id="rows"></tbody></table></div></div>
 </main></div>
 <script>const U='https://lpiusomsuswdcraoozdn.supabase.co',K='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r',sb=supabase.createClient(U,K);let user=null,data=[];const $=x=>document.getElementById(x),states=['Nuevo','Contactado','Preseleccionado','En activación','Asesor activo','Productor','Alto productor','Inactivo','Descartado'];
 async function login(){let r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('pass').value});if(r.error){$('err').textContent=r.error.message;return}enter(r.data.user)}
@@ -18,4 +18,38 @@ async function guardar(){let o={user_id:user.id,nombre:$('nombre').value.trim(),
 async function estado(id,v){let patch={estado:v,actualizado_en:new Date().toISOString()};if(v==='En activación')patch.fecha_activacion=new Date().toISOString();let r=await sb.from('reclutamiento_asesores').update(patch).eq('id',id);if(r.error)alert(r.error.message);await cargar()}
 async function metrica(id,c,v){let p={};p[c]=Number(v||0);let r=await sb.from('reclutamiento_asesores').update(p).eq('id',id);if(r.error)alert(r.error.message);await cargar()}
 function whats(p){p=String(p).replace(/\D/g,'');if(p.length===10)p='57'+p;window.open('https://wa.me/'+p+'?text='+encodeURIComponent('Hola, te escribimos de MIRED360SERVICIOS para continuar con tu proceso como asesor comercial independiente.'),'_blank')}
-(async()=>{let r=await sb.auth.getSession();if(r.data.session?.user)enter(r.data.session.user)})();</script></body></html>
+(async()=>{let r=await sb.auth.getSession();if(r.data.session?.user)enter(r.data.session.user)})();
+// Mejoras de activación: días de prueba, productividad y conversión.
+function diasActivacion(x){
+ if(!x.fecha_activacion)return '-';
+ const d=Math.max(1,Math.floor((Date.now()-new Date(x.fecha_activacion).getTime())/86400000)+1);
+ return 'Día '+Math.min(d,10)+' de 10';
+}
+function nivelSugerido(x){
+ const i=Number(x.instalados||0),p=Number(x.prospectos||0);
+ if(i>=11)return 'Alto productor';
+ if(i>=3)return 'Productor';
+ if(i>=1)return 'Asesor activo';
+ if(x.fecha_activacion && (Date.now()-new Date(x.fecha_activacion).getTime())>=10*86400000 && p===0)return 'Inactivo';
+ return x.estado;
+}
+async function convertir(id){
+ const x=data.find(z=>z.id===id); if(!x)return;
+ if(!confirm('Convertir a '+x.nombre+' en asesor activo? Después podrás crear su usuario desde Usuarios asesores.'))return;
+ const r=await sb.from('reclutamiento_asesores').update({estado:'Asesor activo',actualizado_en:new Date().toISOString()}).eq('id',id);
+ if(r.error)return alert(r.error.message);
+ alert('Candidato convertido en Asesor activo. Ahora puedes crear su acceso desde Usuarios asesores.');
+ await cargar();
+}
+const renderBase=render;
+render=function(){
+ renderBase();
+ const rows=$('rows'); if(!rows)return;
+ const q=($('buscar').value||'').toLowerCase(),f=$('filtro').value;
+ const a=data.filter(x=>(!f||x.estado===f)&&[x.nombre,x.telefono,x.ciudad].join(' ').toLowerCase().includes(q));
+ rows.innerHTML=a.map(x=>{
+   const sugerido=nivelSugerido(x), aviso=sugerido!==x.estado?' · sugerido: '+sugerido:'';
+   return '<tr><td>'+String(x.creado_en||'').slice(0,10)+'</td><td><b>'+esc(x.nombre)+'</b><br>'+esc(x.telefono)+'</td><td>'+esc(x.ciudad||'-')+'</td><td>'+esc(x.experiencia||'-')+'</td><td>'+esc(x.canal||'-')+'</td><td>'+esc(x.origen||'-')+'</td><td><select onchange="estado(\''+x.id+'\',this.value)">'+states.map(s=>'<option '+(s===x.estado?'selected':'')+'>'+s+'</option>').join('')+'</select><div class="muted">'+esc(aviso)+'</div></td><td><b>'+diasActivacion(x)+'</b></td><td><input style="width:75px" type="number" min="0" value="'+(x.prospectos||0)+'" onchange="metrica(\''+x.id+'\',\'prospectos\',this.value)"></td><td><input style="width:75px" type="number" min="0" value="'+(x.instalados||0)+'" onchange="metrica(\''+x.id+'\',\'instalados\',this.value)"></td><td><div class="actions"><button class="btn ghost" onclick="whats(\''+esc(x.telefono)+'\')">WhatsApp</button>'+(x.estado!=='Asesor activo'&&x.estado!=='Productor'&&x.estado!=='Alto productor'?'<button class="btn primary" onclick="convertir(\''+x.id+'\')">Convertir en asesor</button>':'')+'</div></td></tr>';
+ }).join('')||'<tr><td colspan="11">Sin candidatos.</td></tr>';
+}
+</script></body></html>
