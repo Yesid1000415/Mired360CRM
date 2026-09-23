@@ -61,7 +61,9 @@ Deno.serve(async (request) => {
 
     // Log successful sends for the CRM conversation history.
     const { error: logError } = await supabase.from('whatsapp_mensajes').insert({
-      telefono: to, direccion: 'saliente', tipo: 'document', texto: filename, estado: 'enviado',
+      user_id: user.id, telefono: to, direccion: 'saliente', tipo: 'document',
+      texto: '__mired_media__' + JSON.stringify({ id: media.id, name: filename }),
+      wamid: result.messages[0].id, estado: 'enviado',
     });
     return json({ messages: result.messages, logged: !logError, ...(logError ? { warning: 'El archivo salió, pero no se pudo guardar en el historial.' } : {}) });
   } catch (error) {

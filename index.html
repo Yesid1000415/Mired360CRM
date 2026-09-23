@@ -125,6 +125,7 @@ const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const WHATSAPP_SEND_URL=SUPABASE_URL+'/functions/v1/whatsapp-send';
 const WHATSAPP_DOCUMENT_URL=SUPABASE_URL+'/functions/v1/whatsapp-document';
+const WHATSAPP_MEDIA_URL=SUPABASE_URL+'/functions/v1/whatsapp-media';
 const CREATE_ADVISOR_URL=SUPABASE_URL+'/functions/v1/crear-asesor-v3';
 const ADMIN_CRM_URL=SUPABASE_URL+'/functions/v1/administrar-crm-v1';
 const selectedLeadIds=new Set();
@@ -404,6 +405,14 @@ function leadForPhone(phone){
   const p=normalizeWhatsNumber(phone);
   return leads.find(l=>normalizeWhatsNumber(l.phone)===p);
 }
+function chatDocument(text){
+  if(!String(text||'').startsWith('__mired_media__'))return null;
+  try{const doc=JSON.parse(text.slice('__mired_media__'.length));return doc?.id&&doc?.name?doc:null;}catch{return null;}
+}
+function chatDisplayText(m){
+  const doc=chatDocument(m.texto);
+  return doc?'📎 '+doc.name:(m.texto||('['+(m.tipo||'mensaje')+']'));
+}
 async function loadMessages(showAlert=false){
   if(!currentUser)return;
   const {data,error}=await supabaseClient
@@ -444,7 +453,7 @@ function renderChatContacts(){
   const groups=groupedChats().filter(g=>(g.name+' '+g.phone).toLowerCase().includes(q));
   box.innerHTML=groups.map(g=>{
     const active=g.phone===activeChatPhone?' active':'';
-    const preview=g.last.texto||('['+(g.last.tipo||'mensaje')+']');
+    const preview=chatDisplayText(g.last);
     return `<button class="chat-contact${active}" onclick="openChat('${g.phone}')">
       <b>${escapeHtml(g.name)}</b>
       <small>${escapeHtml(preview)}</small>
@@ -588,9 +597,11 @@ function renderActiveChat(){
   head.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${escapeHtml(group.name)}</b><small>${escapeHtml(group.phone)}</small></div><button class="callbtn" onclick="startPhoneCall('${group.phone}')">📞 Llamar</button></div>`;
   panel.innerHTML=group.msgs.map(m=>{
     const dir=m.direccion==='saliente'?'out':'in';
-    const text=m.texto||('['+(m.tipo||'mensaje')+']');
+    const text=chatDisplayText(m);
     const st=m.estado&&m.direccion==='saliente'?' · '+m.estado:'';
-    return `<div class="bubble ${dir}">${escapeHtml(text)}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
+    const doc=chatDocument(m.texto);
+    const action=doc?`<button class="btn ghost" style="margin-top:8px" onclick="downloadChatDocument('${m.id}',this)">⬇ Descargar archivo</button>`:'';
+    return `<div class="bubble ${dir}">${escapeHtml(text)}${action}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
   }).join('');
   input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;
   setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
@@ -602,6 +613,24 @@ function chatWindowOpen(phone){
     .sort((a,b)=>new Date(b.creado_en)-new Date(a.creado_en))[0];
   if(!lastInbound?.creado_en)return false;
   return (Date.now()-new Date(lastInbound.creado_en).getTime()) < 24*60*60*1000;
+}
+
+async function downloadChatDocument(messageId,button){
+  button.disabled=true;button.textContent='Descargando...';
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
+    const response=await fetch(WHATSAPP_MEDIA_URL,{method:'POST',headers:{
+      'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
+    },body:JSON.stringify({messageId})});
+    if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(body.error||'No se pudo descargar.');}
+    const blob=await response.blob();
+    const name=decodeURIComponent(response.headers.get('X-Document-Name')||'documento');
+    const link=document.createElement('a'),url=URL.createObjectURL(blob);
+    link.href=url;link.download=name;document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(e){alert('No se pudo descargar. '+String(e.message||e));}
+  finally{button.disabled=false;button.textContent='⬇ Descargar archivo';}
 }
 
 async function sendChatFile(file){
