@@ -404,6 +404,13 @@ function leadForPhone(phone){
   const p=normalizeWhatsNumber(phone);
   return leads.find(l=>normalizeWhatsNumber(l.phone)===p);
 }
+function chatDisplayText(m){
+  const raw=String(m.texto||'');
+  if(raw.startsWith('__mired_media__')){
+    try{const doc=JSON.parse(raw.slice('__mired_media__'.length));return '📎 '+String(doc.name||'Documento');}catch{}
+  }
+  return raw||('['+(m.tipo||'mensaje')+']');
+}
 async function loadMessages(showAlert=false){
   if(!currentUser)return;
   const {data,error}=await supabaseClient
@@ -444,7 +451,7 @@ function renderChatContacts(){
   const groups=groupedChats().filter(g=>(g.name+' '+g.phone).toLowerCase().includes(q));
   box.innerHTML=groups.map(g=>{
     const active=g.phone===activeChatPhone?' active':'';
-    const preview=g.last.texto||('['+(g.last.tipo||'mensaje')+']');
+    const preview=chatDisplayText(g.last);
     return `<button class="chat-contact${active}" onclick="openChat('${g.phone}')">
       <b>${escapeHtml(g.name)}</b>
       <small>${escapeHtml(preview)}</small>
@@ -588,7 +595,7 @@ function renderActiveChat(){
   head.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${escapeHtml(group.name)}</b><small>${escapeHtml(group.phone)}</small></div><button class="callbtn" onclick="startPhoneCall('${group.phone}')">📞 Llamar</button></div>`;
   panel.innerHTML=group.msgs.map(m=>{
     const dir=m.direccion==='saliente'?'out':'in';
-    const text=m.texto||('['+(m.tipo||'mensaje')+']');
+    const text=chatDisplayText(m);
     const st=m.estado&&m.direccion==='saliente'?' · '+m.estado:'';
     return `<div class="bubble ${dir}">${escapeHtml(text)}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
   }).join('');
