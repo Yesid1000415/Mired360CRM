@@ -99,6 +99,9 @@
     <div class="chat-compose">
       <input id="chatFile" type="file" accept=".pdf,.xls,.xlsx,.csv,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" class="hidden" onchange="sendChatFile(this.files[0]);this.value=''">
       <button class="btn ghost attach-btn" id="attachBtn" onclick="$('chatFile').click()" disabled title="Enviar PDF o Excel">📎 Archivo</button>
+      <input id="chatAudio" type="file" accept=".mp3,.m4a,.aac,.amr,.ogg,audio/mpeg,audio/mp4,audio/aac,audio/amr,audio/ogg" class="hidden" onchange="sendChatAudio(this.files[0]);this.value=''">
+      <button class="btn ghost" id="audioFileBtn" onclick="$('chatAudio').click()" disabled title="Adjuntar audio compatible">🎵 Audio</button>
+      <button class="btn ghost" id="recordBtn" onclick="toggleChatRecording()" disabled title="Grabar nota de voz">🎙 Grabar</button>
       <textarea id="replyText" placeholder="Escribe tu respuesta..." disabled></textarea>
       <button class="btn primary" id="replyBtn" onclick="sendChatReply()" disabled>Enviar</button>
     </div>
@@ -126,6 +129,7 @@ const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const WHATSAPP_SEND_URL=SUPABASE_URL+'/functions/v1/whatsapp-send';
 const WHATSAPP_DOCUMENT_URL=SUPABASE_URL+'/functions/v1/whatsapp-document';
 const WHATSAPP_MEDIA_URL=SUPABASE_URL+'/functions/v1/whatsapp-media';
+const WHATSAPP_AUDIO_URL=SUPABASE_URL+'/functions/v1/whatsapp-audio';
 const CREATE_ADVISOR_URL=SUPABASE_URL+'/functions/v1/crear-asesor-v3';
 const ADMIN_CRM_URL=SUPABASE_URL+'/functions/v1/administrar-crm-v1';
 const selectedLeadIds=new Set();
@@ -266,7 +270,7 @@ async function updateCommissionClaim(id,estado,observacion){
   if(error){alert('No se pudo actualizar la solicitud. '+error.message);await loadCommissionClaims();return}await loadCommissionClaims();
 }
 async function adminCrmAction(payload){const {data:{session}}=await supabaseClient.auth.getSession();if(!session)throw new Error('Su sesión terminó. Ingrese nuevamente.');const res=await fetch(ADMIN_CRM_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},body:JSON.stringify(payload)});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'No fue posible completar la acción.');return data}
-async function deleteCommissionClaim(id){const x=commissionClaims.find(c=>c.id===id);if(!x)return;if(!confirm(`¿Eliminar definitivamente la solicitud ${x.numero_solicitud}?\n\nUse esta opción solamente para pruebas o registros incorrectos. Esta acción no se puede deshacer.`))return;try{const {data,error}=await supabaseClient.rpc('eliminar_solicitud_comision',{p_id:id});if(error)throw error;await loadCommissionClaims();alert(`Solicitud ${data||x.numero_solicitud} eliminada correctamente.`)}catch(e){alert(e.message||'No fue posible eliminar la solicitud.')}}
+async function deleteCommissionClaim(id){const x=commissionClaims.find(c=>c.id===id);if(!x)return;if(!confirm(`¿Eliminar definitivamente la solicitud ${x.numero_solicitud}?\n\nUse esta opción solamente para pruebas o registros incorrectos. Esta acción no se puede deshacer.`))return;try{await adminCrmAction({accion:'eliminar_solicitud',id});await loadCommissionClaims();alert('Solicitud eliminada correctamente.')}catch(e){alert(e.message)}}
 function commissionRowsFor(x){return (x.servicios_comision||[]).map(s=>[x.numero_solicitud,x.creado_en,x.nombre_asesor,x.cedula_asesor,x.cuenta_nequi,x.cantidad_servicios,s.orden_trabajo,s.cuenta,s.cedula_cliente,s.fecha_instalacion,s.ciudad_instalacion,s.tipo_red,s.estrato,s.tipo_producto,x.coordinador,x.estado,x.observacion_coordinacion])}
 function commissionCsv(rows){const cols=['Solicitud','Fecha solicitud','Asesor','Cédula asesor','Nequi','Cantidad servicios','Orden de trabajo','Cuenta','Cédula cliente','Fecha instalación','Ciudad','Tipo de red','Estrato','Tipo de producto','Coordinador','Estado','Observación coordinación'],e=v=>'"'+String(v??'').replaceAll('"','""')+'"';return '\ufeff'+[cols,...rows].map(r=>r.map(e).join(';')).join('\n')}
 function saveCsv(content,name){const blob=new Blob([content],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
@@ -277,9 +281,8 @@ function showCommissionDetail(id){const x=commissionClaims.find(c=>c.id===id);if
 
 function generateAdvisorPassword(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#';let p='';crypto.getRandomValues(new Uint32Array(12)).forEach(n=>p+=chars[n%chars.length]);$('advisorUserPassword').value=p;$('advisorUserPassword').focus();$('advisorUserPassword').select()}
 async function createAdvisorUser(){const nombre=$('advisorUserName').value.trim(),email=$('advisorUserEmail').value.trim().toLowerCase(),password=$('advisorUserPassword').value,msg=$('advisorUserMessage'),btn=$('createAdvisorBtn');msg.textContent='';if(!nombre||!email||password.length<8){msg.textContent='Complete nombre, correo válido y una contraseña de mínimo 8 caracteres.';return}if(!confirm(`¿Crear el usuario de asesor para ${nombre} (${email})?`))return;btn.disabled=true;btn.textContent='Creando usuario...';const {data:{session}}=await supabaseClient.auth.getSession();try{const res=await fetch(CREATE_ADVISOR_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},body:JSON.stringify({nombre,email,password})});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'No fue posible crear el usuario.');msg.style.color='#08774b';msg.textContent='Usuario creado correctamente. Comparta el correo y la contraseña temporal de forma privada.';$('advisorUserName').value='';$('advisorUserEmail').value='';$('advisorUserPassword').value='';await loadAdvisorUsers()}catch(e){msg.style.color='#b4232d';msg.textContent=e.message}finally{btn.disabled=false;btn.textContent='Crear usuario de asesor'}}
-async function loadAdvisorUsers(){const {data,error}=await supabaseClient.from('perfiles').select('user_id,nombre,email,rol,creado_en').order('creado_en',{ascending:false});if(error){$('advisorUsersRows').innerHTML='<tr><td colspan="5" class="empty">No fue posible cargar los usuarios: '+escapeHtml(error.message)+'</td></tr>';return}advisorUsers=(data||[]).filter(x=>x.rol==='asesor');$('advisorUsersCount').textContent=advisorUsers.length+' asesor(es)';$('advisorUsersRows').innerHTML=advisorUsers.map(x=>`<tr><td><b>${escapeHtml(x.nombre||'')}</b></td><td>${escapeHtml(x.email||'')}</td><td><span class="badge">${escapeHtml(x.rol)}</span></td><td>${escapeHtml(new Date(x.creado_en).toLocaleDateString('es-CO'))}</td><td style="white-space:nowrap"><button class="btn ghost" onclick="editAdvisor('${x.user_id}')">Editar nombre</button> <button class="btn ghost" style="color:#b4232d" onclick="removeAdvisor('${x.user_id}')">Retirar asesor</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Aún no hay asesores registrados.</td></tr>'}
-async function editAdvisor(userId){const x=advisorUsers.find(a=>a.user_id===userId);if(!x)return;const nombre=prompt('Nombre y apellidos del asesor:',x.nombre||'');if(nombre===null)return;if(!nombre.trim()){alert('El nombre no puede quedar vacío.');return}try{const {error}=await supabaseClient.rpc('editar_asesor_crm',{p_user_id:userId,p_nombre:nombre.trim()});if(error)throw error;await loadAdvisorUsers();alert('Asesor actualizado correctamente.')}catch(e){alert(e.message||'No fue posible editar el asesor.')}}
-async function removeAdvisor(userId){const x=advisorUsers.find(a=>a.user_id===userId);if(!x)return;if(!confirm(`¿Retirar a ${x.nombre||x.email}?\n\nSe retirará del listado y no podrá operar como asesor. Sus cobros históricos se conservarán.`))return;try{const {error}=await supabaseClient.rpc('retirar_asesor_crm',{p_user_id:userId});if(error)throw error;await loadAdvisorUsers();alert('Asesor retirado correctamente.')}catch(e){alert(e.message||'No fue posible retirar el asesor.')}}
+async function loadAdvisorUsers(){const {data,error}=await supabaseClient.from('perfiles').select('user_id,nombre,email,rol,creado_en').order('creado_en',{ascending:false});if(error){$('advisorUsersRows').innerHTML='<tr><td colspan="5" class="empty">No fue posible cargar los usuarios: '+escapeHtml(error.message)+'</td></tr>';return}advisorUsers=(data||[]).filter(x=>x.rol==='asesor');$('advisorUsersCount').textContent=advisorUsers.length+' asesor(es)';$('advisorUsersRows').innerHTML=advisorUsers.map(x=>`<tr><td><b>${escapeHtml(x.nombre||'')}</b></td><td>${escapeHtml(x.email||'')}</td><td><span class="badge">${escapeHtml(x.rol)}</span></td><td>${escapeHtml(new Date(x.creado_en).toLocaleDateString('es-CO'))}</td><td><button class="btn ghost" style="color:#b4232d" onclick="removeAdvisor('${x.user_id}')">Retirar asesor</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Aún no hay asesores registrados.</td></tr>'}
+async function removeAdvisor(userId){const x=advisorUsers.find(a=>a.user_id===userId);if(!x)return;if(!confirm(`¿Retirar a ${x.nombre||x.email}?\n\nSe bloqueará su acceso al portal. Sus cobros históricos se conservarán.`))return;try{await adminCrmAction({accion:'retirar_asesor',user_id:userId});await loadAdvisorUsers();alert('Asesor retirado y acceso bloqueado correctamente.')}catch(e){alert(e.message)}}
 function renderAuthorizations(){
   const box=$('authRows');if(!box)return;
   const q=($('authSearch')?.value||'').toLowerCase(),st=$('authStatus')?.value||'';
@@ -411,7 +414,7 @@ function chatDocument(text){
 }
 function chatDisplayText(m){
   const doc=chatDocument(m.texto);
-  return doc?'📎 '+doc.name:(m.texto||('['+(m.tipo||'mensaje')+']'));
+  return doc?(doc.kind==='audio'?'🎵 Audio':'📎 '+doc.name):(m.texto||('['+(m.tipo||'mensaje')+']'));
 }
 async function loadMessages(showAlert=false){
   if(!currentUser)return;
@@ -591,7 +594,7 @@ function renderActiveChat(){
   if(!group){
     head.innerHTML='<b>Selecciona una conversación</b><small>Los mensajes entrantes aparecerán aquí.</small>';
     panel.innerHTML='<div class="chat-empty">Sin mensajes.</div>';
-    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;
+    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;$('audioFileBtn').disabled=true;$('recordBtn').disabled=true;
     return;
   }
   head.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${escapeHtml(group.name)}</b><small>${escapeHtml(group.phone)}</small></div><button class="callbtn" onclick="startPhoneCall('${group.phone}')">📞 Llamar</button></div>`;
@@ -600,10 +603,10 @@ function renderActiveChat(){
     const text=chatDisplayText(m);
     const st=m.estado&&m.direccion==='saliente'?' · '+m.estado:'';
     const doc=chatDocument(m.texto);
-    const action=doc?`<button class="btn ghost" style="margin-top:8px" onclick="downloadChatDocument('${m.id}',this)">⬇ Descargar archivo</button>`:'';
+    const action=doc?(doc.kind==='audio'?`<button class="btn ghost" style="margin-top:8px" onclick="playChatAudio('${m.id}',this)">▶ Escuchar</button>`:`<button class="btn ghost" style="margin-top:8px" onclick="downloadChatDocument('${m.id}',this)">⬇ Descargar archivo</button>`):'';
     return `<div class="bubble ${dir}">${escapeHtml(text)}${action}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
   }).join('');
-  input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;
+  input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;$('audioFileBtn').disabled=false;$('recordBtn').disabled=false;
   setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
 }
 function chatWindowOpen(phone){
@@ -631,6 +634,70 @@ async function downloadChatDocument(messageId,button){
     setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch(e){alert('No se pudo descargar. '+String(e.message||e));}
   finally{button.disabled=false;button.textContent='⬇ Descargar archivo';}
+}
+
+async function playChatAudio(messageId,button){
+  button.disabled=true;button.textContent='Cargando audio...';
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
+    const response=await fetch(WHATSAPP_MEDIA_URL,{method:'POST',headers:{
+      'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
+    },body:JSON.stringify({messageId})});
+    if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(body.error||'No se pudo cargar el audio.');}
+    const url=URL.createObjectURL(await response.blob());
+    const player=document.createElement('audio');player.controls=true;player.src=url;player.style.cssText='display:block;width:min(280px,100%);margin-top:8px';
+    player.addEventListener('emptied',()=>URL.revokeObjectURL(url),{once:true});
+    button.replaceWith(player);await player.play().catch(()=>{});
+  }catch(e){alert('No se pudo escuchar el audio. '+String(e.message||e));button.disabled=false;button.textContent='▶ Escuchar';}
+}
+
+async function sendChatAudio(file){
+  if(!file||!activeChatPhone)return;
+  const name=file.name||'audio';
+  if(!/\.(mp3|m4a|aac|amr|ogg)$/i.test(name)||!file.size||file.size>15*1024*1024){
+    alert('Selecciona MP3, M4A, AAC, AMR u OGG Opus de hasta 15 MB.');return;
+  }
+  if(!chatWindowOpen(activeChatPhone)){
+    alert('El cliente debe responder durante las últimas 24 horas para enviar audio.');return;
+  }
+  const phone=activeChatPhone,status=$('chatFileStatus'),btn=$('audioFileBtn');
+  btn.disabled=true;status.textContent='Enviando audio...';
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
+    const form=new FormData();form.append('to',phone);form.append('file',file,name);
+    const response=await fetch(WHATSAPP_AUDIO_URL,{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},body:form});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data?.messages?.length)throw new Error(data.error||'No se pudo enviar el audio.');
+    status.textContent='Audio enviado'+(data.warning?' · '+data.warning:'');await loadMessages(false);
+  }catch(e){status.textContent='No se envió el audio.';alert('No se pudo enviar el audio. '+String(e.message||e));}
+  finally{btn.disabled=false;}
+}
+
+let chatRecorder=null,chatRecordStream=null,chatRecordChunks=[],chatRecordPhone='';
+async function toggleChatRecording(){
+  const btn=$('recordBtn'),status=$('chatFileStatus');
+  if(chatRecorder?.state==='recording'){chatRecorder.stop();btn.disabled=true;status.textContent='Preparando audio...';return;}
+  if(!activeChatPhone||!chatWindowOpen(activeChatPhone)){alert('Para enviar audio, el cliente debe haber respondido en las últimas 24 horas.');return;}
+  const mime=['audio/mp4','audio/ogg;codecs=opus'].find(type=>window.MediaRecorder?.isTypeSupported(type));
+  if(!mime){alert('Este navegador no puede grabar en un formato compatible con WhatsApp. Usa 🎵 Audio para adjuntar un MP3, M4A u OGG Opus.');return;}
+  if(!navigator.mediaDevices?.getUserMedia){alert('Este navegador no permite usar el micrófono.');return;}
+  try{
+    chatRecordStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    chatRecordPhone=activeChatPhone;chatRecordChunks=[];
+    chatRecorder=new MediaRecorder(chatRecordStream,{mimeType:mime});
+    chatRecorder.ondataavailable=e=>{if(e.data.size)chatRecordChunks.push(e.data);};
+    chatRecorder.onstop=async()=>{
+      chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;
+      const extension=mime==='audio/mp4'?'m4a':'ogg';
+      const file=new File(chatRecordChunks,['nota-de-voz-'+Date.now(),extension].join('.'),{type:mime});
+      btn.textContent='🎙 Grabar';btn.disabled=false;chatRecorder=null;
+      if(activeChatPhone!==chatRecordPhone){status.textContent='No se envió: cambiaste de conversación.';return;}
+      await sendChatAudio(file);
+    };
+    chatRecorder.start();btn.textContent='⏹ Enviar audio';status.textContent='Grabando… pulsa ⏹ para enviar.';
+  }catch(e){chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;btn.textContent='🎙 Grabar';alert('No se pudo acceder al micrófono. '+String(e.message||e));}
 }
 
 async function sendChatFile(file){
