@@ -14,6 +14,7 @@ function getMessageText(message: any): string {
     const name = String(message.document.filename || 'documento').split(/[\\/]/).pop()?.slice(0, 180) || 'documento';
     return '__mired_media__' + JSON.stringify({ id: String(message.document.id), name });
   }
+  if (message?.audio?.id) return '__mired_media__' + JSON.stringify({ id: String(message.audio.id), name: 'Nota de voz', kind: 'audio' });
   if (message?.image?.caption) return String(message.image.caption);
   if (message?.video?.caption) return String(message.video.caption);
   if (message?.document?.caption) return String(message.document.caption);
