@@ -1,0 +1,85 @@
+name: Apply Click to Call patch
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-click-to-call.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch index.html safely
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          old_constants = """const ADMIN_CRM_URL=SUPABASE_URL+'/functions/v1/administrar-crm-v1';
+const selectedLeadIds=new Set();"""
+          new_constants = """const ADMIN_CRM_URL=SUPABASE_URL+'/functions/v1/administrar-crm-v1';
+const CLICK_TO_CALL_URL=SUPABASE_URL+'/functions/v1/click-to-call';
+const selectedLeadIds=new Set();"""
+
+          old_call = """function normalizeCallNumber(phone){const d=String(phone||'').replace(/\\D/g,'');if(d.startsWith('57')&&d.length===12)return '+'+d;if(d.length===10)return '+57'+d;return d?'+'+d:'';}
+function startPhoneCall(phone){const n=normalizeCallNumber(phone);if(!n)return alert('Este contacto no tiene un número válido para llamar.');window.location.href='tel:'+n;}"""
+
+          new_call = """function normalizeCallNumber(phone){let d=String(phone||'').replace(/\\D/g,'');if(d.startsWith('57')&&d.length===12)return d;if(d.length===10)return '57'+d;return '';}
+async function startPhoneCall(phone){
+  const n=normalizeCallNumber(phone);
+  if(!n)return alert('Este contacto no tiene un número celular colombiano válido para llamar.');
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(!session?.access_token)return alert('Tu sesión terminó. Ingresa nuevamente al CRM.');
+  try{
+    const response=await fetch(CLICK_TO_CALL_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},
+      body:JSON.stringify({tel:n,account_id:'1502000101'})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||data?.ok===false)throw new Error(data?.error||'No fue posible iniciar la llamada.');
+    alert('Solicitud de llamada enviada a la extensión 101. Revisa tu teléfono o softphone para continuar la llamada.');
+  }catch(e){
+    alert('No se pudo iniciar la llamada. '+String(e.message||e));
+  }
+}"""
+
+          if old_constants not in text:
+              raise SystemExit('No se encontró el bloque de constantes esperado; no se modificó el archivo.')
+          if old_call not in text:
+              raise SystemExit('No se encontró la función de llamada esperada; no se modificó el archivo.')
+
+          text = text.replace(old_constants, new_constants, 1)
+          text = text.replace(old_call, new_call, 1)
+          path.write_text(text, encoding='utf-8')
+
+      - name: Verify only expected call changes
+        shell: bash
+        run: |
+          grep -q "CLICK_TO_CALL_URL" index.html
+          grep -q "account_id:'1502000101'" index.html
+          git diff --check
+          git diff -- index.html
+
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name "MIRED360 Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git commit -m "Conectar Click-to-Call a extensión 101"
+          git push
