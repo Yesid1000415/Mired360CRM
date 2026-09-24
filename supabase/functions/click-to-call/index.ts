@@ -1,5 +1,5 @@
-// Supabase Edge Function: click-to-call para la central IP de MIRED360SERVICIOS.
-// Las credenciales del proveedor se guardan únicamente como Secrets de Supabase.
+// Supabase Edge Function: Click-to-Call de Comuniquémonos para MIRED360SERVICIOS.
+// Las credenciales API se guardan únicamente como Secrets de Supabase.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const cors = {
@@ -12,6 +12,10 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
   status,
   headers: { ...cors, 'Content-Type': 'application/json' },
 });
+
+const CUSTOMER_ID = '15020';
+const DEFAULT_ACCOUNT_ID = '1502000101'; // Yesid · Ext. 101
+const ALLOWED_ACCOUNT_IDS = new Set(['1502000101', '1502000102']);
 
 function normalizeColombia(value: unknown) {
   let tel = String(value ?? '').replace(/\D/g, '');
@@ -39,22 +43,23 @@ Deno.serve(async (request) => {
     const tel = normalizeColombia(body?.tel ?? body?.phone ?? body?.to);
     if (!/^57\d{10}$/.test(tel)) return json({ error: 'Número colombiano no válido.' }, 400);
 
+    const requestedAccount = String(body?.account_id || DEFAULT_ACCOUNT_ID).replace(/\D/g, '');
+    if (!ALLOWED_ACCOUNT_IDS.has(requestedAccount)) {
+      return json({ error: 'Extensión no autorizada para Click-to-Call.' }, 400);
+    }
+
     const endpoint = Deno.env.get('VOIP_ORIGINATE_URL');
     const username = Deno.env.get('VOIP_API_USERNAME');
     const password = Deno.env.get('VOIP_API_PASSWORD');
-    const customerId = Deno.env.get('VOIP_CUSTOMER_ID');
-    const accountId = Deno.env.get('VOIP_ACCOUNT_ID');
 
     const missing = [
       ['VOIP_ORIGINATE_URL', endpoint],
       ['VOIP_API_USERNAME', username],
       ['VOIP_API_PASSWORD', password],
-      ['VOIP_CUSTOMER_ID', customerId],
-      ['VOIP_ACCOUNT_ID', accountId],
     ].filter(([, value]) => !value).map(([name]) => name);
 
     if (missing.length) {
-      return json({ error: 'Falta configurar la central IP en Supabase.', missing }, 503);
+      return json({ error: 'Falta configurar Comuniquémonos en Supabase.', missing }, 503);
     }
 
     const basic = btoa(`${username}:${password}`);
@@ -66,8 +71,8 @@ Deno.serve(async (request) => {
         'Accept': 'application/json',
       },
       body: JSON.stringify({
-        customer_id: customerId,
-        account_id: accountId,
+        customer_id: CUSTOMER_ID,
+        account_id: requestedAccount,
         tel,
       }),
     });
@@ -79,7 +84,7 @@ Deno.serve(async (request) => {
     if (!providerResponse.ok) {
       console.error('click-to-call proveedor:', providerResponse.status, raw);
       return json({
-        error: 'La central IP rechazó la llamada.',
+        error: 'Comuniquémonos rechazó la llamada.',
         provider_status: providerResponse.status,
         provider,
       }, 502);
@@ -87,6 +92,8 @@ Deno.serve(async (request) => {
 
     return json({
       ok: true,
+      customer_id: CUSTOMER_ID,
+      account_id: requestedAccount,
       tel,
       provider_status: providerResponse.status,
       provider,
