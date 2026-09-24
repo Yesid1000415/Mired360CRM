@@ -1,69 +1,73 @@
-// Supabase Edge Function: Click-to-Call de Comuniquémonos para MIRED360SERVICIOS.
-// Las credenciales API se guardan únicamente como Secrets de Supabase.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const cors = {
+const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-
-const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
-  status,
-  headers: { ...cors, 'Content-Type': 'application/json' },
-});
-
-const CUSTOMER_ID = '15020';
-const DEFAULT_ACCOUNT_ID = '1502000101'; // Yesid · Ext. 101
-const ALLOWED_ACCOUNT_IDS = new Set(['1502000101', '1502000102']);
-
-function normalizeColombia(value: unknown) {
-  let tel = String(value ?? '').replace(/\D/g, '');
-  if (tel.length === 10) tel = '57' + tel;
-  return tel;
 }
 
-Deno.serve(async (request) => {
-  if (request.method === 'OPTIONS') return new Response(null, { headers: cors });
-  if (request.method !== 'POST') return json({ error: 'Método no permitido.' }, 405);
+const CUSTOMER_ID = '15020'
+const DEFAULT_ACCOUNT_ID = '1502000101'
+const ALLOWED_ACCOUNT_IDS = new Set(['1502000101', '1502000102'])
+
+function json(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  })
+}
+
+function normalizeColombiaPhone(value: unknown) {
+  let digits = String(value ?? '').replace(/\D/g, '')
+  if (digits.startsWith('57') && digits.length === 12) return digits
+  if (digits.length === 10) return `57${digits}`
+  return ''
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+  if (req.method !== 'POST') return json({ error: 'Método no permitido.' }, 405)
 
   try {
-    const token = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-    if (!token) return json({ error: 'Inicia sesión para realizar llamadas.' }, 401);
+    const authHeader = req.headers.get('Authorization') || ''
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim()
+    if (!token) return json({ error: 'Sesión requerida.' }, 401)
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const publicClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!);
-    const { data: { user }, error: authError } = await publicClient.auth.getUser(token);
-    if (authError || !user) return json({ error: 'Sesión no válida.' }, 401);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
+    const publishableKeys = Deno.env.get('SUPABASE_PUBLISHABLE_KEYS')
+    const legacyAnon = Deno.env.get('SUPABASE_ANON_KEY') || ''
+    let publicKey = legacyAnon
+    if (publishableKeys) {
+      try { publicKey = JSON.parse(publishableKeys)?.default || legacyAnon } catch (_) {}
+    }
+    if (!supabaseUrl || !publicKey) return json({ error: 'Configuración de Supabase incompleta.' }, 500)
 
-    const crmUserId = Deno.env.get('CRM_USER_ID');
-    if (crmUserId && user.id !== crmUserId) return json({ error: 'Acceso no autorizado.' }, 403);
+    const supabase = createClient(supabaseUrl, publicKey, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    })
+    const { data: userData, error: userError } = await supabase.auth.getUser(token)
+    if (userError || !userData?.user) return json({ error: 'Sesión inválida o vencida.' }, 401)
 
-    const body = await request.json().catch(() => ({}));
-    const tel = normalizeColombia(body?.tel ?? body?.phone ?? body?.to);
-    if (!/^57\d{10}$/.test(tel)) return json({ error: 'Número colombiano no válido.' }, 400);
+    const crmUserId = Deno.env.get('CRM_USER_ID')
+    if (crmUserId && userData.user.id !== crmUserId) return json({ error: 'No autorizado para realizar llamadas.' }, 403)
 
-    const requestedAccount = String(body?.account_id || DEFAULT_ACCOUNT_ID).replace(/\D/g, '');
-    if (!ALLOWED_ACCOUNT_IDS.has(requestedAccount)) {
-      return json({ error: 'Extensión no autorizada para Click-to-Call.' }, 400);
+    const body = await req.json().catch(() => ({}))
+    const tel = normalizeColombiaPhone(body?.tel ?? body?.phone ?? body?.telefono)
+    if (!tel) return json({ error: 'Número no válido. Use un celular colombiano de 10 dígitos.' }, 400)
+
+    const requestedAccount = String(body?.account_id || DEFAULT_ACCOUNT_ID)
+    const accountId = ALLOWED_ACCOUNT_IDS.has(requestedAccount) ? requestedAccount : DEFAULT_ACCOUNT_ID
+
+    const endpoint = Deno.env.get('VOIP_ORIGINATE_URL') || ''
+    const username = Deno.env.get('VOIP_API_USERNAME') || ''
+    const password = Deno.env.get('VOIP_API_PASSWORD') || ''
+    if (!endpoint || !username || !password) {
+      return json({ error: 'Faltan los secretos VOIP de Comuniquémonos en Supabase.' }, 500)
     }
 
-    const endpoint = Deno.env.get('VOIP_ORIGINATE_URL');
-    const username = Deno.env.get('VOIP_API_USERNAME');
-    const password = Deno.env.get('VOIP_API_PASSWORD');
-
-    const missing = [
-      ['VOIP_ORIGINATE_URL', endpoint],
-      ['VOIP_API_USERNAME', username],
-      ['VOIP_API_PASSWORD', password],
-    ].filter(([, value]) => !value).map(([name]) => name);
-
-    if (missing.length) {
-      return json({ error: 'Falta configurar Comuniquémonos en Supabase.', missing }, 503);
-    }
-
-    const basic = btoa(`${username}:${password}`);
-    const providerResponse = await fetch(endpoint!, {
+    const basic = btoa(`${username}:${password}`)
+    const providerResponse = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${basic}`,
@@ -72,34 +76,31 @@ Deno.serve(async (request) => {
       },
       body: JSON.stringify({
         customer_id: CUSTOMER_ID,
-        account_id: requestedAccount,
+        account_id: accountId,
         tel,
       }),
-    });
+    })
 
-    const raw = await providerResponse.text();
-    let provider: unknown = raw;
-    try { provider = raw ? JSON.parse(raw) : {}; } catch { /* conservar texto */ }
+    const raw = await providerResponse.text()
+    let providerData: unknown = raw
+    try { providerData = raw ? JSON.parse(raw) : {} } catch (_) {}
 
     if (!providerResponse.ok) {
-      console.error('click-to-call proveedor:', providerResponse.status, raw);
       return json({
-        error: 'Comuniquémonos rechazó la llamada.',
-        provider_status: providerResponse.status,
-        provider,
-      }, 502);
+        error: 'Comuniquémonos rechazó la solicitud de llamada.',
+        status: providerResponse.status,
+        detail: providerData,
+      }, 502)
     }
 
     return json({
       ok: true,
-      customer_id: CUSTOMER_ID,
-      account_id: requestedAccount,
+      message: 'Llamada solicitada correctamente.',
+      account_id: accountId,
       tel,
-      provider_status: providerResponse.status,
-      provider,
-    });
+      provider: providerData,
+    })
   } catch (error) {
-    console.error('click-to-call:', error);
-    return json({ error: 'No se pudo iniciar la llamada.' }, 500);
+    return json({ error: error instanceof Error ? error.message : 'Error inesperado.' }, 500)
   }
-});
+})
