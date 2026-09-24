@@ -132,6 +132,7 @@ const WHATSAPP_MEDIA_URL=SUPABASE_URL+'/functions/v1/whatsapp-media';
 const WHATSAPP_AUDIO_URL=SUPABASE_URL+'/functions/v1/whatsapp-audio';
 const CREATE_ADVISOR_URL=SUPABASE_URL+'/functions/v1/crear-asesor-v3';
 const ADMIN_CRM_URL=SUPABASE_URL+'/functions/v1/administrar-crm-v1';
+const CLICK_TO_CALL_URL=SUPABASE_URL+'/functions/v1/click-to-call';
 const selectedLeadIds=new Set();
 
 const STAGES=['Nuevo contacto','Validar cobertura','Cobertura positiva','Oferta enviada','Seguimiento','Venta','Pendiente instalación','Instalado','No interesado'];
@@ -394,8 +395,25 @@ function updateBulkControls(){
 }
 
 
-function normalizeCallNumber(phone){const d=String(phone||'').replace(/\D/g,'');if(d.startsWith('57')&&d.length===12)return '+'+d;if(d.length===10)return '+57'+d;return d?'+'+d:'';}
-function startPhoneCall(phone){const n=normalizeCallNumber(phone);if(!n)return alert('Este contacto no tiene un número válido para llamar.');window.location.href='tel:'+n;}
+function normalizeCallNumber(phone){let d=String(phone||'').replace(/\D/g,'');if(d.startsWith('57')&&d.length===12)return d;if(d.length===10)return '57'+d;return '';}
+async function startPhoneCall(phone){
+  const n=normalizeCallNumber(phone);
+  if(!n)return alert('Este contacto no tiene un número celular colombiano válido para llamar.');
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(!session?.access_token)return alert('Tu sesión terminó. Ingresa nuevamente al CRM.');
+  try{
+    const response=await fetch(CLICK_TO_CALL_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},
+      body:JSON.stringify({tel:n,account_id:'1502000101'})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||data?.ok===false)throw new Error(data?.error||'No fue posible iniciar la llamada.');
+    alert('Solicitud de llamada enviada a la extensión 101. Revisa tu teléfono o softphone para continuar la llamada.');
+  }catch(e){
+    alert('No se pudo iniciar la llamada. '+String(e.message||e));
+  }
+}
 
 function escapeHtml(v){
   return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
