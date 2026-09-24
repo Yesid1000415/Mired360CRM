@@ -99,6 +99,9 @@
     <div class="chat-compose">
       <input id="chatFile" type="file" accept=".pdf,.xls,.xlsx,.csv,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" class="hidden" onchange="sendChatFile(this.files[0]);this.value=''">
       <button class="btn ghost attach-btn" id="attachBtn" onclick="$('chatFile').click()" disabled title="Enviar PDF o Excel">📎 Archivo</button>
+      <input id="chatAudio" type="file" accept=".mp3,.m4a,.aac,.amr,.ogg,audio/mpeg,audio/mp4,audio/aac,audio/amr,audio/ogg" class="hidden" onchange="sendChatAudio(this.files[0]);this.value=''">
+      <button class="btn ghost" id="audioFileBtn" onclick="$('chatAudio').click()" disabled title="Adjuntar audio compatible">🎵 Audio</button>
+      <button class="btn ghost" id="recordBtn" onclick="toggleChatRecording()" disabled title="Grabar nota de voz">🎙 Grabar</button>
       <textarea id="replyText" placeholder="Escribe tu respuesta..." disabled></textarea>
       <button class="btn primary" id="replyBtn" onclick="sendChatReply()" disabled>Enviar</button>
     </div>
@@ -125,6 +128,8 @@ const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const WHATSAPP_SEND_URL=SUPABASE_URL+'/functions/v1/whatsapp-send';
 const WHATSAPP_DOCUMENT_URL=SUPABASE_URL+'/functions/v1/whatsapp-document';
+const WHATSAPP_MEDIA_URL=SUPABASE_URL+'/functions/v1/whatsapp-media';
+const WHATSAPP_AUDIO_URL=SUPABASE_URL+'/functions/v1/whatsapp-audio';
 const CREATE_ADVISOR_URL=SUPABASE_URL+'/functions/v1/crear-asesor-v3';
 const ADMIN_CRM_URL=SUPABASE_URL+'/functions/v1/administrar-crm-v1';
 const selectedLeadIds=new Set();
@@ -404,12 +409,13 @@ function leadForPhone(phone){
   const p=normalizeWhatsNumber(phone);
   return leads.find(l=>normalizeWhatsNumber(l.phone)===p);
 }
+function chatDocument(text){
+  if(!String(text||'').startsWith('__mired_media__'))return null;
+  try{const doc=JSON.parse(text.slice('__mired_media__'.length));return doc?.id&&doc?.name?doc:null;}catch{return null;}
+}
 function chatDisplayText(m){
-  const raw=String(m.texto||'');
-  if(raw.startsWith('__mired_media__')){
-    try{const doc=JSON.parse(raw.slice('__mired_media__'.length));return '📎 '+String(doc.name||'Documento');}catch{}
-  }
-  return raw||('['+(m.tipo||'mensaje')+']');
+  const doc=chatDocument(m.texto);
+  return doc?(doc.kind==='audio'?'🎵 Audio':'📎 '+doc.name):(m.texto||('['+(m.tipo||'mensaje')+']'));
 }
 async function loadMessages(showAlert=false){
   if(!currentUser)return;
@@ -589,7 +595,7 @@ function renderActiveChat(){
   if(!group){
     head.innerHTML='<b>Selecciona una conversación</b><small>Los mensajes entrantes aparecerán aquí.</small>';
     panel.innerHTML='<div class="chat-empty">Sin mensajes.</div>';
-    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;
+    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;$('audioFileBtn').disabled=true;$('recordBtn').disabled=true;
     return;
   }
   head.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${escapeHtml(group.name)}</b><small>${escapeHtml(group.phone)}</small></div><button class="callbtn" onclick="startPhoneCall('${group.phone}')">📞 Llamar</button></div>`;
@@ -597,9 +603,11 @@ function renderActiveChat(){
     const dir=m.direccion==='saliente'?'out':'in';
     const text=chatDisplayText(m);
     const st=m.estado&&m.direccion==='saliente'?' · '+m.estado:'';
-    return `<div class="bubble ${dir}">${escapeHtml(text)}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
+    const doc=chatDocument(m.texto);
+    const action=doc?(doc.kind==='audio'?`<button class="btn ghost" style="margin-top:8px" onclick="playChatAudio('${m.id}',this)">▶ Escuchar</button>`:`<button class="btn ghost" style="margin-top:8px" onclick="downloadChatDocument('${m.id}',this)">⬇ Descargar archivo</button>`):'';
+    return `<div class="bubble ${dir}">${escapeHtml(text)}${action}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
   }).join('');
-  input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;
+  input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;$('audioFileBtn').disabled=false;$('recordBtn').disabled=false;
   setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
 }
 function chatWindowOpen(phone){
@@ -609,6 +617,88 @@ function chatWindowOpen(phone){
     .sort((a,b)=>new Date(b.creado_en)-new Date(a.creado_en))[0];
   if(!lastInbound?.creado_en)return false;
   return (Date.now()-new Date(lastInbound.creado_en).getTime()) < 24*60*60*1000;
+}
+
+async function downloadChatDocument(messageId,button){
+  button.disabled=true;button.textContent='Descargando...';
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
+    const response=await fetch(WHATSAPP_MEDIA_URL,{method:'POST',headers:{
+      'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
+    },body:JSON.stringify({messageId})});
+    if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(body.error||'No se pudo descargar.');}
+    const blob=await response.blob();
+    const name=decodeURIComponent(response.headers.get('X-Document-Name')||'documento');
+    const link=document.createElement('a'),url=URL.createObjectURL(blob);
+    link.href=url;link.download=name;document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(e){alert('No se pudo descargar. '+String(e.message||e));}
+  finally{button.disabled=false;button.textContent='⬇ Descargar archivo';}
+}
+
+async function playChatAudio(messageId,button){
+  button.disabled=true;button.textContent='Cargando audio...';
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
+    const response=await fetch(WHATSAPP_MEDIA_URL,{method:'POST',headers:{
+      'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
+    },body:JSON.stringify({messageId})});
+    if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(body.error||'No se pudo cargar el audio.');}
+    const url=URL.createObjectURL(await response.blob());
+    const player=document.createElement('audio');player.controls=true;player.src=url;player.style.cssText='display:block;width:min(280px,100%);margin-top:8px';
+    player.addEventListener('emptied',()=>URL.revokeObjectURL(url),{once:true});
+    button.replaceWith(player);await player.play().catch(()=>{});
+  }catch(e){alert('No se pudo escuchar el audio. '+String(e.message||e));button.disabled=false;button.textContent='▶ Escuchar';}
+}
+
+async function sendChatAudio(file){
+  if(!file||!activeChatPhone)return;
+  const name=file.name||'audio';
+  if(!/\.(mp3|m4a|aac|amr|ogg)$/i.test(name)||!file.size||file.size>15*1024*1024){
+    alert('Selecciona MP3, M4A, AAC, AMR u OGG Opus de hasta 15 MB.');return;
+  }
+  if(!chatWindowOpen(activeChatPhone)){
+    alert('El cliente debe responder durante las últimas 24 horas para enviar audio.');return;
+  }
+  const phone=activeChatPhone,status=$('chatFileStatus'),btn=$('audioFileBtn');
+  btn.disabled=true;status.textContent='Enviando audio...';
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
+    const form=new FormData();form.append('to',phone);form.append('file',file,name);
+    const response=await fetch(WHATSAPP_AUDIO_URL,{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},body:form});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data?.messages?.length)throw new Error(data.error||'No se pudo enviar el audio.');
+    status.textContent='Audio enviado'+(data.warning?' · '+data.warning:'');await loadMessages(false);
+  }catch(e){status.textContent='No se envió el audio.';alert('No se pudo enviar el audio. '+String(e.message||e));}
+  finally{btn.disabled=false;}
+}
+
+let chatRecorder=null,chatRecordStream=null,chatRecordChunks=[],chatRecordPhone='';
+async function toggleChatRecording(){
+  const btn=$('recordBtn'),status=$('chatFileStatus');
+  if(chatRecorder?.state==='recording'){chatRecorder.stop();btn.disabled=true;status.textContent='Preparando audio...';return;}
+  if(!activeChatPhone||!chatWindowOpen(activeChatPhone)){alert('Para enviar audio, el cliente debe haber respondido en las últimas 24 horas.');return;}
+  const mime=['audio/mp4','audio/ogg;codecs=opus'].find(type=>window.MediaRecorder?.isTypeSupported(type));
+  if(!mime){alert('Este navegador no puede grabar en un formato compatible con WhatsApp. Usa 🎵 Audio para adjuntar un MP3, M4A u OGG Opus.');return;}
+  if(!navigator.mediaDevices?.getUserMedia){alert('Este navegador no permite usar el micrófono.');return;}
+  try{
+    chatRecordStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    chatRecordPhone=activeChatPhone;chatRecordChunks=[];
+    chatRecorder=new MediaRecorder(chatRecordStream,{mimeType:mime});
+    chatRecorder.ondataavailable=e=>{if(e.data.size)chatRecordChunks.push(e.data);};
+    chatRecorder.onstop=async()=>{
+      chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;
+      const extension=mime==='audio/mp4'?'m4a':'ogg';
+      const file=new File(chatRecordChunks,['nota-de-voz-'+Date.now(),extension].join('.'),{type:mime});
+      btn.textContent='🎙 Grabar';btn.disabled=false;chatRecorder=null;
+      if(activeChatPhone!==chatRecordPhone){status.textContent='No se envió: cambiaste de conversación.';return;}
+      await sendChatAudio(file);
+    };
+    chatRecorder.start();btn.textContent='⏹ Enviar audio';status.textContent='Grabando… pulsa ⏹ para enviar.';
+  }catch(e){chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;btn.textContent='🎙 Grabar';alert('No se pudo acceder al micrófono. '+String(e.message||e));}
 }
 
 async function sendChatFile(file){
@@ -819,3 +909,4 @@ renderAds();
 </script>
 </body>
 </html>
+
