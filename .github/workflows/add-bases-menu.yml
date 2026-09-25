@@ -1,0 +1,41 @@
+name: Add Bases de llamadas menu
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/add-bases-menu.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-menu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add menu item
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          button = '<button type="button" data-link="bases-llamadas.html">📞 Bases de llamadas</button>'
+          if button not in s:
+              anchor = '<button data-view="prospectos">👥 Prospectos</button>'
+              if anchor not in s:
+                  raise SystemExit('No se encontró el punto de inserción del menú')
+              s = s.replace(anchor, anchor + button, 1)
+              p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Menu already updated"
+          else
+            git commit -m "Agregar Bases de llamadas al menu del CRM"
+            git push
+          fi
