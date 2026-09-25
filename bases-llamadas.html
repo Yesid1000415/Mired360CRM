@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIRED360 · Bases de llamadas</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.side{background:linear-gradient(180deg,var(--n),#061426);color:#fff;padding:18px 14px}.brand{display:flex;gap:10px;align-items:center;margin-bottom:18px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand small{display:block;color:#7fdfff;letter-spacing:1.5px}.side a,.side button{display:block;width:100%;text-align:left;border:0;background:transparent;color:#d4e2ef;padding:11px 12px;border-radius:11px;text-decoration:none;cursor:pointer}.side a:hover,.side button:hover{background:#0d335a;color:#fff}.side .active{background:rgba(0,184,255,.16);color:#fff}.side hr{border:0;border-top:1px solid #ffffff22;margin:15px 0}.mini{font-size:12px;color:#a8bfd6;line-height:1.5;padding:8px 10px}
+main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:16px}.top h1{margin:0;font-size:28px}.top p{margin:5px 0;color:var(--m)}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:11px;padding:10px 13px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l)}.danger{background:#fff0f2;color:#ad2430;border:1px solid #f3c5ca}.card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(4,35,66,.05);margin-bottom:14px}.grid{display:grid;gap:12px}.stats{grid-template-columns:repeat(5,1fr)}.stat small{color:var(--m)}.stat strong{display:block;font-size:26px;margin-top:5px}.basebar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}.basebar label{font-size:12px;color:#52647a;font-weight:700;display:grid;gap:5px}input,select,textarea{width:100%;border:1px solid #cfdceb;border-radius:10px;padding:10px;background:#fff}.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.filters input{max-width:320px}.filters select{max-width:220px}.table-wrap{overflow:auto;border:1px solid var(--l);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:1180px}th,td{padding:10px;border-bottom:1px solid var(--l);font-size:12px;text-align:left;vertical-align:top}th{background:#f2f7fc;position:sticky;top:0}.badge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eef6ff;font-weight:700}.badge.ok{background:#e9f8ef;color:#08764a}.badge.warn{background:#fff5df;color:#8f6100}.badge.danger{background:#feecec;color:#ad2430}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.row-actions .btn{padding:7px 9px;font-size:11px}.empty{padding:30px;text-align:center;color:var(--m)}.notice{background:#eef8ff;border:1px solid #c6eaff;border-radius:12px;padding:12px;font-size:13px;color:#245b80}.status{font-size:12px;color:var(--m);min-height:20px;margin-top:8px}.hidden{display:none!important}.modal{position:fixed;inset:0;background:#00162c99;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}.modal.open{display:flex}.modal-box{background:#fff;border-radius:18px;padding:18px;width:min(680px,100%);max-height:90vh;overflow:auto}.modal-box h2{margin-top:0}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}.progress{height:9px;border-radius:999px;background:#e9eef5;overflow:hidden}.progress span{display:block;height:100%;background:#0f7cff;width:0%}.small{font-size:11px;color:var(--m)}
+@media(max-width:950px){.app{grid-template-columns:1fr}.side{padding:12px}.side nav{display:flex;overflow:auto}.side nav a,.side nav button{width:auto;white-space:nowrap}.stats{grid-template-columns:repeat(2,1fr)}.basebar{grid-template-columns:1fr}main{padding:12px}.top{flex-direction:column}.modal-grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><div class="logo">M</div><div><b>MIRED<span style="color:#00b8ff">360</span></b><small>BASES DE LLAMADAS</small></div></div>
+  <nav>
+    <a href="index.html">← Volver al CRM</a>
+    <a class="active" href="bases-llamadas.html">📞 Bases de llamadas</a>
+  </nav>
+  <hr>
+  <div class="mini">Las bases se manejan aparte del CRM. Solo los contactos que tú conviertas pasan a Prospectos.</div>
+</aside>
+<main>
+  <div class="top">
+    <div><h1>📞 Bases de llamadas</h1><p>Importa archivos, llama desde Comuniquémonos y convierte únicamente los interesados en prospectos.</p></div>
+    <div class="toolbar">
+      <button class="btn primary" onclick="document.getElementById('fileImport').click()">📥 Importar archivo</button>
+      <button class="btn ghost" onclick="openPaste()">📋 Pegar datos</button>
+      <button class="btn ghost" onclick="exportCurrent('xlsx')">⬇ Excel</button>
+      <button class="btn ghost" onclick="exportCurrent('csv')">⬇ CSV</button>
+      <input id="fileImport" type="file" class="hidden" accept=".xlsx,.xls,.csv,.ods,.tsv,.txt,.json,.vcf" onchange="importFile(this.files[0]);this.value=''">
+    </div>
+  </div>
+
+  <div class="card notice">Formatos admitidos: <b>XLSX, XLS, CSV, ODS, TSV, TXT, JSON y VCF</b>. El sistema intenta detectar automáticamente nombre, teléfono, ciudad, barrio, cédula/NIT, correo y dirección. Las columnas adicionales se conservan como datos extra.</div>
+
+  <div class="card">
+    <div class="basebar">
+      <label>Base activa<select id="baseSelect" onchange="selectBase(this.value)"><option value="">Selecciona una base</option></select></label>
+      <label>Extensión para llamar<select id="extensionSelect" onchange="saveBaseExtension()"><option value="1502000101">101 · Yesid</option><option value="1502000102">102 · Segundo usuario</option></select></label>
+      <label>Estado a mostrar<select id="statusFilter" onchange="renderContacts()"><option value="">Todos</option><option>Pendiente</option><option>No contestó</option><option>Ocupado</option><option>Volver a llamar</option><option>Interesado</option><option>No interesado</option><option>Número incorrecto</option><option>Venta</option></select></label>
+    </div>
+    <div class="status" id="baseStatus"></div>
+  </div>
+
+  <div class="grid stats">
+    <div class="card stat"><small>Total</small><strong id="sTotal">0</strong></div>
+    <div class="card stat"><small>Pendientes</small><strong id="sPending">0</strong></div>
+    <div class="card stat"><small>Gestionados</small><strong id="sDone">0</strong></div>
+    <div class="card stat"><small>Interesados</small><strong id="sInterested">0</strong></div>
+    <div class="card stat"><small>Convertidos al CRM</small><strong id="sConverted">0</strong></div>
+  </div>
+
+  <div class="card">
+    <div class="filters">
+      <input id="search" placeholder="Buscar nombre, teléfono, ciudad, documento..." oninput="renderContacts()">
+      <button class="btn primary" onclick="nextPending()">▶ Siguiente pendiente</button>
+      <span class="small" id="shownInfo"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Nombre</th><th>Teléfono</th><th>Ciudad / Barrio</th><th>Documento</th><th>Estado</th><th>Intentos</th><th>Próximo contacto</th><th>Nota</th><th>Acciones</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="9" class="empty">Importa o selecciona una base para comenzar.</td></tr></tbody>
+    </table></div>
+  </div>
+</main>
+</div>
+
+<div class="modal" id="pasteModal"><div class="modal-box">
+  <h2>Pegar datos</h2>
+  <p class="small">Puedes pegar filas desde Excel, Google Sheets, un TXT o una lista. Si pegas columnas, procura incluir encabezados como Nombre, Teléfono, Ciudad, etc.</p>
+  <div class="modal-grid">
+    <label class="full">Nombre de la base<input id="pasteBaseName" placeholder="Ej. Comercios Madrid septiembre"></label>
+    <label>Extensión<select id="pasteExtension"><option value="1502000101">101 · Yesid</option><option value="1502000102">102 · Segundo usuario</option></select></label>
+    <label>Separador<select id="pasteSeparator"><option value="auto">Detectar automáticamente</option><option value="tab">Tabulador</option><option value="comma">Coma</option><option value="semicolon">Punto y coma</option></select></label>
+    <label class="full">Datos<textarea id="pasteData" style="min-height:240px" placeholder="Nombre\tTeléfono\tCiudad\nCliente 1\t3001234567\tMadrid"></textarea></label>
+    <div class="full toolbar"><button class="btn ghost" onclick="closePaste()">Cancelar</button><button class="btn primary" onclick="importPasted()">Crear base</button></div>
+  </div>
+</div></div>
+
+<div class="modal" id="importModal"><div class="modal-box">
+  <h2 id="importTitle">Importando base</h2>
+  <div class="progress"><span id="importBar"></span></div>
+  <p id="importText" class="small">Preparando...</p>
+</div></div>
+
+<script>
+const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
+const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
+const CLICK_TO_CALL_URL=SUPABASE_URL+'/functions/v1/click-to-call';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+const STATES=['Pendiente','No contestó','Ocupado','Volver a llamar','Interesado','No interesado','Número incorrecto','Venta'];
+let user=null,bases=[],activeBase=null,contacts=[];
+
+function normKey(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'')}
+function normPhone(v){let d=String(v??'').replace(/\D/g,'');if(d.startsWith('0057'))d=d.slice(2);if(d.startsWith('57')&&d.length===12)return d;if(d.length===10)return '57'+d;if(d.length>=7&&d.length<=13)return d;return ''}
+function validCallPhone(v){const d=normPhone(v);return /^57\d{10}$/.test(d)?d:''}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function stateBadge(s){let c=['Interesado','Venta'].includes(s)?'ok':['No contestó','Ocupado','Volver a llamar'].includes(s)?'warn':['No interesado','Número incorrecto'].includes(s)?'danger':'';return `<span class="badge ${c}">${esc(s||'Pendiente')}</span>`}
+function fmtDate(v){return v?String(v).slice(0,10):''}
+function fileStem(name){return String(name||'Base').replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim()||'Base de llamadas'}
+
+async function init(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session?.user){location.href='index.html';return}
+  user=session.user;await loadBases();
+}
+
+async function loadBases(){
+  const {data,error}=await sb.from('bases_llamadas').select('*').order('creado_en',{ascending:false});
+  if(error){$('baseStatus').textContent='No se pudieron cargar las bases: '+error.message;return}
+  bases=data||[];
+  $('baseSelect').innerHTML='<option value="">Selecciona una base</option>'+bases.map(b=>`<option value="${b.id}">${esc(b.nombre)} · ${b.total_registros||0}</option>`).join('');
+  if(activeBase&&bases.some(b=>b.id===activeBase.id)){$('baseSelect').value=activeBase.id}
+  else if(bases.length){await selectBase(bases[0].id)}
+}
+
+async function selectBase(id){
+  activeBase=bases.find(b=>b.id===id)||null;
+  if(!activeBase){contacts=[];renderContacts();return}
+  $('baseSelect').value=id;$('extensionSelect').value=activeBase.extension||'1502000101';
+  $('baseStatus').textContent='Cargando '+activeBase.nombre+'...';
+  await loadContacts();
+}
+
+async function loadContacts(){
+  contacts=[];let from=0;const page=1000;
+  while(true){
+    const {data,error}=await sb.from('contactos_base_llamadas').select('*').eq('base_id',activeBase.id).order('creado_en',{ascending:true}).range(from,from+page-1);
+    if(error){$('baseStatus').textContent='Error al cargar contactos: '+error.message;return}
+    const batch=data||[];contacts.push(...batch);if(batch.length<page)break;from+=page;if(from>50000)break;
+  }
+  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${activeBase.extension==='1502000102'?'102':'101'}`;
+  renderContacts();
+}
+
+async function saveBaseExtension(){
+  if(!activeBase)return;const extension=$('extensionSelect').value;
+  const {error}=await sb.from('bases_llamadas').update({extension,actualizado_en:new Date().toISOString()}).eq('id',activeBase.id);
+  if(error)return alert('No se pudo cambiar la extensión. '+error.message);
+  activeBase.extension=extension;const b=bases.find(x=>x.id===activeBase.id);if(b)b.extension=extension;
+  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extension==='1502000102'?'102':'101'}`;
+}
+
+function filteredContacts(){
+  const q=normKey($('search').value),st=$('statusFilter').value;
+  return contacts.filter(c=>(!st||c.estado===st)&&(!q||normKey([c.nombre,c.telefono,c.ciudad,c.barrio,c.documento,c.correo,c.direccion,c.observacion,c.resultado_detalle].join(' ')).includes(q)));
+}
+
+function renderContacts(){
+  const total=contacts.length,pending=contacts.filter(c=>c.estado==='Pendiente').length,interested=contacts.filter(c=>['Interesado','Venta'].includes(c.estado)).length,converted=contacts.filter(c=>c.convertido_prospecto_id).length;
+  $('sTotal').textContent=total;$('sPending').textContent=pending;$('sDone').textContent=total-pending;$('sInterested').textContent=interested;$('sConverted').textContent=converted;
+  const a=filteredContacts();const show=a.slice(0,500);$('shownInfo').textContent=a.length>500?`Mostrando 500 de ${a.length}`:`${a.length} registro(s)`;
+  $('rows').innerHTML=show.map(c=>`<tr id="row-${c.id}">
+    <td><b>${esc(c.nombre||'Sin nombre')}</b>${c.correo?`<br><span class="small">${esc(c.correo)}</span>`:''}</td>
+    <td>${esc(c.telefono)}</td>
+    <td>${esc([c.ciudad,c.barrio].filter(Boolean).join(' / ')||'-')}${c.direccion?`<br><span class="small">${esc(c.direccion)}</span>`:''}</td>
+    <td>${esc(c.documento||'-')}</td>
+    <td><select onchange="quickStatus('${c.id}',this.value)">${STATES.map(s=>`<option ${c.estado===s?'selected':''}>${s}</option>`).join('')}</select></td>
+    <td>${c.intentos||0}</td>
+    <td>${esc(fmtDate(c.proximo_contacto)||'-')}</td>
+    <td>${esc(c.resultado_detalle||c.observacion||'-')}</td>
+    <td><div class="row-actions">
+      <button class="btn primary" onclick="callContact('${c.id}')">📞 Llamar</button>
+      <button class="btn ghost" onclick="addNote('${c.id}')">📝 Nota</button>
+      <button class="btn ghost" onclick="scheduleCall('${c.id}')">📅 Recontactar</button>
+      <button class="btn ghost" ${c.convertido_prospecto_id?'disabled':''} onclick="convertProspect('${c.id}')">${c.convertido_prospecto_id?'✓ En CRM':'➡ Prospecto'}</button>
+    </div></td>
+  </tr>`).join('')||'<tr><td colspan="9" class="empty">No hay registros con este filtro.</td></tr>';
+}
+
+async function callContact(id){
+  const c=contacts.find(x=>x.id===id);if(!c)return;const tel=validCallPhone(c.telefono);if(!tel)return alert('Este teléfono no tiene un formato colombiano válido de 10 dígitos para Click-to-Call.');
+  const {data:{session}}=await sb.auth.getSession();if(!session?.access_token)return alert('Tu sesión terminó. Ingresa nuevamente.');
+  try{
+    const r=await fetch(CLICK_TO_CALL_URL,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},body:JSON.stringify({tel,account_id:activeBase.extension||'1502000101'})});
+    const data=await r.json().catch(()=>({}));if(!r.ok||data?.ok===false)throw new Error(data.error||'No fue posible iniciar la llamada.');
+    c.intentos=(c.intentos||0)+1;c.ultima_llamada=new Date().toISOString();
+    await sb.from('contactos_base_llamadas').update({intentos:c.intentos,ultima_llamada:c.ultima_llamada,actualizado_en:new Date().toISOString()}).eq('id',c.id);
+    renderContacts();alert(`Llamada enviada a la extensión ${activeBase.extension==='1502000102'?'102':'101'}. Contesta la extensión para conectar con ${c.nombre||c.telefono}.`);
+  }catch(e){alert('No se pudo iniciar la llamada. '+String(e.message||e));}
+}
+
+async function quickStatus(id,estado){
+  const c=contacts.find(x=>x.id===id);if(!c)return;let proximo=c.proximo_contacto;
+  if(estado==='Volver a llamar'&&!proximo){const d=prompt('Fecha para volver a llamar (AAAA-MM-DD):',new Date(Date.now()+86400000).toISOString().slice(0,10));if(d!==null)proximo=d||null}
+  const {error}=await sb.from('contactos_base_llamadas').update({estado,proximo_contacto:proximo,actualizado_en:new Date().toISOString()}).eq('id',id);
+  if(error){alert('No se pudo guardar el estado. '+error.message);return}
+  c.estado=estado;c.proximo_contacto=proximo;renderContacts();
+}
+
+async function addNote(id){
+  const c=contacts.find(x=>x.id===id);if(!c)return;const note=prompt('Nota / resultado de la llamada:',c.resultado_detalle||c.observacion||'');if(note===null)return;
+  const {error}=await sb.from('contactos_base_llamadas').update({resultado_detalle:note||null,actualizado_en:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);c.resultado_detalle=note;renderContacts();
+}
+
+async function scheduleCall(id){
+  const c=contacts.find(x=>x.id===id);if(!c)return;const d=prompt('Fecha para volver a llamar (AAAA-MM-DD):',fmtDate(c.proximo_contacto)||new Date(Date.now()+86400000).toISOString().slice(0,10));if(d===null)return;
+  const {error}=await sb.from('contactos_base_llamadas').update({estado:'Volver a llamar',proximo_contacto:d||null,actualizado_en:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);c.estado='Volver a llamar';c.proximo_contacto=d||null;renderContacts();
+}
+
+function nextPending(){
+  const c=contacts.find(x=>x.estado==='Pendiente')||contacts.find(x=>x.estado==='Volver a llamar'&&(!x.proximo_contacto||x.proximo_contacto<=new Date().toISOString().slice(0,10)));if(!c)return alert('No hay contactos pendientes en esta base.');
+  $('statusFilter').value='';$('search').value=c.telefono;renderContacts();setTimeout(()=>document.getElementById('row-'+c.id)?.scrollIntoView({behavior:'smooth',block:'center'}),50);
+}
+
+async function convertProspect(id){
+  const c=contacts.find(x=>x.id===id);if(!c||c.convertido_prospecto_id)return;if(!confirm(`¿Convertir a ${c.nombre||c.telefono} en Prospecto del CRM?`))return;
+  const baseName=activeBase?.nombre||'Base de llamadas';const notes=[`Origen: ${baseName}`,c.resultado_detalle,c.observacion].filter(Boolean).join(' · ');
+  const {data,error}=await sb.from('prospectos').insert({user_id:user.id,nombre:c.nombre||'Sin nombre',telefono:c.telefono,ciudad:c.ciudad||null,barrio:c.barrio||null,direccion:c.direccion||null,origen:'Otro',campana:baseName,producto:'Otro',estado:'Nuevo contacto',notas:notes||null}).select('id').single();
+  if(error)return alert('No se pudo crear el prospecto. '+error.message);
+  await sb.from('contactos_base_llamadas').update({convertido_prospecto_id:data.id,actualizado_en:new Date().toISOString()}).eq('id',c.id);c.convertido_prospecto_id=data.id;renderContacts();alert('Contacto convertido en prospecto correctamente.');
+}
+
+const aliases={
+ nombre:['nombre','nombres','cliente','contacto','name','razonsocial','empresa','negocio'],
+ telefono:['telefono','telefonos','celular','movil','whatsapp','phone','numero','numerocelular','tel'],
+ ciudad:['ciudad','municipio','city','localidad'],
+ barrio:['barrio','sector','zona','neighborhood'],
+ documento:['documento','cedula','cc','nit','identificacion','dni'],
+ correo:['correo','email','mail','correoelectronico'],
+ direccion:['direccion','address','domicilio'],
+ observacion:['observacion','observaciones','nota','notas','comentario','detalle']
+};
+function findCol(headers,key){const hs=headers.map(normKey);for(const a of aliases[key]){const i=hs.indexOf(normKey(a));if(i>=0)return i}return -1}
+function detectPhoneCol(rows,headers){let idx=findCol(headers,'telefono');if(idx>=0)return idx;let best=-1,score=0;for(let c=0;c<Math.max(...rows.slice(0,20).map(r=>r.length),0);c++){let n=0,t=0;for(const r of rows.slice(0,30)){if(r[c]!==undefined&&String(r[c]).trim()){t++;if(normPhone(r[c]).length>=10)n++;}}const s=t?n/t:0;if(s>score&&n>=2){score=s;best=c}}return best}
+function matrixToRecords(rows){
+  rows=rows.filter(r=>Array.isArray(r)&&r.some(v=>String(v??'').trim()));if(!rows.length)return[];
+  let headers=rows[0].map((v,i)=>String(v??'').trim()||`Columna ${i+1}`);let phoneCol=detectPhoneCol(rows.slice(1),headers),dataRows=rows.slice(1);
+  if(phoneCol<0){phoneCol=detectPhoneCol(rows,headers);if(phoneCol>=0){headers=headers.map((_,i)=>`Columna ${i+1}`);dataRows=rows}}
+  if(phoneCol<0)return[];
+  const map={telefono:phoneCol};for(const k of ['nombre','ciudad','barrio','documento','correo','direccion','observacion'])map[k]=findCol(headers,k);
+  const out=[];for(const r of dataRows){const phone=normPhone(r[map.telefono]);if(!phone)continue;const rec={telefono:phone,nombre:map.nombre>=0?String(r[map.nombre]??'').trim():'Sin nombre',ciudad:map.ciudad>=0?String(r[map.ciudad]??'').trim():null,barrio:map.barrio>=0?String(r[map.barrio]??'').trim():null,documento:map.documento>=0?String(r[map.documento]??'').trim():null,correo:map.correo>=0?String(r[map.correo]??'').trim():null,direccion:map.direccion>=0?String(r[map.direccion]??'').trim():null,observacion:map.observacion>=0?String(r[map.observacion]??'').trim():null,datos_extra:{}};headers.forEach((h,i)=>{if(!Object.values(map).includes(i)&&String(r[i]??'').trim())rec.datos_extra[h]=r[i]});out.push(rec)}return out;
+}
+function objectsToRecords(arr){if(!arr.length)return[];const headers=[...new Set(arr.flatMap(o=>Object.keys(o||{})))];return matrixToRecords([headers,...arr.map(o=>headers.map(h=>o?.[h]??''))])}
+function parseVcf(text){const cards=String(text).split(/BEGIN:VCARD/i).slice(1);return cards.map(card=>{const val=k=>{const m=card.match(new RegExp('(?:^|\\n)'+k+'[^:]*:([^\\r\\n]+)','i'));return m?m[1].trim():''};const phone=normPhone(val('TEL'));if(!phone)return null;return{nombre:val('FN')||val('N')||'Sin nombre',telefono:phone,correo:val('EMAIL')||null,direccion:val('ADR')?.replace(/;/g,' ')||null,ciudad:null,barrio:null,documento:null,observacion:val('ORG')||null,datos_extra:{}}}).filter(Boolean)}
+function dedupe(records){const seen=new Set();return records.filter(r=>{const k=normPhone(r.telefono)+'|'+normKey(r.nombre);if(!normPhone(r.telefono)||seen.has(k))return false;seen.add(k);return true})}
+
+async function importFile(file){
+  if(!file)return;let records=[];const ext=(file.name.split('.').pop()||'').toLowerCase();openImport('Leyendo '+file.name+'...',5);
+  try{
+    if(ext==='vcf'){records=parseVcf(await file.text())}
+    else if(ext==='json'){const obj=JSON.parse(await file.text());const arr=Array.isArray(obj)?obj:(Object.values(obj).find(v=>Array.isArray(v))||[]);records=objectsToRecords(arr)}
+    else{const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:'array'});for(const s of wb.SheetNames){const rows=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,raw:false,defval:''});records.push(...matrixToRecords(rows))}}
+    records=dedupe(records);if(!records.length)throw new Error('No encontré una columna o datos de teléfono válidos.');
+    const name=prompt('Nombre de esta base:',fileStem(file.name));if(name===null){closeImport();return}const extension=prompt('Extensión para trabajar esta base: escribe 101 o 102','101')==='102'?'1502000102':'1502000101';
+    await createBase(name||fileStem(file.name),file.name,extension,records);
+  }catch(e){closeImport();alert('No se pudo importar el archivo. '+String(e.message||e));}
+}
+
+async function createBase(name,source,extension,records){
+  openImport(`Creando base ${name}...`,10);
+  const {data:base,error}=await sb.from('bases_llamadas').insert({user_id:user.id,nombre:name,archivo_origen:source||null,extension,total_registros:records.length}).select('*').single();if(error)throw error;
+  for(let i=0;i<records.length;i+=400){const chunk=records.slice(i,i+400).map(r=>({...r,base_id:base.id,user_id:user.id,estado:'Pendiente'}));const {error:e}=await sb.from('contactos_base_llamadas').insert(chunk);if(e)throw e;openImport(`Guardando ${Math.min(i+400,records.length)} de ${records.length}...`,10+Math.round(85*Math.min(i+400,records.length)/records.length));}
+  openImport('Base lista.',100);setTimeout(closeImport,400);activeBase=base;await loadBases();await selectBase(base.id);alert(`Base creada correctamente con ${records.length} registro(s).`);
+}
+
+function openPaste(){$('pasteModal').classList.add('open');$('pasteBaseName').value='';$('pasteData').value='';$('pasteExtension').value=activeBase?.extension||'1502000101'}
+function closePaste(){$('pasteModal').classList.remove('open')}
+async function importPasted(){const text=$('pasteData').value.trim(),name=$('pasteBaseName').value.trim()||'Base pegada';if(!text)return alert('Pega primero los datos.');let rows=[];const sep=$('pasteSeparator').value;let delimiter=sep==='tab'?'\t':sep==='comma'?',':sep==='semicolon'?';':(text.includes('\t')?'\t':text.includes(';')?';':',');rows=text.split(/\r?\n/).filter(Boolean).map(line=>line.split(delimiter));let records=dedupe(matrixToRecords(rows));if(!records.length){records=dedupe(text.split(/\r?\n/).map(line=>{const m=line.match(/(?:\+?57)?\D*(\d{3})\D*(\d{3})\D*(\d{4})/);if(!m)return null;const p=normPhone(m[1]+m[2]+m[3]);return{nombre:line.replace(m[0],'').replace(/[;,\t|-]+/g,' ').trim()||'Sin nombre',telefono:p,ciudad:null,barrio:null,documento:null,correo:null,direccion:null,observacion:null,datos_extra:{}}}).filter(Boolean))}if(!records.length)return alert('No encontré teléfonos válidos.');closePaste();try{await createBase(name,'Datos pegados',$('pasteExtension').value,records)}catch(e){closeImport();alert('No se pudo crear la base. '+String(e.message||e))}}
+
+function openImport(text,pct){$('importModal').classList.add('open');$('importText').textContent=text;$('importBar').style.width=(pct||0)+'%'}
+function closeImport(){$('importModal').classList.remove('open')}
+
+function exportRows(){return filteredContacts().map(c=>({Nombre:c.nombre,Telefono:c.telefono,Ciudad:c.ciudad||'',Barrio:c.barrio||'',Documento:c.documento||'',Correo:c.correo||'',Direccion:c.direccion||'',Estado:c.estado,Intentos:c.intentos||0,Proximo_contacto:fmtDate(c.proximo_contacto),Ultima_llamada:c.ultima_llamada||'',Nota:c.resultado_detalle||c.observacion||'',Convertido_CRM:c.convertido_prospecto_id?'Sí':'No',Datos_extra:JSON.stringify(c.datos_extra||{})}))}
+function exportCurrent(type){if(!activeBase)return alert('Selecciona una base.');const rows=exportRows();if(!rows.length)return alert('No hay registros para exportar.');const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Gestion');const name=(activeBase.nombre||'base').replace(/[^a-z0-9áéíóúñ _-]/gi,'_');if(type==='csv'){const csv=XLSX.utils.sheet_to_csv(ws);const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'.csv';a.click();URL.revokeObjectURL(a.href)}else XLSX.writeFile(wb,name+'.xlsx')}
+
+init();
+</script>
+</body>
+</html>
