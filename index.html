@@ -1,887 +1,104 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CRM MIRED360SERVICIOS · WhatsApp API</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
-<style>
-:root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}.hidden{display:none!important}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}aside{background:linear-gradient(180deg,var(--n),#061426);color:white;padding:20px 14px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand span{display:block;font-size:11px;letter-spacing:2px;color:#7fdfff}nav button{width:100%;border:0;background:transparent;color:#cbd9e8;text-align:left;padding:12px;border-radius:12px;margin:3px 0;cursor:pointer}nav button.active,nav button:hover{background:rgba(0,184,255,.15);color:#fff}main{padding:22px;max-width:1450px;width:100%;margin:auto}header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1{margin:0;font-size:27px}header p{margin:5px 0 0;color:var(--m)}.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l)}.danger-btn{background:#fff1f2;color:#b4232d;border:1px solid #fecdd3}.grid{display:grid;gap:15px}.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:16px}.card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:17px;box-shadow:0 10px 30px rgba(4,35,66,.06)}.kpi small{color:var(--m)}.kpi strong{display:block;font-size:29px;margin-top:8px}.two{grid-template-columns:1.3fr .7fr}.section{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section h2{margin:0;font-size:18px}.pipeline{display:flex;gap:8px;overflow:auto}.stage{min-width:160px;background:#f7fbff;border:1px solid var(--l);border-radius:13px;padding:12px}.stage strong{display:block;font-size:24px;margin:7px 0}.table-wrap{overflow:auto;border:1px solid var(--l);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:11px;border-bottom:1px solid var(--l);font-size:13px;text-align:left}th{background:#f2f7fc}.badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:#eef6ff;font-size:12px;font-weight:700}.ok{background:#eaf8f1;color:#08774b}.warn{background:#fff5df;color:#996000}.danger{background:#feecec;color:#b4232d}.whats{display:inline-block;text-decoration:none;background:#e9fbf2;color:#087a49;border:1px solid #bdebd5;padding:7px 10px;border-radius:10px;font-weight:700}.callbtn{display:inline-block;text-decoration:none;background:#eef6ff;color:#0756a6;border:1px solid #bdd8f7;padding:7px 10px;border-radius:10px;font-weight:700;cursor:pointer}.view{display:none}.view.active{display:block}.empty{padding:25px;text-align:center;color:var(--m)}.modal{position:fixed;inset:0;background:rgba(1,15,29,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}.modal.open{display:flex}.modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:20px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-size:12px;color:#52647a;font-weight:700}input,select,textarea{padding:11px;border:1px solid #cfdceb;border-radius:11px;width:100%}textarea{min-height:75px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.toolbar input{max-width:320px}.toolbar select{max-width:220px}.bulkbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:12px;border:1px solid #c6eaff;background:#f3fbff;border-radius:13px}.bulkbar .btn:disabled{opacity:.5;cursor:not-allowed}.bulk-status{font-size:12px;color:#52647a;font-weight:700}.checkcell{width:42px;text-align:center}.checkcell input{width:18px;height:18px;cursor:pointer}.notice{padding:12px;background:#eef8ff;border:1px solid #c6eaff;border-radius:12px;color:#27577a;font-size:13px}.statusbar{font-size:12px;color:#d2e9ff;margin-top:16px;line-height:1.5}.login-page{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top right,#0f7cff33,transparent 35%),linear-gradient(135deg,#061426,#0b2d52)}.login-card{width:min(440px,100%);background:white;border-radius:22px;padding:28px;box-shadow:0 25px 70px #0005}.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}.login-card h1{font-size:24px}.login-card p{color:var(--m)}.login-card label{margin:12px 0}.login-error{min-height:20px;color:#b4232d;font-size:13px;margin-top:10px}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a36a;margin-right:6px}.sync-dot.off{background:#e5484d}.loader{opacity:.65;pointer-events:none}@media(max-width:950px){.app{grid-template-columns:1fr}aside{height:auto;position:static}nav{display:flex;overflow:auto}nav button{width:auto;white-space:nowrap}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}main{padding:14px}}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.kpis{grid-template-columns:1fr 1fr}}
-
-.chat-layout{display:grid;grid-template-columns:320px 1fr;gap:14px;min-height:620px}
-.chat-list{border:1px solid var(--l);border-radius:16px;background:#fff;overflow:hidden}
-.chat-list-head{padding:12px;border-bottom:1px solid var(--l);background:#f7fbff}
-.chat-list-head input{max-width:none}
-.chat-contacts{max-height:560px;overflow:auto}
-.chat-contact{width:100%;border:0;border-bottom:1px solid var(--l);background:#fff;padding:13px;text-align:left;cursor:pointer}
-.chat-contact:hover,.chat-contact.active{background:#eef8ff}
-.chat-contact b,.chat-contact small,.chat-contact span{display:block}
-.chat-contact small{color:var(--m);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-contact span{font-size:11px;color:var(--m);margin-top:4px}
-.chat-panel{border:1px solid var(--l);border-radius:16px;background:#edf3f7;display:flex;flex-direction:column;min-width:0}
-.chat-head{padding:14px 16px;background:#fff;border-bottom:1px solid var(--l);border-radius:16px 16px 0 0}
-.chat-head b,.chat-head small{display:block}.chat-head small{color:var(--m);margin-top:3px}
-.chat-messages{flex:1;min-height:430px;max-height:520px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:9px}
-.bubble{max-width:78%;padding:10px 12px;border-radius:14px;background:#fff;box-shadow:0 1px 2px #0001;white-space:pre-wrap;overflow-wrap:anywhere}
-.bubble.in{align-self:flex-start;border-top-left-radius:4px}
-.bubble.out{align-self:flex-end;background:#d9fdd3;border-top-right-radius:4px}
-.bubble small{display:block;color:#6c7b8d;font-size:10px;margin-top:5px;text-align:right}
-.chat-compose{padding:12px;background:#fff;border-top:1px solid var(--l);border-radius:0 0 16px 16px;display:flex;gap:9px}
-.chat-compose textarea{min-height:46px;max-height:120px;resize:vertical}
-.chat-compose button{align-self:flex-end}
-.chat-compose .attach-btn{white-space:nowrap}.chat-file-status{padding:0 12px 10px;background:#fff;color:var(--m);font-size:12px}
-.chat-empty{padding:24px;color:var(--m);text-align:center}
-@media(max-width:850px){.chat-layout{grid-template-columns:1fr}.chat-contacts{max-height:260px}.chat-messages{min-height:360px}}
-
-</style>
-</head>
-<body>
-<div id="loginPage" class="login-page">
-  <div class="login-card">
-    <div class="login-brand"><div class="logo">M</div><div><h1>MIRED<span style="color:#0f7cff">360</span> CRM</h1><small>Acceso seguro con Supabase</small></div></div>
-    <p>Ingresa con el correo y la contraseña del usuario creado en Supabase.</p>
-    <label>Correo electrónico<input id="loginEmail" type="email" autocomplete="username" placeholder="correo@ejemplo.com"></label>
-    <label>Contraseña<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Tu contraseña"></label>
-    <button class="btn primary" style="width:100%" id="loginBtn">Ingresar</button>
-    <div id="loginError" class="login-error"></div>
-  </div>
-</div>
-
-<div id="crmApp" class="app hidden">
-<aside>
-  <div class="brand"><div class="logo">M</div><div><b>MIRED<span style="color:#00b8ff">360</span></b><span>SERVICIOS · CRM</span></div></div>
-  <nav><button class="active" data-view="dashboard">📊 Dashboard</button><button data-view="prospectos">👥 Prospectos</button><button type="button" data-link="bases-llamadas.html">📞 Bases de llamadas</button><button type="button" data-link="negocios.html">🏪 Negocios Pymes</button><button data-view="conversaciones">💬 WhatsApp</button><button data-view="seguimientos">📅 Seguimientos</button><button data-view="ventas">💰 Ventas</button><button data-view="autorizaciones">✍️ Autorizaciones</button><button data-view="comisiones">💵 Cobro comisiones</button><button data-view="usuarios">🔐 Usuarios asesores</button><button type="button" data-link="reclutamiento.html">🎯 Reclutamiento</button><button data-view="publicidad">📣 Publicidad</button><button data-view="config">⚙️ Configuración</button></nav>
-  <div class="statusbar"><span id="syncDot" class="sync-dot"></span><span id="syncText">Conectado a Supabase</span><br><span id="userLabel"></span></div>
-</aside>
-<main>
-<section class="view active" id="dashboard"><header><div><h1>Panel comercial</h1><p>Controle prospectos, seguimientos, ventas e instalaciones.</p></div><div><button class="btn ghost" id="exportBtn">Exportar CSV</button> <button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button></div></header><div class="grid kpis"><div class="card kpi"><small>Prospectos</small><strong id="kPros">0</strong></div><div class="card kpi"><small>Seguimientos hoy</small><strong id="kFollow">0</strong></div><div class="card kpi"><small>Ventas</small><strong id="kSales">0</strong></div><div class="card kpi"><small>Instalados</small><strong id="kInstalled">0</strong></div></div><div class="card" style="margin-bottom:15px"><div class="section"><h2>Embudo comercial</h2></div><div class="pipeline" id="pipeline"></div></div><div class="grid two"><div class="card"><div class="section"><h2>Prospectos recientes</h2><button class="btn ghost" onclick="showView('prospectos')">Ver todos</button></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Ciudad</th><th>Origen</th><th>Estado</th><th>WhatsApp</th></tr></thead><tbody id="recentRows"></tbody></table></div></div><div class="card"><div class="section"><h2>Seguimientos próximos</h2></div><div id="followBox"></div></div></div></section>
-<section class="view" id="prospectos"><header><div><h1>Prospectos</h1><p>Base central de clientes potenciales.</p></div><button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button></header><div class="card"><div class="toolbar"><input id="searchLead" placeholder="Buscar nombre, teléfono, ciudad..."><select id="filterStatus"><option value="">Todos los estados</option></select></div><div class="bulkbar"><button class="btn primary" id="bulkWhatsBtn" onclick="sendSelectedWhatsApp()" disabled>📣 Enviar WhatsApp (0)</button><button class="btn ghost" id="clearSelectionBtn" onclick="clearLeadSelection()" disabled>Limpiar selección</button><span class="bulk-status" id="bulkStatus">Seleccione los prospectos autorizados para recibir la plantilla aprobada.</span></div><div class="table-wrap"><table><thead><tr><th class="checkcell"><input type="checkbox" id="selectVisibleLeads" title="Seleccionar visibles"></th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Ciudad/Barrio</th><th>Origen</th><th>Producto</th><th>Estado</th><th>Seguimiento</th><th>WhatsApp</th><th>Llamada</th><th></th></tr></thead><tbody id="leadRows"></tbody></table></div></div></section>
-
-<section class="view" id="conversaciones">
-<header>
-  <div>
-    <h1>WhatsApp</h1>
-    <p>Bandeja de conversaciones del número conectado a WhatsApp Cloud API.</p>
-  </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn primary" onclick="startDirectWhatsApp()">+ Nuevo WhatsApp</button>
-    <button class="btn ghost" onclick="document.getElementById('waExcelFile').click()">📄 Importar Excel</button>
-    <input id="waExcelFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importWhatsAppExcel(this.files[0]);this.value=''">
-    <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
-  </div>
-</header>
-<div class="notice" style="margin-bottom:12px">
-  <b>Atención:</b> puedes responder con texto libre dentro de la ventana de atención de 24 horas después del último mensaje del cliente. Fuera de esa ventana, inicia la conversación con una plantilla aprobada.
-</div>
-<div class="chat-layout">
-  <div class="chat-list">
-    <div class="chat-list-head">
-      <input id="chatSearch" placeholder="Buscar nombre o teléfono...">
-    </div>
-    <div class="chat-contacts" id="chatContacts">
-      <div class="chat-empty">Cargando conversaciones...</div>
-    </div>
-  </div>
-
-  <div class="chat-panel">
-    <div class="chat-head" id="chatHead">
-      <b>Selecciona una conversación</b>
-      <small>Los mensajes entrantes aparecerán aquí.</small>
-    </div>
-
-    <div class="chat-messages" id="chatMessages">
-      <div class="chat-empty">Selecciona un contacto para ver el historial.</div>
-    </div>
-
-    <div class="chat-compose">
-      <input id="chatFile" type="file" accept=".pdf,.xls,.xlsx,.csv,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" class="hidden" onchange="sendChatFile(this.files[0]);this.value=''">
-      <button class="btn ghost attach-btn" id="attachBtn" onclick="$('chatFile').click()" disabled title="Enviar PDF o Excel">📎 Archivo</button>
-      <input id="chatAudio" type="file" accept=".mp3,.m4a,.aac,.amr,.ogg,audio/mpeg,audio/mp4,audio/aac,audio/amr,audio/ogg" class="hidden" onchange="sendChatAudio(this.files[0]);this.value=''">
-      <button class="btn ghost" id="audioFileBtn" onclick="$('chatAudio').click()" disabled title="Adjuntar audio compatible">🎵 Audio</button>
-      <button class="btn ghost" id="recordBtn" onclick="toggleChatRecording()" disabled title="Grabar nota de voz">🎙 Grabar</button>
-      <textarea id="replyText" placeholder="Escribe tu respuesta..." disabled></textarea>
-      <button class="btn primary" id="replyBtn" onclick="sendChatReply()" disabled>Enviar</button>
-    </div>
-    <div class="chat-file-status" id="chatFileStatus" role="status">PDF o Excel · máximo 15 MB</div>
-  </div>
-</div>
-</section>
-
-<section class="view" id="seguimientos"><header><div><h1>Seguimientos</h1><p>Lo que debe atender hoy y después.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estado</th><th>Nota</th><th>WhatsApp</th><th>Llamada</th></tr></thead><tbody id="followRows"></tbody></table></div></div></section>
-<section class="view" id="ventas"><header><div><h1>Ventas</h1><p>Negocios cerrados e instalaciones.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Plan</th><th>Valor</th><th>Estado</th><th>Instalación</th><th>Comisión</th></tr></thead><tbody id="salesRows"></tbody></table></div></div></section>
-<section class="view" id="autorizaciones"><header><div><h1>Autorizaciones</h1><p>Constancias firmadas y control de auditoría de ventas.</p></div><div><a class="btn primary" href="autorizacion.html" target="_blank" style="text-decoration:none">+ Nueva autorización</a> <button class="btn ghost" onclick="loadAuthorizations()">↻ Actualizar</button></div></header><div class="card"><div class="toolbar"><input id="authSearch" placeholder="Buscar cliente, cédula, teléfono, asesor o constancia..." oninput="renderAuthorizations()"><select id="authStatus" onchange="renderAuthorizations()"><option value="">Todos los estados</option><option>Pendiente</option><option>Pasó auditoría</option><option>No pasó auditoría</option></select></div><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Constancia</th><th>Cliente</th><th>Teléfono</th><th>Plan</th><th>Valor</th><th>Asesor</th><th>Auditoría</th><th>Acciones</th></tr></thead><tbody id="authRows"><tr><td colspan="11" class="empty">Cargando autorizaciones...</td></tr></tbody></table></div></div></section>
-<section class="view" id="comisiones"><header><div><h1>Cobro de comisiones</h1><p>Revise, apruebe, descargue y administre las solicitudes enviadas por los asesores.</p></div><div><button class="btn ghost" onclick="exportCommissionClaims()">Exportar CSV</button> <button class="btn ghost" onclick="loadCommissionClaims()">↻ Actualizar</button></div></header><div class="grid kpis"><div class="card kpi"><small>Solicitudes</small><strong id="cTotal">0</strong></div><div class="card kpi"><small>Servicios</small><strong id="cServices">0</strong></div><div class="card kpi"><small>Pendientes</small><strong id="cPending">0</strong></div><div class="card kpi"><small>Pagadas</small><strong id="cPaid">0</strong></div></div><div class="card"><p class="notice" style="margin-top:0">Los asesores no pueden modificar ni borrar registros. Los controles administrativos de esta sección son exclusivos para coordinación.</p><div class="toolbar"><input id="commissionSearch" placeholder="Buscar solicitud, asesor, cédula, Nequi, orden o cuenta..." oninput="renderCommissionClaims()"><select id="commissionStatus" onchange="renderCommissionClaims()"><option value="">Todos los estados</option><option>Pendiente</option><option>Aprobado</option><option>Pagado</option><option>Rechazado</option></select></div><div class="table-wrap"><table><thead><tr><th>Solicitud</th><th>Fecha</th><th>Asesor</th><th>Cédula</th><th>Nequi</th><th>Servicios</th><th>Coordinador</th><th>Estado</th><th>Observación</th><th>Acciones</th></tr></thead><tbody id="commissionRows"><tr><td colspan="10" class="empty">Cargando solicitudes...</td></tr></tbody></table></div></div></section>
-<section class="view" id="usuarios"><header><div><h1>Usuarios de asesores</h1><p>Cree accesos individuales para autorizaciones y cobro de comisiones.</p></div><button class="btn ghost" onclick="loadAdvisorUsers()">↻ Actualizar</button></header><div class="grid two"><div class="card"><h2>Crear nuevo usuario</h2><p class="notice">El usuario quedará confirmado automáticamente con rol <b>asesor</b>. Comparta la contraseña temporal de manera privada.</p><div class="form-grid" style="margin-top:14px"><label class="full">Nombre y apellidos<input id="advisorUserName" autocomplete="name"></label><label class="full">Correo electrónico<input id="advisorUserEmail" type="email" autocomplete="off"></label><label>Contraseña temporal<input id="advisorUserPassword" type="text" autocomplete="off" minlength="8"></label><label>&nbsp;<button class="btn ghost" type="button" onclick="generateAdvisorPassword()">Generar contraseña</button></label><div class="full"><button class="btn primary" id="createAdvisorBtn" onclick="createAdvisorUser()">Crear usuario de asesor</button></div><div class="full login-error" id="advisorUserMessage"></div></div></div><div class="card"><h2>Seguridad del acceso</h2><div class="notice">Cada asesor utiliza un solo usuario para autorizaciones y comisiones. Solo verá sus propios registros. Desde el Portal de Asesores podrá cambiar o recuperar su contraseña.</div><p><b>Portal de Asesores</b></p><a class="btn ghost" href="asesores.html" target="_blank" style="text-decoration:none">Abrir portal</a></div></div><div class="card" style="margin-top:15px"><div class="section"><h2>Usuarios registrados</h2><span class="muted" id="advisorUsersCount"></span></div><div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Fecha de creación</th><th>Acción</th></tr></thead><tbody id="advisorUsersRows"><tr><td colspan="5" class="empty">Cargando usuarios...</td></tr></tbody></table></div></div></section>
-<section class="view" id="publicidad"><header><div><h1>Publicidad</h1><p>Registre inversión y mida resultados.</p></div></header><div class="grid two"><div class="card"><h2>Resumen</h2><p>Inversión: <b id="adSpend">$0</b></p><p>Ventas atribuidas: <b id="adSales">0</b></p></div><div class="card"><h2>Registrar campaña</h2><div class="form-grid"><label>Nombre<input id="adName"></label><label>Canal<select id="adChannel"><option>Facebook</option><option>Instagram</option><option>Google</option><option>Orgánico</option><option>Otro</option></select></label><label>Inversión<input id="adAmount" type="number"></label><label>Fecha<input id="adDate" type="date"></label><div class="full"><button class="btn primary" onclick="addAd()">Guardar campaña</button></div></div></div></div><div class="card" style="margin-top:15px"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Campaña</th><th>Canal</th><th>Inversión</th></tr></thead><tbody id="adRows"></tbody></table></div></div></section>
-<section class="view" id="config"><header><div><h1>Configuración</h1><p>Cuenta, sincronización y respaldo.</p></div></header><div class="grid two"><div class="card"><label>Nombre comercial<input id="businessName" value="MIRED360SERVICIOS"></label><br><label>WhatsApp principal<input id="businessPhone" value="573133938312"></label><br><button class="btn primary" onclick="saveSettings()">Guardar</button><br><br><button class="btn ghost" onclick="migrateLocalLeads()">Migrar prospectos locales a Supabase</button><br><br><button class="btn danger-btn" onclick="logoutCRM()">Cerrar sesión</button></div><div class="card"><div class="notice"><b>Prospectos:</b> se guardan en Supabase. La sección Publicidad y la configuración general siguen guardándose localmente en este navegador por ahora.</div></div></div></section>
-</main>
-</div>
-
-<div class="modal" id="leadModal"><div class="modal-box"><div class="section"><h2 id="modalTitle">Nuevo prospecto</h2><button class="btn ghost" onclick="closeLead()">✕</button></div><div class="form-grid"><input type="hidden" id="leadId"><label>Nombre<input id="name"></label><label>Teléfono<input id="phone"></label><label>Ciudad<input id="city"></label><label>Barrio<input id="barrio"></label><label class="full">Dirección<input id="address"></label><label>Origen<select id="origin"><option>Facebook Ads</option><option>Instagram Ads</option><option>WhatsApp</option><option>Orgánico</option><option>Referido</option><option>Google Ads</option><option>Otro</option></select></label><label>Campaña<input id="campaign"></label><label>Producto<select id="product"><option>Internet Hogar</option><option>Internet Negocios</option><option>Datáfono</option><option>Recargas</option><option>Pago de facturas</option><option>Streaming</option><option>Herramientas digitales</option><option>Otro</option></select></label><label>Operador<input id="operator"></label><label>Plan<input id="plan"></label><label>Valor mensual<input id="value" type="number"></label><label>Estado<select id="status"></select></label><label>Próximo seguimiento<input id="nextFollow" type="date"></label><label>Fecha instalación<input id="installDate" type="date"></label><label>Comisión<input id="commission" type="number"></label><label>Estado comisión<select id="estadoComision"><option value="pendiente">Pendiente</option><option value="pagada">Pagada</option></select></label><label class="full">Notas<textarea id="notes"></textarea></label><div class="full"><button class="btn ghost" onclick="closeLead()">Cancelar</button> <button class="btn primary" id="saveLeadBtn" onclick="saveLead()">Guardar prospecto</button></div></div></div></div>
-
-<script>
-const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
-const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const WHATSAPP_SEND_URL=SUPABASE_URL+'/functions/v1/whatsapp-send';
-const WHATSAPP_DOCUMENT_URL=SUPABASE_URL+'/functions/v1/whatsapp-document';
-const WHATSAPP_MEDIA_URL=SUPABASE_URL+'/functions/v1/whatsapp-media';
-const WHATSAPP_AUDIO_URL=SUPABASE_URL+'/functions/v1/whatsapp-audio';
-const CREATE_ADVISOR_URL=SUPABASE_URL+'/functions/v1/crear-asesor-v3';
-const ADMIN_CRM_URL=SUPABASE_URL+'/functions/v1/administrar-crm-v1';
-const CLICK_TO_CALL_URL=SUPABASE_URL+'/functions/v1/click-to-call';
-const selectedLeadIds=new Set();
-
-const STAGES=['Nuevo contacto','Validar cobertura','Cobertura positiva','Oferta enviada','Seguimiento','Venta','Pendiente instalación','Instalado','No interesado'];
-const $=id=>document.getElementById(id);
-const today=()=>new Date().toISOString().slice(0,10);
-const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number(n||0));
-let leads=[];
-let ads=JSON.parse(localStorage.getItem('mired360_ads_v1')||'[]');
-let currentUser=null;
-let waMessages=[];
-let activeChatPhone='';
-let messageSubscription=null;
-let authorizations=[];
-let commissionClaims=[];
-let advisorUsers=[];
-
-function dbToLead(r){
-  return {
-    id:r.id,
-    created:(r.fecha_ingreso||r.creado_en||'').slice(0,10),
-    name:r.nombre||'', phone:r.telefono||'', city:r.ciudad||'', barrio:r.barrio||'', address:r.direccion||'',
-    origin:r.origen||'Facebook Ads', campaign:r.campana||'', product:r.producto||'Internet Hogar', operator:r.operador||'',
-    plan:r.plan||'', value:Number(r.valor_mensual||0), status:r.estado||'Nuevo contacto',
-    nextFollow:(r.proximo_seguimiento||'').slice(0,10), installDate:(r.fecha_instalacion||'').slice(0,10),
-    commission:Number(r.comision||0), notes:r.notas||''
-  };
+btn.textContent='Enviando...';
+const {data:{session}}=await supabaseClient.auth.getSession();
+const authToken=session?.access_token||SUPABASE_KEY;
+const response=await fetch(WHATSAPP_SEND_URL,{
+  method:'POST',
+  headers:{
+    'Content-Type':'application/json',
+    'Authorization':'Bearer '+authToken,
+    'apikey':SUPABASE_KEY
+  },
+  body:JSON.stringify({to:activeChatPhone,text})
+});
+const data=await response.json().catch(()=>({}));
+if(!response.ok||!data?.messages?.length){
+  throw new Error(data?.error?.message||data?.error||'No se pudo enviar');
 }
+$('replyText').value='';
+await loadMessages(false);
 
-function leadToDb(o){
-  return {
-    user_id:currentUser.id,
-    nombre:o.name,
-    telefono:o.phone,
-    ciudad:o.city||null,
-    barrio:o.barrio||null,
-    direccion:o.address||null,
-    origen:o.origin||null,
-    campana:o.campaign||null,
-    producto:o.product||null,
-    operador:o.operator||null,
-    plan:o.plan||null,
-    valor_mensual:o.value||0,
-    estado:o.status||'Nuevo contacto',
-    proximo_seguimiento:o.nextFollow||null,
-    fecha_instalacion:o.installDate||null,
-    comision:o.commission||0,
-estado_comision:o.estadoComision||'pendiente',
-
-    notas:o.notes||null,
-    actualizado_en:new Date().toISOString()
-  };
+}catch(e){
+alert('No se pudo enviar. '+String(e.message||e));
+}finally{
+btn.disabled=false;
+btn.textContent='Enviar';
 }
-
-async function loginCRM(){
-  const email=$('loginEmail').value.trim();
-  const password=$('loginPassword').value;
-  $('loginError').textContent='';
-  if(!email||!password){$('loginError').textContent='Escribe correo y contraseña.';return;}
-  $('loginBtn').disabled=true;$('loginBtn').textContent='Ingresando...';
-  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
-  $('loginBtn').disabled=false;$('loginBtn').textContent='Ingresar';
-  if(error){$('loginError').textContent='No fue posible ingresar: '+error.message;return;}
-  await enterCRM(data.user);
-}
-
-async function logoutCRM(){
-  if(messageSubscription){await supabaseClient.removeChannel(messageSubscription);messageSubscription=null;}
-  await supabaseClient.auth.signOut();
-  currentUser=null;leads=[];waMessages=[];activeChatPhone='';
-  $('crmApp').classList.add('hidden');
-  $('loginPage').classList.remove('hidden');
-}
-
-async function enterCRM(user){
-  currentUser=user;
-  $('userLabel').textContent=user.email||'';
-  $('loginPage').classList.add('hidden');
-  $('crmApp').classList.remove('hidden');
-  await loadLeads();
-  await loadMessages(false);
-  await loadCommissionClaims();
-  startMessageRealtime();
-}
-
-async function loadLeads(){
-  setSync('Cargando prospectos...',true);
-  const {data,error}=await supabaseClient.from('prospectos').select('*').order('creado_en',{ascending:false});
-  if(error){setSync('Error de Supabase',false);alert('No se pudieron cargar los prospectos. '+error.message);leads=[];render();return;}
-  leads=(data||[]).map(dbToLead);
-  setSync('Conectado a Supabase',true);
-  render();
-}
-
-function setSync(text,ok){$('syncText').textContent=text;$('syncDot').classList.toggle('off',!ok);}
-function wa(p,n){p=(p||'').replace(/\D/g,'');if(p.length===10)p='57'+p;return'https://wa.me/'+p+'?text='+encodeURIComponent('Hola '+(n||'')+', te escribimos de MIRED360SERVICIOS para continuar con tu solicitud.');}
-function badge(s){let c=s==='Instalado'?'ok':s==='No interesado'?'danger':(s==='Seguimiento'||s==='Pendiente instalación'?'warn':'');return`<span class="badge ${c}">${s}</span>`;}
-function showView(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
-  if(id==='conversaciones')loadMessages(false);
-  if(id==='autorizaciones')loadAuthorizations();
-  if(id==='comisiones')loadCommissionClaims();
-  if(id==='usuarios')loadAdvisorUsers();
-}
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.link){window.location.assign(b.dataset.link);return;}if(b.dataset.view)showView(b.dataset.view);});
-
-async function loadAuthorizations(){
-  if(!currentUser)return;
-  const {data,error}=await supabaseClient.from('autorizaciones').select('*').order('fecha',{ascending:false});
-  if(error){$('authRows').innerHTML='<tr><td colspan="11" class="empty">No se pudieron cargar las autorizaciones: '+escapeHtml(error.message)+'</td></tr>';return}
-  authorizations=data||[];renderAuthorizations();
-}
-
-async function loadCommissionClaims(){
-  if(!currentUser)return;
-  const {data,error}=await supabaseClient.from('solicitudes_comision').select('*,servicios_comision(*)').order('creado_en',{ascending:false});
-  if(error){$('commissionRows').innerHTML='<tr><td colspan="10" class="empty">No se pudieron cargar las solicitudes: '+escapeHtml(error.message)+'</td></tr>';return}
-  commissionClaims=data||[];renderCommissionClaims();
-}
-function filteredCommissionClaims(){
-  const q=($('commissionSearch')?.value||'').toLowerCase(),st=$('commissionStatus')?.value||'';
-  return commissionClaims.filter(x=>{
-    const detail=(x.servicios_comision||[]).map(s=>[s.orden_trabajo,s.cuenta,s.cedula_cliente,s.ciudad_instalacion].join(' ')).join(' ');
-    const hay=[x.numero_solicitud,x.nombre_asesor,x.cedula_asesor,x.cuenta_nequi,x.coordinador,detail].join(' ').toLowerCase();
-    return (!q||hay.includes(q))&&(!st||x.estado===st);
-  });
-}
-function renderCommissionClaims(){
-  const a=filteredCommissionClaims();
-  $('cTotal').textContent=commissionClaims.length;$('cServices').textContent=commissionClaims.reduce((n,x)=>n+Number(x.cantidad_servicios||0),0);$('cPending').textContent=commissionClaims.filter(x=>x.estado==='Pendiente').length;$('cPaid').textContent=commissionClaims.filter(x=>x.estado==='Pagado').length;
-  $('commissionRows').innerHTML=a.map(x=>`<tr data-claim-id="${x.id}"><td><b>${escapeHtml(x.numero_solicitud||'')}</b></td><td>${escapeHtml(new Date(x.creado_en).toLocaleDateString('es-CO'))}</td><td>${escapeHtml(x.nombre_asesor)}</td><td>${escapeHtml(x.cedula_asesor)}</td><td>${escapeHtml(x.cuenta_nequi)}</td><td>${escapeHtml(x.cantidad_servicios)}</td><td>${escapeHtml(x.coordinador)}</td><td><select data-claim-status style="min-width:120px;padding:7px" onchange="saveCommissionRow(this)"><option ${x.estado==='Pendiente'?'selected':''}>Pendiente</option><option ${x.estado==='Aprobado'?'selected':''}>Aprobado</option><option ${x.estado==='Pagado'?'selected':''}>Pagado</option><option ${x.estado==='Rechazado'?'selected':''}>Rechazado</option></select></td><td><input data-note value="${escapeHtml(x.observacion_coordinacion||'')}" placeholder="Observación"> <button class="btn ghost" onclick="saveCommissionRow(this)">Guardar</button></td><td style="white-space:nowrap"><button class="btn ghost" onclick="showCommissionDetail('${x.id}')">Ver</button> <button class="btn ghost" onclick="downloadCommissionClaim('${x.id}')">PDF</button> <button class="btn ghost" style="color:#b4232d" onclick="deleteCommissionClaim('${x.id}')">Eliminar</button></td></tr>`).join('')||'<tr><td colspan="10" class="empty">No hay solicitudes para mostrar.</td></tr>';
-}
-function saveCommissionRow(el){const tr=el.closest('tr');updateCommissionClaim(tr.dataset.claimId,tr.querySelector('[data-claim-status]').value,tr.querySelector('[data-note]').value)}
-async function updateCommissionClaim(id,estado,observacion){
-  const {error}=await supabaseClient.from('solicitudes_comision').update({estado,observacion_coordinacion:observacion||null,actualizado_en:new Date().toISOString()}).eq('id',id);
-  if(error){alert('No se pudo actualizar la solicitud. '+error.message);await loadCommissionClaims();return}await loadCommissionClaims();
-}
-async function adminCrmAction(payload){const {data:{session}}=await supabaseClient.auth.getSession();if(!session)throw new Error('Su sesión terminó. Ingrese nuevamente.');const res=await fetch(ADMIN_CRM_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},body:JSON.stringify(payload)});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'No fue posible completar la acción.');return data}
-async function deleteCommissionClaim(id){const x=commissionClaims.find(c=>c.id===id);if(!x)return;if(!confirm(`¿Eliminar definitivamente la solicitud ${x.numero_solicitud}?\n\nUse esta opción solamente para pruebas o registros incorrectos. Esta acción no se puede deshacer.`))return;try{const {data,error}=await supabaseClient.rpc('eliminar_solicitud_comision',{p_id:id});if(error)throw error;await loadCommissionClaims();alert(`Solicitud ${data||x.numero_solicitud} eliminada correctamente.`)}catch(e){alert(e.message||'No fue posible eliminar la solicitud.')}}
-function commissionRowsFor(x){return (x.servicios_comision||[]).map(s=>[x.numero_solicitud,x.creado_en,x.nombre_asesor,x.cedula_asesor,x.cuenta_nequi,x.cantidad_servicios,s.orden_trabajo,s.cuenta,s.cedula_cliente,s.fecha_instalacion,s.ciudad_instalacion,s.tipo_red,s.estrato,s.tipo_producto,x.coordinador,x.estado,x.observacion_coordinacion])}
-function commissionCsv(rows){const cols=['Solicitud','Fecha solicitud','Asesor','Cédula asesor','Nequi','Cantidad servicios','Orden de trabajo','Cuenta','Cédula cliente','Fecha instalación','Ciudad','Tipo de red','Estrato','Tipo de producto','Coordinador','Estado','Observación coordinación'],e=v=>'"'+String(v??'').replaceAll('"','""')+'"';return '\ufeff'+[cols,...rows].map(r=>r.map(e).join(';')).join('\n')}
-function saveCsv(content,name){const blob=new Blob([content],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
-function createCommissionPdf(x){const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'}),blue=[8,43,82];doc.setFillColor(...blue);doc.rect(0,0,297,28,'F');doc.setTextColor(255,255,255);doc.setFontSize(19);doc.setFont('helvetica','bold');doc.text('MIRED360SERVICIOS',14,12);doc.setFontSize(12);doc.text('Solicitud de cobro de comisiones',14,21);doc.setTextColor(23,38,58);doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text(`Solicitud: ${x.numero_solicitud||'-'}`,14,38);doc.text(`Fecha: ${new Date(x.creado_en).toLocaleString('es-CO')}`,95,38);doc.text(`Estado: ${x.estado||'Pendiente'}`,218,38);doc.text(`Asesor: ${x.nombre_asesor||'-'}`,14,46);doc.text(`Cédula: ${x.cedula_asesor||'-'}`,95,46);doc.text(`Nequi: ${x.cuenta_nequi||'-'}`,160,46);doc.text(`Coordinador: ${x.coordinador||'-'}`,218,46);doc.text(`Cantidad de servicios: ${x.cantidad_servicios||0}`,14,54);if(x.observacion_coordinacion)doc.text(`Observación: ${x.observacion_coordinacion}`,95,54,{maxWidth:185});const body=(x.servicios_comision||[]).sort((a,b)=>a.item-b.item).map(s=>[s.item,s.orden_trabajo,s.cuenta,s.cedula_cliente,s.fecha_instalacion,s.ciudad_instalacion,s.tipo_red,s.estrato,s.tipo_producto]);doc.autoTable({startY:62,head:[['#','Orden de trabajo','Cuenta','Cédula cliente','Fecha instalación','Ciudad','Red','Estrato','Producto']],body,theme:'grid',styles:{fontSize:8,cellPadding:2.2,overflow:'linebreak'},headStyles:{fillColor:blue,textColor:255},alternateRowStyles:{fillColor:[242,247,252]},margin:{left:10,right:10}});const pages=doc.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(100);doc.text(`Página ${i} de ${pages}`,270,202);doc.text('Documento generado desde MIRED360 CRM',14,202)}doc.save((x.numero_solicitud||'solicitud-comision')+'.pdf')}
-function downloadCommissionClaim(id){const x=commissionClaims.find(c=>c.id===id);if(x)createCommissionPdf(x)}
-function exportCommissionClaims(){const a=filteredCommissionClaims();saveCsv(commissionCsv(a.flatMap(commissionRowsFor)),'Cobro_comisiones_MIRED360_'+today()+'.csv')}
-function showCommissionDetail(id){const x=commissionClaims.find(c=>c.id===id);if(!x)return;const rows=(x.servicios_comision||[]).map(s=>`<tr><td>${escapeHtml(s.item)}</td><td>${escapeHtml(s.orden_trabajo)}</td><td>${escapeHtml(s.cuenta)}</td><td>${escapeHtml(s.cedula_cliente)}</td><td>${escapeHtml(s.fecha_instalacion)}</td><td>${escapeHtml(s.ciudad_instalacion)}</td><td>${escapeHtml(s.tipo_red)}</td><td>${escapeHtml(s.estrato)}</td><td>${escapeHtml(s.tipo_producto)}</td></tr>`).join('');const w=window.open('','_blank','width=1100,height=700');w.document.write(`<!doctype html><meta charset="utf-8"><title>${escapeHtml(x.numero_solicitud)}</title><style>body{font-family:Arial;padding:25px;color:#17263a}table{border-collapse:collapse;width:100%}th,td{padding:9px;border:1px solid #d8e2ee;text-align:left;font-size:12px}th{background:#f2f7fc}h1{color:#082b52}</style><h1>Solicitud ${escapeHtml(x.numero_solicitud)}</h1><p><b>Asesor:</b> ${escapeHtml(x.nombre_asesor)} · <b>Cédula:</b> ${escapeHtml(x.cedula_asesor)} · <b>Nequi:</b> ${escapeHtml(x.cuenta_nequi)}</p><p><b>Coordinador:</b> ${escapeHtml(x.coordinador)} · <b>Estado:</b> ${escapeHtml(x.estado)}</p><table><thead><tr><th>#</th><th>Orden</th><th>Cuenta</th><th>Cédula cliente</th><th>Instalación</th><th>Ciudad</th><th>Red</th><th>Estrato</th><th>Producto</th></tr></thead><tbody>${rows}</tbody></table>`);w.document.close()}
-
-function generateAdvisorPassword(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#';let p='';crypto.getRandomValues(new Uint32Array(12)).forEach(n=>p+=chars[n%chars.length]);$('advisorUserPassword').value=p;$('advisorUserPassword').focus();$('advisorUserPassword').select()}
-async function createAdvisorUser(){const nombre=$('advisorUserName').value.trim(),email=$('advisorUserEmail').value.trim().toLowerCase(),password=$('advisorUserPassword').value,msg=$('advisorUserMessage'),btn=$('createAdvisorBtn');msg.textContent='';if(!nombre||!email||password.length<8){msg.textContent='Complete nombre, correo válido y una contraseña de mínimo 8 caracteres.';return}if(!confirm(`¿Crear el usuario de asesor para ${nombre} (${email})?`))return;btn.disabled=true;btn.textContent='Creando usuario...';const {data:{session}}=await supabaseClient.auth.getSession();try{const res=await fetch(CREATE_ADVISOR_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},body:JSON.stringify({nombre,email,password})});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'No fue posible crear el usuario.');msg.style.color='#08774b';msg.textContent='Usuario creado correctamente. Comparta el correo y la contraseña temporal de forma privada.';$('advisorUserName').value='';$('advisorUserEmail').value='';$('advisorUserPassword').value='';await loadAdvisorUsers()}catch(e){msg.style.color='#b4232d';msg.textContent=e.message}finally{btn.disabled=false;btn.textContent='Crear usuario de asesor'}}
-async function loadAdvisorUsers(){const {data,error}=await supabaseClient.from('perfiles').select('user_id,nombre,email,rol,creado_en').order('creado_en',{ascending:false});if(error){$('advisorUsersRows').innerHTML='<tr><td colspan="5" class="empty">No fue posible cargar los usuarios: '+escapeHtml(error.message)+'</td></tr>';return}advisorUsers=(data||[]).filter(x=>x.rol==='asesor');$('advisorUsersCount').textContent=advisorUsers.length+' asesor(es)';$('advisorUsersRows').innerHTML=advisorUsers.map(x=>`<tr><td><b>${escapeHtml(x.nombre||'')}</b></td><td>${escapeHtml(x.email||'')}</td><td><span class="badge">${escapeHtml(x.rol)}</span></td><td>${escapeHtml(new Date(x.creado_en).toLocaleDateString('es-CO'))}</td><td style="white-space:nowrap"><button class="btn ghost" onclick="editAdvisor('${x.user_id}')">Editar nombre</button> <button class="btn ghost" style="color:#b4232d" onclick="removeAdvisor('${x.user_id}')">Retirar asesor</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Aún no hay asesores registrados.</td></tr>'}
-async function editAdvisor(userId){const x=advisorUsers.find(a=>a.user_id===userId);if(!x)return;const nombre=prompt('Nombre y apellidos del asesor:',x.nombre||'');if(nombre===null)return;if(!nombre.trim()){alert('El nombre no puede quedar vacío.');return}try{const {error}=await supabaseClient.rpc('editar_asesor_crm',{p_user_id:userId,p_nombre:nombre.trim()});if(error)throw error;await loadAdvisorUsers();alert('Asesor actualizado correctamente.')}catch(e){alert(e.message||'No fue posible editar el asesor.')}}
-async function removeAdvisor(userId){const x=advisorUsers.find(a=>a.user_id===userId);if(!x)return;if(!confirm(`¿Retirar a ${x.nombre||x.email}?\n\nSe retirará del listado y no podrá operar como asesor. Sus cobros históricos se conservarán.`))return;try{const {error}=await supabaseClient.rpc('retirar_asesor_crm',{p_user_id:userId});if(error)throw error;await loadAdvisorUsers();alert('Asesor retirado correctamente.')}catch(e){alert(e.message||'No fue posible retirar el asesor.')}}
-function renderAuthorizations(){
-  const box=$('authRows');if(!box)return;
-  const q=($('authSearch')?.value||'').toLowerCase(),st=$('authStatus')?.value||'';
-  const a=authorizations.filter(x=>{
-    const hay=[x.numero_constancia,x.nombre_cliente,x.cedula,x.telefono,x.asesor,x.descripcion_plan].join(' ').toLowerCase();
-    return (!q||hay.includes(q))&&(!st||x.estado_auditoria===st);
-  });
-  box.innerHTML=a.map(x=>`<tr><td>${escapeHtml(x.fecha||'')}</td><td><b>${escapeHtml(x.numero_constancia||'')}</b></td><td>${escapeHtml(x.nombre_cliente||'')}</td><td>${escapeHtml(x.telefono||'')}</td><td title="${escapeHtml(x.descripcion_plan||'')}">${escapeHtml(shortText(x.descripcion_plan||'',55))}</td><td>${money(x.valor_comercial||0)}</td><td>${escapeHtml(x.asesor||'')}</td><td><select style="min-width:155px;padding:7px" onchange="updateAuditStatus('${escapeHtml(x.numero_constancia||'')}',this.value,this)" aria-label="Estado de auditoría"><option ${(x.estado_auditoria||'Pendiente')==='Pendiente'?'selected':''}>Pendiente</option><option ${x.estado_auditoria==='Pasó auditoría'?'selected':''}>Pasó auditoría</option><option ${x.estado_auditoria==='No pasó auditoría'?'selected':''}>No pasó auditoría</option></select></td><td style="white-space:nowrap"><button class="btn ghost" onclick="showAuthorization('${x.id}')">Ver detalle</button> <button class="btn primary" onclick="downloadAuthorization('${x.id}')">Descargar</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">No hay autorizaciones para mostrar.</td></tr>';
-}
-function shortText(t,n){t=String(t||'');return t.length>n?t.slice(0,n-1)+'…':t}
-async function updateAuditStatus(numero,estado,select){
-  const x=authorizations.find(a=>a.numero_constancia===numero);
-  const anterior=x?.estado_auditoria||'Pendiente';
-  select.disabled=true;
-  const {data,error}=await supabaseClient.rpc('actualizar_estado_auditoria',{p_numero:numero,p_estado:estado,p_observacion:null});
-  select.disabled=false;
-  if(error||data!==true){select.value=anterior;alert('No se pudo actualizar la auditoría. '+(error?.message||'Intenta nuevamente.'));return;}
-  if(x)x.estado_auditoria=estado;
-  await loadAuthorizations();
-}
-function authDocument(x,autoPrint=false){
- const safe=v=>escapeHtml(String(v??''));
- const row=(a,b)=>'<tr><th>'+a+'</th><td>'+safe(b||'No especificado')+'</td></tr>';
- return `<!doctype html><html><head><meta charset="utf-8"><title>Constancia ${safe(x.numero_constancia)}</title><style>body{font-family:Arial,sans-serif;color:#17263a;margin:0;background:#f4f7fb}.page{max-width:820px;margin:24px auto;background:#fff;padding:34px;border:1px solid #d8e2ee}.head{border-bottom:3px solid #0f7cff;padding-bottom:15px;margin-bottom:20px}.head h1{margin:0;color:#082b52;font-size:24px}.head p{margin:6px 0 0;color:#64748b}h2{font-size:16px;color:#082b52;margin-top:24px}table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid #e3eaf2;text-align:left;vertical-align:top;font-size:13px}th{width:32%;background:#f8fbff}.notice{padding:13px;border:1px solid #c8e4ff;background:#eef7ff;border-radius:10px;font-size:13px;line-height:1.45}.sig{max-width:520px;max-height:180px;border:1px solid #d8e2ee;margin-top:8px}.actions{margin:20px auto;max-width:820px}.actions button{padding:12px 16px;border:0;border-radius:10px;background:#0f7cff;color:#fff;font-weight:700}.foot{font-size:11px;color:#64748b;margin-top:20px}@media print{body{background:#fff}.page{border:0;margin:0;max-width:none}.actions{display:none}}</style></head><body><div class="actions"><button onclick="window.print()">Descargar / Guardar PDF</button></div><div class="page"><div class="head"><h1>Constancia de información y autorización</h1><p>Gestión comercial de servicios Claro · MIRED360SERVICIOS</p><p><b>Número:</b> ${safe(x.numero_constancia)}</p></div><h2>Datos del usuario</h2><table>${row('Fecha',x.fecha)}${row('Ciudad',x.ciudad)}${row('Nombre',x.nombre_cliente)}${row('Cédula',x.cedula)}${row('Teléfono',x.telefono)}${row('Correo',x.correo)}</table><h2>Servicio y condiciones comerciales</h2><table>${row('Tipo de servicio',x.tipo_servicio)}${row('Tecnología',x.tecnologia)}${row('Velocidad',x.velocidad)}${row('Descripción del plan',x.descripcion_plan)}${row('Beneficios incluidos',x.beneficios)}${row('Adicionales',x.adicionales)}${row('Valor comercial mensual',money(x.valor_comercial||0))}${row('Promoción',x.promocion)}${row('Valor promocional',x.valor_promocional!=null?money(x.valor_promocional):'No especificado')}${row('Duración de la promoción',x.duracion_promocion)}${row('Valor después de promoción',x.valor_despues_promocion!=null?money(x.valor_despues_promocion):'No especificado')}${row('Observaciones',x.observaciones)}</table><h2>Autorización</h2><div class="notice">El usuario manifestó haber recibido información sobre el servicio y las condiciones comerciales registradas. <b>Respuesta de autorización: ${safe(x.autorizacion)}</b>. El usuario podrá recibir dentro de un plazo máximo de cinco (5) días una llamada de verificación o auditoría sobre la calidad de la atención y la información suministrada.</div><h2>Asesor y auditoría</h2><table>${row('Asesor',x.asesor)}${row('Código del asesor',x.codigo_asesor)}${row('Estado de auditoría',x.estado_auditoria)}${row('Fecha de auditoría',x.fecha_auditoria?new Date(x.fecha_auditoria).toLocaleString('es-CO'):'Pendiente')}${row('Observación de auditoría',x.observacion_auditoria)}</table><h2>Firma del usuario</h2>${x.firma?'<img class="sig" src="'+x.firma+'">':'<p>Sin firma registrada.</p>'}<p class="foot">Esta constancia registra la información comercial suministrada durante la gestión de venta y no reemplaza los documentos, términos, condiciones o contratos que correspondan al operador del servicio.</p></div>${autoPrint?'<script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script>':''}</body></html>`;
-}
-function showAuthorization(id){
- const x=authorizations.find(a=>String(a.id)===String(id));if(!x)return;
- const w=window.open('','_blank');w.document.open();w.document.write(authDocument(x,false));w.document.close();
-}
-function downloadAuthorization(id){
- const x=authorizations.find(a=>String(a.id)===String(id));if(!x)return;
- const w=window.open('','_blank');w.document.open();w.document.write(authDocument(x,true));w.document.close();
-}
-function showSignature(id){
- const x=authorizations.find(a=>String(a.id)===String(id));if(!x?.firma)return;
- const w=window.open('','_blank','width=700,height=450');w.document.write('<title>Firma '+escapeHtml(x.numero_constancia||'')+'</title><body style="font-family:Arial;padding:25px"><h2>Firma del usuario</h2><p>'+escapeHtml(x.nombre_cliente||'')+' · '+escapeHtml(x.numero_constancia||'')+'</p><img style="max-width:100%;border:1px solid #ccc" src="'+x.firma+'"></body>');
-}
-
-function openLead(id){
-  const x=id?leads.find(l=>l.id===id):null;
-  $('modalTitle').textContent=x?'Editar prospecto':'Nuevo prospecto';
-  $('leadId').value=x?.id||'';
-  ['name','phone','city','barrio','address','campaign','operator','plan','value','nextFollow','installDate','commission','notes'].forEach(k=>$(k).value=x?.[k]||'');
-  $('origin').value=x?.origin||'Facebook Ads';
-  $('product').value=x?.product||'Internet Hogar';
-  $('status').value=x?.status||'Nuevo contacto';
-  $('leadModal').classList.add('open');
-}
-function closeLead(){$('leadModal').classList.remove('open');}
-
-async function saveLead(){
-  if(!currentUser){alert('La sesión no está activa. Vuelve a ingresar.');return;}
-  const id=$('leadId').value;
-  const o={
-    name:$('name').value.trim(),phone:$('phone').value.trim(),city:$('city').value.trim(),barrio:$('barrio').value.trim(),address:$('address').value.trim(),
-    origin:$('origin').value,campaign:$('campaign').value.trim(),product:$('product').value,operator:$('operator').value.trim(),plan:$('plan').value.trim(),
-    value:Number($('value').value||0),status:$('status').value,nextFollow:$('nextFollow').value,installDate:$('installDate').value,
-    commission:Number($('commission').value||0),notes:$('notes').value.trim()
-  };
-  if(!o.name||!o.phone){alert('Nombre y teléfono son obligatorios');return;}
-  const btn=$('saveLeadBtn');btn.disabled=true;btn.textContent='Guardando...';setSync('Sincronizando...',true);
-  let result;
-  if(id){result=await supabaseClient.from('prospectos').update(leadToDb(o)).eq('id',id).select().single();}
-  else{result=await supabaseClient.from('prospectos').insert(leadToDb(o)).select().single();}
-  btn.disabled=false;btn.textContent='Guardar prospecto';
-  if(result.error){setSync('Error de Supabase',false);alert('No se pudo guardar. '+result.error.message);return;}
-  closeLead();await loadLeads();
-}
-
-async function delLead(id){
-  if(!confirm('¿Eliminar este prospecto?'))return;
-  const {error}=await supabaseClient.from('prospectos').delete().eq('id',id);
-  if(error){alert('No se pudo eliminar. '+error.message);return;}
-  await loadLeads();
-}
-
-function render(){
-  $('kPros').textContent=leads.length;
-  $('kFollow').textContent=leads.filter(l=>l.nextFollow===today()&&!['Instalado','No interesado'].includes(l.status)).length;
-  $('kSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)).length;
-  $('kInstalled').textContent=leads.filter(l=>l.status==='Instalado').length;
-  $('pipeline').innerHTML=STAGES.filter(s=>s!=='No interesado').map(s=>`<div class="stage"><b>${s}</b><strong>${leads.filter(l=>l.status===s).length}</strong><span>prospectos</span></div>`).join('');
-  $('recentRows').innerHTML=leads.slice(0,6).map(l=>`<tr><td><b>${l.name}</b><br>${l.phone}</td><td>${l.city||'-'}</td><td>${l.origin}</td><td>${badge(l.status)}</td><td><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Aún no hay prospectos.</td></tr>';
-  $('followBox')&&($('followBox').innerHTML=leads.filter(l=>l.nextFollow&&!['Instalado','No interesado'].includes(l.status)).sort((a,b)=>a.nextFollow.localeCompare(b.nextFollow)).map(l=>`<p>${l.nextFollow} · ${l.name} <small>${l.status}</small></p>`).join('')||'<div class="empty">No hay seguimientos</div>');
-  renderLeadTable();
-  $('followRows').innerHTML=leads.filter(l=>l.nextFollow&&!['Instalado','No interesado'].includes(l.status)).sort((a,b)=>a.nextFollow.localeCompare(b.nextFollow)).map(l=>`<tr><td>${l.nextFollow}</td><td>${l.name}</td><td>${l.phone}</td><td>${badge(l.status)}</td><td>${l.notes||'-'}</td><td><a class="whats" href="${wa(l.phone,l.name)}" target="_blank">Abrir</a></td><td><button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button></td></tr>`).join('')||'<tr><td colspan="7" class="empty">No hay seguimientos.</td></tr>';
-  $('salesRows').innerHTML=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)).map(l=>`<tr><td>${l.name}</td><td>${l.plan||'-'}</td><td>${money(l.value)}</td><td>${badge(l.status)}</td><td>${l.installDate||'-'}</td><td>${money(l.commission)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">Aún no hay ventas.</td></tr>';
-  renderAds();
-}
-
-function filteredLeads(){
-  const q=($('searchLead').value||'').toLowerCase(),fs=$('filterStatus').value;
-  return leads.filter(l=>(!fs||l.status===fs)&&[l.name,l.phone,l.city,l.barrio,l.origin,l.product].join(' ').toLowerCase().includes(q));
-}
-
-function updateBulkControls(){
-  const count=selectedLeadIds.size;
-  const btn=$('bulkWhatsBtn'),clear=$('clearSelectionBtn');
-  if(btn){btn.disabled=count===0;btn.textContent=`📣 Enviar WhatsApp (${count})`;}
-  if(clear)clear.disabled=count===0;
-  const visible=filteredLeads().filter(l=>l.phone);
-  const master=$('selectVisibleLeads');
-  if(master){
-    const marked=visible.filter(l=>selectedLeadIds.has(String(l.id))).length;
-    master.checked=visible.length>0&&marked===visible.length;
-    master.indeterminate=marked>0&&marked<visible.length;
-  }
-}
-
-
-function normalizeCallNumber(phone){let d=String(phone||'').replace(/\D/g,'');if(d.startsWith('57')&&d.length===12)return d;if(d.length===10)return '57'+d;return '';}
-async function startPhoneCall(phone){
-  const n=normalizeCallNumber(phone);
-  if(!n)return alert('Este contacto no tiene un número celular colombiano válido para llamar.');
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  if(!session?.access_token)return alert('Tu sesión terminó. Ingresa nuevamente al CRM.');
-  try{
-    const response=await fetch(CLICK_TO_CALL_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},
-      body:JSON.stringify({tel:n,account_id:'1502000101'})
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||data?.ok===false)throw new Error(data?.error||'No fue posible iniciar la llamada.');
-    alert('Solicitud de llamada enviada a la extensión 101. Revisa tu teléfono o softphone para continuar la llamada.');
-  }catch(e){
-    alert('No se pudo iniciar la llamada. '+String(e.message||e));
-  }
-}
-
-function escapeHtml(v){
-  return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-}
-function formatMsgTime(v){
-  if(!v)return '';
-  const d=new Date(v);
-  return isNaN(d)?String(v):d.toLocaleString('es-CO',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-}
-function leadForPhone(phone){
-  const p=normalizeWhatsNumber(phone);
-  return leads.find(l=>normalizeWhatsNumber(l.phone)===p);
-}
-function chatDocument(text){
-  if(!String(text||'').startsWith('__mired_media__'))return null;
-  try{const doc=JSON.parse(text.slice('__mired_media__'.length));return doc?.id&&doc?.name?doc:null;}catch{return null;}
-}
-function chatDisplayText(m){
-  const doc=chatDocument(m.texto);
-  return doc?(doc.kind==='audio'?'🎵 Audio':'📎 '+doc.name):(m.texto||('['+(m.tipo||'mensaje')+']'));
-}
-async function loadMessages(showAlert=false){
-  if(!currentUser)return;
-  const {data,error}=await supabaseClient
-    .from('whatsapp_mensajes')
-    .select('*')
-    .order('creado_en',{ascending:true})
-    .limit(3000);
-
-  if(error){
-    if(showAlert)alert('No se pudieron cargar las conversaciones. '+error.message);
-    const box=$('chatContacts');
-    if(box)box.innerHTML='<div class="chat-empty">No se pudieron cargar los mensajes.</div>';
-    return;
-  }
-  waMessages=data||[];
-  renderChatContacts();
-  if(activeChatPhone)renderActiveChat();
-}
-function groupedChats(){
-  const map=new Map();
-  for(const m of waMessages){
-    const phone=normalizeWhatsNumber(m.telefono);
-    if(!phone)continue;
-    if(!map.has(phone))map.set(phone,[]);
-    map.get(phone).push(m);
-  }
-  return [...map.entries()].map(([phone,msgs])=>{
-    msgs.sort((a,b)=>new Date(a.creado_en)-new Date(b.creado_en));
-    const last=msgs[msgs.length-1];
-    const lead=leadForPhone(phone);
-    const name=lead?.name||last.nombre||phone;
-    return {phone,name,msgs,last};
-  }).sort((a,b)=>new Date(b.last.creado_en)-new Date(a.last.creado_en));
-}
-function renderChatContacts(){
-  const box=$('chatContacts'); if(!box)return;
-  const q=($('chatSearch')?.value||'').toLowerCase();
-  const groups=groupedChats().filter(g=>(g.name+' '+g.phone).toLowerCase().includes(q));
-  box.innerHTML=groups.map(g=>{
-    const active=g.phone===activeChatPhone?' active':'';
-    const preview=chatDisplayText(g.last);
-    return `<button class="chat-contact${active}" onclick="openChat('${g.phone}')">
-      <b>${escapeHtml(g.name)}</b>
-      <small>${escapeHtml(preview)}</small>
-      <span>${escapeHtml(g.phone)} · ${formatMsgTime(g.last.creado_en)}</span>
-    </button>`;
-  }).join('')||'<div class="chat-empty">No hay conversaciones todavía.</div>';
-}
-function openChat(phone){
-  activeChatPhone=normalizeWhatsNumber(phone);
-  renderChatContacts();
-  renderActiveChat();
-}
-
-async function startDirectWhatsApp(){
-  const raw=prompt('Escribe el número de WhatsApp del contacto.\n\nEjemplo: 3001234567');
-  if(raw===null)return;
-  const phone=normalizeWhatsNumber(raw);
-  if(!/^57\d{10}$/.test(phone)){
-    alert('Número no válido. Para Colombia escribe los 10 dígitos del celular, por ejemplo: 3001234567.');
-    return;
-  }
-
-  const existing=groupedChats().find(g=>g.phone===phone);
-  if(existing){
-    openChat(phone);
-    if(chatWindowOpen(phone)){
-      alert('Este número ya tiene una conversación y está dentro de la ventana de 24 horas. Puedes escribirle directamente.');
-    }else{
-      alert('Este número ya tiene conversación, pero está fuera de la ventana de 24 horas. Para volver a contactarlo se debe usar la plantilla aprobada.');
-    }
-    return;
-  }
-
-  const ok=confirm('Este número no tiene una conversación activa en el CRM.\n\nPara iniciar el contacto, WhatsApp exige una plantilla aprobada. Se enviará mired360_validar_cobertura.\n\nNo es necesario crear un prospecto ni llenar otros datos.\n\n¿Enviar ahora?');
-  if(!ok)return;
-
-  try{
-    await sendApprovedTemplate(phone);
-    activeChatPhone=phone;
-    alert('Plantilla enviada correctamente. No se creó ningún prospecto. Cuando la persona responda, la conversación aparecerá aquí y podrás escribir normalmente.');
-    await new Promise(r=>setTimeout(r,800));
-    await loadMessages(false);
-    if(groupedChats().some(g=>g.phone===phone))openChat(phone);
-  }catch(e){
-    alert('No se pudo iniciar el WhatsApp. '+String(e.message||e));
-  }
-}
-let waImportQueue=[];
-let waImportRunning=false;
-
-function extractPhonesFromWorkbook(workbook){
-  const phones=[];
-  for(const sheetName of workbook.SheetNames){
-    const sheet=workbook.Sheets[sheetName];
-    const rows=XLSX.utils.sheet_to_json(sheet,{header:1,raw:false,defval:''});
-    for(const row of rows){
-      for(const cell of row){
-        const raw=String(cell||'').trim();
-        if(!raw)continue;
-        const normalized=normalizeWhatsNumber(raw);
-        if(/^57\d{10}$/.test(normalized))phones.push(normalized);
-      }
-    }
-  }
-  return phones;
-}
-
-async function importWhatsAppExcel(file){
-  if(!file)return;
-  if(typeof XLSX==='undefined')return alert('No se pudo cargar el lector de Excel. Actualiza la página e inténtalo nuevamente.');
-  try{
-    const buffer=await file.arrayBuffer();
-    const workbook=XLSX.read(buffer,{type:'array'});
-    const extracted=extractPhonesFromWorkbook(workbook);
-    const unique=[...new Set(extracted)];
-    const duplicates=extracted.length-unique.length;
-    const existingChats=new Set(groupedChats().map(g=>g.phone));
-    const eligible=unique.filter(p=>!existingChats.has(p));
-    const already=unique.length-eligible.length;
-
-    if(!unique.length){
-      alert('No encontré números celulares colombianos válidos en el archivo. Puedes usar un Excel con una sola columna llamada Teléfono.');
-      return;
-    }
-
-    const msg='Archivo revisado.\n\n'+
-      'Números válidos únicos: '+unique.length+'\n'+
-      'Duplicados eliminados: '+duplicates+'\n'+
-      'Con conversación existente: '+already+'\n'+
-      'Listos para plantilla: '+eligible.length+'\n\n'+
-      'Solo se enviará la plantilla aprobada mired360_validar_cobertura. No se crearán prospectos.\n\n'+
-      'Continúa únicamente si estos contactos autorizaron recibir comunicaciones por WhatsApp.\n\n¿Preparar el envío?';
-    if(!confirm(msg))return;
-    if(!eligible.length)return alert('No hay números nuevos para enviar.');
-
-    waImportQueue=eligible;
-    await runWhatsAppImport();
-  }catch(e){
-    alert('No se pudo leer el archivo. '+String(e.message||e));
-  }
-}
-
-async function runWhatsAppImport(){
-  if(waImportRunning||!waImportQueue.length)return;
-  waImportRunning=true;
-  let ok=0,fail=0;
-  const failed=[];
-  try{
-    for(let i=0;i<waImportQueue.length;i++){
-      const phone=waImportQueue[i];
-      const proceed= i===0 ? confirm('Se enviarán '+waImportQueue.length+' plantillas aprobadas.\n\nEl proceso será secuencial y mostrará el resultado al terminar. ¿Iniciar ahora?') : true;
-      if(!proceed)break;
-      try{
-        await sendApprovedTemplate(phone);
-        ok++;
-      }catch(e){
-        fail++;
-        failed.push(phone);
-      }
-      // Pausa técnica para evitar solicitudes simultáneas; no pretende eludir límites de WhatsApp.
-      if(i<waImportQueue.length-1)await new Promise(r=>setTimeout(r,750));
-    }
-    alert('Envío terminado.\n\nEnviados: '+ok+'\nFallidos: '+fail+(failed.length?'\n\nFallidos: '+failed.slice(0,20).join(', '):''));
-    await loadMessages(false);
-  }finally{
-    waImportQueue=[];
-    waImportRunning=false;
-  }
-}
-
-function renderActiveChat(){
-  const panel=$('chatMessages'),head=$('chatHead'),input=$('replyText'),btn=$('replyBtn');
-  if(!panel||!head)return;
-  const group=groupedChats().find(g=>g.phone===activeChatPhone);
-  if(!group){
-    head.innerHTML='<b>Selecciona una conversación</b><small>Los mensajes entrantes aparecerán aquí.</small>';
-    panel.innerHTML='<div class="chat-empty">Sin mensajes.</div>';
-    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;$('audioFileBtn').disabled=true;$('recordBtn').disabled=true;
-    return;
-  }
-  head.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${escapeHtml(group.name)}</b><small>${escapeHtml(group.phone)}</small></div><button class="callbtn" onclick="startPhoneCall('${group.phone}')">📞 Llamar</button></div>`;
-  panel.innerHTML=group.msgs.map(m=>{
-    const dir=m.direccion==='saliente'?'out':'in';
-    const text=chatDisplayText(m);
-    const st=m.estado&&m.direccion==='saliente'?' · '+m.estado:'';
-    const doc=chatDocument(m.texto);
-    const action=doc?(doc.kind==='audio'?`<button class="btn ghost" style="margin-top:8px" onclick="playChatAudio('${m.id}',this)">▶ Escuchar</button>`:`<button class="btn ghost" style="margin-top:8px" onclick="downloadChatDocument('${m.id}',this)">⬇ Descargar archivo</button>`):'';
-    return `<div class="bubble ${dir}">${escapeHtml(text)}${action}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
-  }).join('');
-  input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;$('audioFileBtn').disabled=false;$('recordBtn').disabled=false;
-  setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
-}
-function chatWindowOpen(phone){
-  const p=normalizeWhatsNumber(phone);
-  const lastInbound=waMessages
-    .filter(m=>normalizeWhatsNumber(m.telefono)===p&&m.direccion!=='saliente')
-    .sort((a,b)=>new Date(b.creado_en)-new Date(a.creado_en))[0];
-  if(!lastInbound?.creado_en)return false;
-  return (Date.now()-new Date(lastInbound.creado_en).getTime()) < 24*60*60*1000;
-}
-
-async function downloadChatDocument(messageId,button){
-  button.disabled=true;button.textContent='Descargando...';
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
-    const response=await fetch(WHATSAPP_MEDIA_URL,{method:'POST',headers:{
-      'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
-    },body:JSON.stringify({messageId})});
-    if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(body.error||'No se pudo descargar.');}
-    const blob=await response.blob();
-    const name=decodeURIComponent(response.headers.get('X-Document-Name')||'documento');
-    const link=document.createElement('a'),url=URL.createObjectURL(blob);
-    link.href=url;link.download=name;document.body.append(link);link.click();link.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),60000);
-  }catch(e){alert('No se pudo descargar. '+String(e.message||e));}
-  finally{button.disabled=false;button.textContent='⬇ Descargar archivo';}
-}
-
-async function playChatAudio(messageId,button){
-  button.disabled=true;button.textContent='Cargando audio...';
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
-    const response=await fetch(WHATSAPP_MEDIA_URL,{method:'POST',headers:{
-      'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
-    },body:JSON.stringify({messageId})});
-    if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(body.error||'No se pudo cargar el audio.');}
-    const url=URL.createObjectURL(await response.blob());
-    const player=document.createElement('audio');player.controls=true;player.src=url;player.style.cssText='display:block;width:min(280px,100%);margin-top:8px';
-    player.addEventListener('emptied',()=>URL.revokeObjectURL(url),{once:true});
-    button.replaceWith(player);await player.play().catch(()=>{});
-  }catch(e){alert('No se pudo escuchar el audio. '+String(e.message||e));button.disabled=false;button.textContent='▶ Escuchar';}
-}
-
-async function sendChatAudio(file){
-  if(!file||!activeChatPhone)return;
-  const name=file.name||'audio';
-  if(!/\.(mp3|m4a|aac|amr|ogg)$/i.test(name)||!file.size||file.size>15*1024*1024){
-    alert('Selecciona MP3, M4A, AAC, AMR u OGG Opus de hasta 15 MB.');return;
-  }
-  if(!chatWindowOpen(activeChatPhone)){
-    alert('El cliente debe responder durante las últimas 24 horas para enviar audio.');return;
-  }
-  const phone=activeChatPhone,status=$('chatFileStatus'),btn=$('audioFileBtn');
-  btn.disabled=true;status.textContent='Enviando audio...';
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
-    const form=new FormData();form.append('to',phone);form.append('file',file,name);
-    const response=await fetch(WHATSAPP_AUDIO_URL,{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},body:form});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data?.messages?.length)throw new Error(data.error||'No se pudo enviar el audio.');
-    status.textContent='Audio enviado'+(data.warning?' · '+data.warning:'');await loadMessages(false);
-  }catch(e){status.textContent='No se envió el audio.';alert('No se pudo enviar el audio. '+String(e.message||e));}
-  finally{btn.disabled=false;}
-}
-
-let chatRecorder=null,chatRecordStream=null,chatRecordChunks=[],chatRecordPhone='';
-async function toggleChatRecording(){
-  const btn=$('recordBtn'),status=$('chatFileStatus');
-  if(chatRecorder?.state==='recording'){chatRecorder.stop();btn.disabled=true;status.textContent='Preparando audio...';return;}
-  if(!activeChatPhone||!chatWindowOpen(activeChatPhone)){alert('Para enviar audio, el cliente debe haber respondido en las últimas 24 horas.');return;}
-  const mime=['audio/mp4','audio/ogg;codecs=opus'].find(type=>window.MediaRecorder?.isTypeSupported(type));
-  if(!mime){alert('Este navegador no puede grabar en un formato compatible con WhatsApp. Usa 🎵 Audio para adjuntar un MP3, M4A u OGG Opus.');return;}
-  if(!navigator.mediaDevices?.getUserMedia){alert('Este navegador no permite usar el micrófono.');return;}
-  try{
-    chatRecordStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    chatRecordPhone=activeChatPhone;chatRecordChunks=[];
-    chatRecorder=new MediaRecorder(chatRecordStream,{mimeType:mime});
-    chatRecorder.ondataavailable=e=>{if(e.data.size)chatRecordChunks.push(e.data);};
-    chatRecorder.onstop=async()=>{
-      chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;
-      const extension=mime==='audio/mp4'?'m4a':'ogg';
-      const file=new File(chatRecordChunks,['nota-de-voz-'+Date.now(),extension].join('.'),{type:mime});
-      btn.textContent='🎙 Grabar';btn.disabled=false;chatRecorder=null;
-      if(activeChatPhone!==chatRecordPhone){status.textContent='No se envió: cambiaste de conversación.';return;}
-      await sendChatAudio(file);
-    };
-    chatRecorder.start();btn.textContent='⏹ Enviar audio';status.textContent='Grabando… pulsa ⏹ para enviar.';
-  }catch(e){chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;btn.textContent='🎙 Grabar';alert('No se pudo acceder al micrófono. '+String(e.message||e));}
-}
-
-async function sendChatFile(file){
-  if(!file||!activeChatPhone)return;
-  const name=file.name||'';
-  if(!/\.(pdf|xls|xlsx|csv)$/i.test(name)||file.size>15*1024*1024||!file.size){
-    alert('Selecciona un PDF o Excel (.pdf, .xls, .xlsx o .csv) de hasta 15 MB.');return;
-  }
-  if(!chatWindowOpen(activeChatPhone)){
-    alert('Para enviar un archivo, el cliente debe haber respondido durante las últimas 24 horas. Primero envía la plantilla aprobada y espera su respuesta.');return;
-  }
-  const phone=activeChatPhone,btn=$('attachBtn'),status=$('chatFileStatus');
-  btn.disabled=true;status.textContent='Enviando '+name+'...';
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
-    const form=new FormData();form.append('to',phone);form.append('file',file,name);
-    const response=await fetch(WHATSAPP_DOCUMENT_URL,{
-      method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},body:form
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data?.messages?.length)throw new Error(data?.error||'No se pudo enviar el archivo.');
-    status.textContent='Archivo enviado: '+name+(data.warning?' · '+data.warning:'');
-    await loadMessages(false);
-  }catch(e){status.textContent='No se envió el archivo.';alert('No se pudo enviar el archivo. '+String(e.message||e));}
-  finally{btn.disabled=false;}
-}
-
-async function sendApprovedTemplate(phone){
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  const authToken=session?.access_token||SUPABASE_KEY;
-  const response=await fetch(WHATSAPP_SEND_URL,{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':'Bearer '+authToken,
-      'apikey':SUPABASE_KEY
-    },
-    body:JSON.stringify({to:normalizeWhatsNumber(phone)})
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok||!data?.messages?.length){
-    throw new Error(data?.error?.message||data?.error||'No se pudo enviar la plantilla aprobada');
-  }
-  return data;
-}
-
-async function sendChatReply(){
-  const text=$('replyText').value.trim();
-  if(!activeChatPhone||!text)return;
-  const btn=$('replyBtn');
-  btn.disabled=true;
-
-  try{
-    if(!chatWindowOpen(activeChatPhone)){
-      btn.textContent='Enviando plantilla...';
-      const ok=confirm('Han pasado más de 24 horas desde el último mensaje del cliente. WhatsApp no permite enviar texto libre.\n\nSe enviará la plantilla aprobada mired360_validar_cobertura para reabrir el contacto. Cuando el cliente responda, podrás escribir normalmente.\n\n¿Enviar plantilla ahora?');
-      if(!ok)return;
-      await sendApprovedTemplate(activeChatPhone);
-      alert('Plantilla enviada correctamente. El texto que escribiste NO se envió. Cuando el cliente responda, se abrirá nuevamente la ventana de 24 horas.');
-      await loadMessages(false);
-      return;
-    }
-
-    btn.textContent='Enviando...';
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    const authToken=session?.access_token||SUPABASE_KEY;
-    const response=await fetch(WHATSAPP_SEND_URL,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+authToken,
-        'apikey':SUPABASE_KEY
-      },
-      body:JSON.stringify({to:activeChatPhone,text})
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data?.messages?.length){
-      throw new Error(data?.error?.message||data?.error||'No se pudo enviar');
-    }
-    $('replyText').value='';
-    await loadMessages(false);
-  }catch(e){
-    alert('No se pudo enviar. '+String(e.message||e));
-  }finally{
-    btn.disabled=false;
-    btn.textContent='Enviar';
-  }
 }
 function startMessageRealtime(){
-  if(messageSubscription||!currentUser)return;
-  messageSubscription=supabaseClient
-    .channel('mired360-whatsapp-mensajes')
-    .on('postgres_changes',{event:'*',schema:'public',table:'whatsapp_mensajes'},()=>loadMessages(false))
-    .subscribe();
+if(messageSubscription||!currentUser)return;
+messageSubscription=supabaseClient
+.channel('mired360-whatsapp-mensajes')
+.on('postgres_changes',{event:'*',schema:'public',table:'whatsapp_mensajes'},()=>loadMessages(false))
+.subscribe();
 }
 
 function toggleLeadSelection(id,checked){
-  id=String(id);
-  if(checked)selectedLeadIds.add(id);else selectedLeadIds.delete(id);
-  updateBulkControls();
+id=String(id);
+if(checked)selectedLeadIds.add(id);else selectedLeadIds.delete(id);
+updateBulkControls();
 }
 
 function toggleVisibleLeads(checked){
-  filteredLeads().forEach(l=>{if(!l.phone)return;const id=String(l.id);if(checked)selectedLeadIds.add(id);else selectedLeadIds.delete(id);});
-  renderLeadTable();
+filteredLeads().forEach(l=>{if(!l.phone)return;const id=String(l.id);if(checked)selectedLeadIds.add(id);else selectedLeadIds.delete(id);});
+renderLeadTable();
 }
 
 function clearLeadSelection(){
-  selectedLeadIds.clear();
-  renderLeadTable();
-  $('bulkStatus').textContent='Selección limpiada.';
+selectedLeadIds.clear();
+renderLeadTable();
+$('bulkStatus').textContent='Selección limpiada.';
 }
 
 function normalizeWhatsNumber(phone){
-  let p=String(phone||'').replace(/\D/g,'');
-  if(p.length===10)p='57'+p;
-  return p;
+let p=String(phone||'').replace(/\D/g,'');
+if(p.length===10)p='57'+p;
+return p;
 }
 
 async function sendSelectedWhatsApp(){
-  const selected=leads.filter(l=>selectedLeadIds.has(String(l.id))&&l.phone);
-  if(!selected.length)return alert('Seleccione al menos un prospecto.');
-  if(!confirm(`Se enviará la plantilla aprobada mired360_validar_cobertura a ${selected.length} contacto(s). Continúe solo si estos contactos autorizaron comunicaciones por WhatsApp. ¿Enviar ahora?`))return;
+const selected=leads.filter(l=>selectedLeadIds.has(String(l.id))&&l.phone);
+if(!selected.length)return alert('Seleccione al menos un prospecto.');
+if(!confirm(Se enviará la plantilla aprobada mired360_validar_cobertura a ${selected.length} contacto(s). Continúe solo si estos contactos autorizaron comunicaciones por WhatsApp. ¿Enviar ahora?))return;
 
-  const btn=$('bulkWhatsBtn');
-  btn.disabled=true;
-  let ok=0,fail=0;
-  const failures=[];
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  const authToken=session?.access_token||SUPABASE_KEY;
+const btn=$('bulkWhatsBtn');
+btn.disabled=true;
+let ok=0,fail=0;
+const failures=[];
+const {data:{session}}=await supabaseClient.auth.getSession();
+const authToken=session?.access_token||SUPABASE_KEY;
 
-  for(let i=0;i<selected.length;i++){
-    const lead=selected[i];
-    $('bulkStatus').textContent=`Enviando ${i+1} de ${selected.length}: ${lead.name}...`;
-    try{
-      const response=await fetch(WHATSAPP_SEND_URL,{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Bearer '+authToken,
-          'apikey':SUPABASE_KEY
-        },
-        body:JSON.stringify({to:normalizeWhatsNumber(lead.phone)})
-      });
-      const data=await response.json().catch(()=>({}));
-      if(response.ok&&data?.messages?.length){ok++;}
-      else{fail++;failures.push(`${lead.name}: ${data?.error?.message||data?.error||'No enviado'}`);}
-    }catch(e){fail++;failures.push(`${lead.name}: ${String(e)}`);}
-    if(i<selected.length-1)await new Promise(r=>setTimeout(r,350));
-  }
+for(let i=0;i<selected.length;i++){
+const lead=selected[i];
+$('bulkStatus').textContent=Enviando ${i+1} de ${selected.length}: ${lead.name}...;
+try{
+const response=await fetch(WHATSAPP_SEND_URL,{
+method:'POST',
+headers:{
+'Content-Type':'application/json',
+'Authorization':'Bearer '+authToken,
+'apikey':SUPABASE_KEY
+},
+body:JSON.stringify({to:normalizeWhatsNumber(lead.phone)})
+});
+const data=await response.json().catch(()=>({}));
+if(response.ok&&data?.messages?.length){ok++;}
+else{fail++;failures.push(${lead.name}: ${data?.error?.message||data?.error||'No enviado'});}
+}catch(e){fail++;failures.push(${lead.name}: ${String(e)});}
+if(i<selected.length-1)await new Promise(r=>setTimeout(r,350));
+}
 
-  $('bulkStatus').textContent=`Campaña terminada · Enviados: ${ok} · Fallidos: ${fail}`;
-  if(failures.length)console.warn('WhatsApp no enviados',failures);
-  alert(`Envío terminado.\n\nEnviados: ${ok}\nFallidos: ${fail}${failures.length?'\n\nRevise la consola para el detalle de fallidos.':''}`);
-  selectedLeadIds.clear();
-  renderLeadTable();
+$('bulkStatus').textContent=Campaña terminada · Enviados: ${ok} · Fallidos: ${fail};
+if(failures.length)console.warn('WhatsApp no enviados',failures);
+alert(Envío terminado.\n\nEnviados: ${ok}\nFallidos: ${fail}${failures.length?'\n\nRevise la consola para el detalle de fallidos.':''});
+selectedLeadIds.clear();
+renderLeadTable();
 }
 
 function renderLeadTable(){
-  const a=filteredLeads();
-  $('leadRows').innerHTML=a.map(l=>`<tr><td class="checkcell"><input type="checkbox" ${selectedLeadIds.has(String(l.id))?'checked':''} onchange="toggleLeadSelection('${l.id}',this.checked)" aria-label="Seleccionar ${String(l.name||'prospecto').replaceAll('"','&quot;')}"></td><td>${l.created||'-'}</td><td><b>${l.name}</b></td><td>${l.phone}</td><td>${[l.city,l.barrio].filter(Boolean).join(' / ')||'-'}</td><td>${l.origin}</td><td>${l.product}</td><td>${badge(l.status)}</td><td>${l.nextFollow||'-'}</td><td><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a></td><td><button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button></td><td><button class="btn ghost" onclick="openLead('${l.id}')">Editar</button> <button class="btn ghost" onclick="delLead('${l.id}')">✕</button></td></tr>`).join('')||'<tr><td colspan="12" class="empty">Sin resultados.</td></tr>';
-  updateBulkControls();
+const a=filteredLeads();
+$('leadRows').innerHTML=a.map(l=><tr><td class="checkcell"><input type="checkbox" ${selectedLeadIds.has(String(l.id))?'checked':''} onchange="toggleLeadSelection('${l.id}',this.checked)" aria-label="Seleccionar ${String(l.name||'prospecto').replaceAll('"','&quot;')}"></td><td>${l.created||'-'}</td><td><b>${l.name}</b></td><td>${l.phone}</td><td>${[l.city,l.barrio].filter(Boolean).join(' / ')||'-'}</td><td>${l.origin}</td><td>${l.product}</td><td>${badge(l.status)}</td><td>${l.nextFollow||'-'}</td><td><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a></td><td><button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button></td><td><button class="btn ghost" onclick="openLead('${l.id}')">Editar</button> <button class="btn ghost" onclick="delLead('${l.id}')">✕</button></td></tr>).join('')||'<tr><td colspan="12" class="empty">Sin resultados.</td></tr>';
+updateBulkControls();
 }
-
 
 $('searchLead').oninput=renderLeadTable;
 $('filterStatus').onchange=renderLeadTable;
@@ -890,30 +107,30 @@ $('replyText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e
 $('selectVisibleLeads').onchange=e=>toggleVisibleLeads(e.target.checked);
 document.querySelectorAll('nav button[data-link]').forEach(b=>b.addEventListener('click',e=>{e.stopImmediatePropagation();window.location.href=b.dataset.link;}));
 function addAd(){if(!$('adName').value.trim()||!$('adAmount').value)return alert('Ingrese nombre e inversión');ads.unshift({id:Date.now(),name:$('adName').value.trim(),channel:$('adChannel').value,amount:Number($('adAmount').value),date:$('adDate').value||today()});localStorage.setItem('mired360_ads_v1',JSON.stringify(ads));$('adName').value='';$('adAmount').value='';renderAds();}
-function renderAds(){$('adRows').innerHTML=ads.map(a=>`<tr><td>${a.date}</td><td>${a.name}</td><td>${a.channel}</td><td>${money(a.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No hay campañas.</td></tr>';$('adSpend').textContent=money(ads.reduce((s,a)=>s+a.amount,0));$('adSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)&&['Facebook Ads','Instagram Ads','Google Ads'].includes(l.origin)).length;}
+function renderAds(){$('adRows').innerHTML=ads.map(a=><tr><td>${a.date}</td><td>${a.name}</td><td>${a.channel}</td><td>${money(a.amount)}</td></tr>).join('')||'<tr><td colspan="4" class="empty">No hay campañas.</td></tr>';$('adSpend').textContent=money(ads.reduce((s,a)=>s+a.amount,0));$('adSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)&&['Facebook Ads','Instagram Ads','Google Ads'].includes(l.origin)).length;}
 function saveSettings(){let phone=normalizeWhatsNumber($('businessPhone').value);$('businessPhone').value=phone;localStorage.setItem('mired360_settings_v1',JSON.stringify({businessName:$('businessName').value,businessPhone:phone}));alert('Configuración guardada');}
 function exportCSV(){let cols=['created','name','phone','city','barrio','address','origin','campaign','product','operator','plan','value','status','nextFollow','installDate','commission','notes'],esc=v=>'"'+String(v??'').replaceAll('"','""')+'"',csv=[cols.join(','),...leads.map(l=>cols.map(c=>esc(l[c])).join(','))].join('\n'),blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='CRM_MIRED360_'+today()+'.csv';a.click();}
 
 async function migrateLocalLeads(){
-  const local=JSON.parse(localStorage.getItem('mired360_crm_v1')||'[]');
-  if(!local.length){alert('No encontré prospectos locales para migrar.');return;}
-  if(!confirm(`Se encontraron ${local.length} prospectos locales. ¿Migrarlos a Supabase evitando coincidencias por nombre y teléfono?`))return;
-  let inserted=0,skipped=0;
-  for(const l of local){
-    if(leads.some(x=>x.phone===l.phone&&x.name.toLowerCase()===String(l.name||'').toLowerCase())){skipped++;continue;}
-    const {error}=await supabaseClient.from('prospectos').insert(leadToDb(l));
-    if(error){alert('La migración se detuvo: '+error.message);break;}
-    inserted++;
-  }
-  await loadLeads();
-  alert(`Migración terminada. Nuevos: ${inserted}. Omitidos por posible duplicado: ${skipped}.`);
+const local=JSON.parse(localStorage.getItem('mired360_crm_v1')||'[]');
+if(!local.length){alert('No encontré prospectos locales para migrar.');return;}
+if(!confirm(Se encontraron ${local.length} prospectos locales. ¿Migrarlos a Supabase evitando coincidencias por nombre y teléfono?))return;
+let inserted=0,skipped=0;
+for(const l of local){
+if(leads.some(x=>x.phone===l.phone&&x.name.toLowerCase()===String(l.name||'').toLowerCase())){skipped++;continue;}
+const {error}=await supabaseClient.from('prospectos').insert(leadToDb(l));
+if(error){alert('La migración se detuvo: '+error.message);break;}
+inserted++;
+}
+await loadLeads();
+alert(Migración terminada. Nuevos: ${inserted}. Omitidos por posible duplicado: ${skipped}.);
 }
 
 $('loginBtn').onclick=loginCRM;
 $('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')loginCRM();});
 $('exportBtn').onclick=exportCSV;
-$('status').innerHTML=STAGES.map(s=>`<option>${s}</option>`).join('');
-$('filterStatus').innerHTML+=STAGES.map(s=>`<option>${s}</option>`).join('');
+$('status').innerHTML=STAGES.map(s=><option>${s}</option>).join('');
+$('filterStatus').innerHTML+=STAGES.map(s=><option>${s}</option>).join('');
 $('adDate').value=today();
 const settings=JSON.parse(localStorage.getItem('mired360_settings_v1')||'{}');
 if(settings.businessName)$('businessName').value=settings.businessName;
@@ -921,10 +138,10 @@ if(settings.businessPhone)$('businessPhone').value=settings.businessPhone;
 renderAds();
 
 (async()=>{
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  if(session?.user)await enterCRM(session.user);
+const {data:{session}}=await supabaseClient.auth.getSession();
+if(session?.user)await enterCRM(session.user);
 })();
 </script>
-</body>
-</html>
+</body> </html>
+
 
