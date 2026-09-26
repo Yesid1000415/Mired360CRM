@@ -6,6 +6,7 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 const types: Record<string, string> = {
   pdf: 'application/pdf', xls: 'application/vnd.ms-excel',
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', csv: 'text/csv',
+  jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
 };
 
 Deno.serve(async (request) => {
@@ -28,8 +29,9 @@ Deno.serve(async (request) => {
     if (!(file instanceof File)) return json({ error: 'Selecciona un archivo.' }, 400);
     const filename = file.name.split(/[\\/]/).pop()?.replace(/[\x00-\x1f]/g, '').slice(0, 180) || 'documento';
     const extension = filename.split('.').pop()?.toLowerCase() || '';
-    if (!types[extension] || file.size < 1 || file.size > 15 * 1024 * 1024)
-      return json({ error: 'Solo PDF y Excel de hasta 15 MB.' }, 400);
+    const isImage = ['jpg', 'jpeg', 'png'].includes(extension);
+    if (!types[extension] || file.size < 1 || file.size > (isImage ? 5 : 15) * 1024 * 1024)
+      return json({ error: 'Usa PDF o Excel de hasta 15 MB, o JPG/PNG de hasta 5 MB.' }, 400);
 
     // Check the customer service window against stored inbound messages, not the browser clock.
     const { data: incoming, error: queryError } = await supabase
@@ -54,14 +56,17 @@ Deno.serve(async (request) => {
 
     const sent = await fetch(`${base}/messages`, {
       method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to, type: 'document', document: { id: media.id, filename } }),
+      body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to,
+        ...(isImage ? { type: 'image', image: { id: media.id } } : { type: 'document', document: { id: media.id, filename } }) }),
     });
     const result = await sent.json();
     if (!sent.ok || !result.messages?.length) return json({ error: result.error?.message || 'WhatsApp rechazó el envío.' }, 502);
 
     // Log successful sends for the CRM conversation history.
     const { error: logError } = await supabase.from('whatsapp_mensajes').insert({
-      telefono: to, direccion: 'saliente', tipo: 'document', texto: filename, estado: 'enviado',
+      user_id: user.id, telefono: to, direccion: 'saliente', tipo: isImage ? 'image' : 'document',
+      texto: '__mired_media__' + JSON.stringify({ id: media.id, name: filename, ...(isImage ? { kind: 'image' } : {}) }),
+      wamid: result.messages[0].id, estado: 'enviado',
     });
     return json({ messages: result.messages, logged: !logError, ...(logError ? { warning: 'El archivo salió, pero no se pudo guardar en el historial.' } : {}) });
   } catch (error) {
