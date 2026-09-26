@@ -1,0 +1,49 @@
+name: Update call extensions 101-105
+on:
+  push:
+    paths:
+      - '.github/workflows/update-extensions-101-105.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch CRM and Click-to-Call extensions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          html_path = Path('bases-llamadas.html')
+          html = html_path.read_text(encoding='utf-8')
+
+          old_options = '<option value="1502000101">101 · Yesid</option><option value="1502000102">102 · Segundo usuario</option>'
+          new_options = '<option value="1502000101">101 · Yesid celular</option><option value="1502000102">102 · Usuario 2</option><option value="1502000103">103 · Computador Yesid</option><option value="1502000104">104 · Usuario 4</option><option value="1502000105">105 · Usuario 5</option>'
+          html = html.replace(old_options, new_options)
+
+          html = html.replace("activeBase.extension==='1502000102'?'102':'101'", "extensionShort(activeBase.extension)")
+
+          marker = "function fileStem(name){return String(name||'Base').replace(/\\.[^.]+$/,'').replace(/[_-]+/g,' ').trim()||'Base de llamadas'}"
+          helper = marker + "\nfunction extensionShort(v){return String(v||'1502000101').slice(-3)}"
+          if 'function extensionShort(' not in html:
+              html = html.replace(marker, helper)
+
+          old_prompt = "const name=prompt('Nombre de esta base:',fileStem(file.name));if(name===null){closeImport();return}const extension=prompt('Extensión para trabajar esta base: escribe 101 o 102','101')==='102'?'1502000102':'1502000101';"
+          new_prompt = "const name=prompt('Nombre de esta base:',fileStem(file.name));if(name===null){closeImport();return}const extInput=String(prompt('Extensión para trabajar esta base: 101, 102, 103, 104 o 105','101')||'101').trim();const extNum=['101','102','103','104','105'].includes(extInput)?extInput:'101';const extension='1502000'+extNum;"
+          html = html.replace(old_prompt, new_prompt)
+
+          html_path.write_text(html, encoding='utf-8')
+
+          fn_path = Path('supabase/functions/click-to-call/index.ts')
+          fn = fn_path.read_text(encoding='utf-8')
+          fn = fn.replace("const ALLOWED_ACCOUNT_IDS = new Set(['1502000101', '1502000102'])", "const ALLOWED_ACCOUNT_IDS = new Set(['1502000101', '1502000102', '1502000103', '1502000104', '1502000105'])")
+          fn_path.write_text(fn, encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bases-llamadas.html supabase/functions/click-to-call/index.ts
+          git diff --cached --quiet || git commit -m "Habilitar extensiones 101 a 105"
+          git push
