@@ -30,8 +30,8 @@
 .bubble.in{align-self:flex-start;border-top-left-radius:4px}
 .bubble.out{align-self:flex-end;background:#d9fdd3;border-top-right-radius:4px}
 .bubble small{display:block;color:#6c7b8d;font-size:10px;margin-top:5px;text-align:right}
-.chat-compose{padding:12px;background:#fff;border-top:1px solid var(--l);border-radius:0 0 16px 16px;display:flex;gap:9px}
-.chat-compose textarea{min-height:46px;max-height:120px;resize:vertical}
+.chat-compose{padding:12px;background:#fff;border-top:1px solid var(--l);border-radius:0 0 16px 16px;display:flex;flex-wrap:wrap;gap:9px}
+.chat-compose textarea{min-height:46px;max-height:120px;resize:vertical;flex:1 1 220px}
 .chat-compose button{align-self:flex-end}
 .chat-compose .attach-btn{white-space:nowrap}.chat-file-status{padding:0 12px 10px;background:#fff;color:var(--m);font-size:12px}
 .chat-empty{padding:24px;color:var(--m);text-align:center}
@@ -100,6 +100,8 @@
     <div class="chat-compose">
       <input id="chatFile" type="file" accept=".pdf,.xls,.xlsx,.csv,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" class="hidden" onchange="sendChatFile(this.files[0]);this.value=''">
       <button class="btn ghost attach-btn" id="attachBtn" onclick="$('chatFile').click()" disabled title="Enviar PDF o Excel">📎 Archivo</button>
+      <input id="chatImage" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="hidden" onchange="sendChatImage(this.files[0]);this.value=''">
+      <button class="btn ghost" id="imageBtn" onclick="$('chatImage').click()" disabled title="Enviar JPG o PNG">🖼 Imagen</button>
       <input id="chatAudio" type="file" accept=".mp3,.m4a,.aac,.amr,.ogg,audio/mpeg,audio/mp4,audio/aac,audio/amr,audio/ogg" class="hidden" onchange="sendChatAudio(this.files[0]);this.value=''">
       <button class="btn ghost" id="audioFileBtn" onclick="$('chatAudio').click()" disabled title="Adjuntar audio compatible">🎵 Audio</button>
       <button class="btn ghost" id="recordBtn" onclick="toggleChatRecording()" disabled title="Grabar nota de voz">🎙 Grabar</button>
@@ -434,7 +436,7 @@ function chatDocument(text){
 }
 function chatDisplayText(m){
   const doc=chatDocument(m.texto);
-  return doc?(doc.kind==='audio'?'🎵 Audio':'📎 '+doc.name):(m.texto||('['+(m.tipo||'mensaje')+']'));
+  return doc?(doc.kind==='audio'?'🎵 Audio':doc.kind==='image'?'🖼 Imagen':'📎 '+doc.name):(m.texto||('['+(m.tipo||'mensaje')+']'));
 }
 async function loadMessages(showAlert=false){
   if(!currentUser)return;
@@ -614,7 +616,7 @@ function renderActiveChat(){
   if(!group){
     head.innerHTML='<b>Selecciona una conversación</b><small>Los mensajes entrantes aparecerán aquí.</small>';
     panel.innerHTML='<div class="chat-empty">Sin mensajes.</div>';
-    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;$('audioFileBtn').disabled=true;$('recordBtn').disabled=true;
+    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;$('imageBtn').disabled=true;$('audioFileBtn').disabled=true;$('recordBtn').disabled=true;
     return;
   }
   head.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${escapeHtml(group.name)}</b><small>${escapeHtml(group.phone)}</small></div><button class="callbtn" onclick="startPhoneCall('${group.phone}')">📞 Llamar</button></div>`;
@@ -623,10 +625,10 @@ function renderActiveChat(){
     const text=chatDisplayText(m);
     const st=m.estado&&m.direccion==='saliente'?' · '+m.estado:'';
     const doc=chatDocument(m.texto);
-    const action=doc?(doc.kind==='audio'?`<button class="btn ghost" style="margin-top:8px" onclick="playChatAudio('${m.id}',this)">▶ Escuchar</button>`:`<button class="btn ghost" style="margin-top:8px" onclick="downloadChatDocument('${m.id}',this)">⬇ Descargar archivo</button>`):'';
+    const action=doc?(doc.kind==='audio'?`<button class="btn ghost" style="margin-top:8px" onclick="playChatAudio('${m.id}',this)">▶ Escuchar</button>`:doc.kind==='image'?`<button class="btn ghost" style="margin-top:8px" onclick="viewChatImage('${m.id}',this)">🖼 Ver imagen</button>`:`<button class="btn ghost" style="margin-top:8px" onclick="downloadChatDocument('${m.id}',this)">⬇ Descargar archivo</button>`):'';
     return `<div class="bubble ${dir}">${escapeHtml(text)}${action}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
   }).join('');
-  input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;$('audioFileBtn').disabled=false;$('recordBtn').disabled=false;
+  input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;$('imageBtn').disabled=false;$('audioFileBtn').disabled=false;$('recordBtn').disabled=false;
   setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
 }
 function chatWindowOpen(phone){
@@ -654,6 +656,24 @@ async function downloadChatDocument(messageId,button){
     setTimeout(()=>URL.revokeObjectURL(url),60000);
   }catch(e){alert('No se pudo descargar. '+String(e.message||e));}
   finally{button.disabled=false;button.textContent='⬇ Descargar archivo';}
+}
+
+async function viewChatImage(messageId,button){
+  button.disabled=true;button.textContent='Cargando imagen...';
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
+    const response=await fetch(WHATSAPP_MEDIA_URL,{method:'POST',headers:{
+      'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
+    },body:JSON.stringify({messageId})});
+    if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(body.error||'No se pudo cargar la imagen.');}
+    const blob=await response.blob();
+    if(!['image/jpeg','image/png'].includes(blob.type))throw new Error('Formato de imagen no válido.');
+    const url=URL.createObjectURL(blob),img=document.createElement('img');
+    img.src=url;img.alt='Imagen del chat';img.style.cssText='display:block;max-width:min(320px,100%);max-height:340px;border-radius:10px;margin-top:8px;object-fit:contain';
+    img.onload=()=>URL.revokeObjectURL(url);img.onerror=()=>URL.revokeObjectURL(url);
+    button.replaceWith(img);
+  }catch(e){alert('No se pudo abrir la imagen. '+String(e.message||e));button.disabled=false;button.textContent='🖼 Ver imagen';}
 }
 
 async function playChatAudio(messageId,button){
@@ -718,6 +738,32 @@ async function toggleChatRecording(){
     };
     chatRecorder.start();btn.textContent='⏹ Enviar audio';status.textContent='Grabando… pulsa ⏹ para enviar.';
   }catch(e){chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;btn.textContent='🎙 Grabar';alert('No se pudo acceder al micrófono. '+String(e.message||e));}
+}
+
+async function sendChatImage(file){
+  if(!file||!activeChatPhone)return;
+  const name=file.name||'';
+  if(!/\.(jpe?g|png)$/i.test(name)||!file.size||file.size>5*1024*1024){
+    alert('Selecciona una imagen JPG o PNG de hasta 5 MB.');return;
+  }
+  if(!chatWindowOpen(activeChatPhone)){
+    alert('Para enviar una imagen, el cliente debe haber respondido durante las últimas 24 horas.');return;
+  }
+  const phone=activeChatPhone,btn=$('imageBtn'),status=$('chatFileStatus');
+  btn.disabled=true;status.textContent='Enviando imagen...';
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
+    const form=new FormData();form.append('to',phone);form.append('file',file,name);
+    const response=await fetch(WHATSAPP_DOCUMENT_URL,{method:'POST',headers:{
+      Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
+    },body:form});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data?.messages?.length)throw new Error(data.error||'No se pudo enviar la imagen.');
+    status.textContent='Imagen enviada'+(data.warning?' · '+data.warning:'');
+    await loadMessages(false);
+  }catch(e){status.textContent='No se envió la imagen.';alert('No se pudo enviar la imagen. '+String(e.message||e));}
+  finally{btn.disabled=false;}
 }
 
 async function sendChatFile(file){
