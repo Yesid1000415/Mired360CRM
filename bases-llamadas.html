@@ -147,7 +147,7 @@ async function saveBaseExtension(){
   const {error}=await sb.from('bases_llamadas').update({extension,actualizado_en:new Date().toISOString()}).eq('id',activeBase.id);
   if(error)return alert('No se pudo cambiar la extensión. '+error.message);
   activeBase.extension=extension;const b=bases.find(x=>x.id===activeBase.id);if(b)b.extension=extension;
-  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extension==='1502000102'?'102':'101'}`;
+  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extensionShort(extension)}`;
 }
 
 function filteredContacts(){
