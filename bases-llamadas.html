@@ -41,7 +41,7 @@ main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;just
   <div class="card">
     <div class="basebar">
       <label>Base activa<select id="baseSelect" onchange="selectBase(this.value)"><option value="">Selecciona una base</option></select></label>
-      <label>Extensión para llamar<select id="extensionSelect" onchange="saveBaseExtension()"><option value="1502000101">101 · Yesid</option><option value="1502000102">102 · Segundo usuario</option></select></label>
+      <label>Extensión para llamar<select id="extensionSelect" onchange="saveBaseExtension()"><option value="1502000101">101 · Yesid celular</option><option value="1502000102">102 · Usuario 2</option><option value="1502000103">103 · Computador Yesid</option><option value="1502000104">104 · Usuario 4</option><option value="1502000105">105 · Usuario 5</option></select></label>
       <label>Estado a mostrar<select id="statusFilter" onchange="renderContacts()"><option value="">Todos</option><option>Pendiente</option><option>No contestó</option><option>Ocupado</option><option>Volver a llamar</option><option>Interesado</option><option>No interesado</option><option>Número incorrecto</option><option>Venta</option></select></label>
     </div>
     <div class="status" id="baseStatus"></div>
@@ -77,7 +77,7 @@ main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;just
   <p class="small">Puedes pegar filas desde Excel, Google Sheets, un TXT o una lista. Si pegas columnas, procura incluir encabezados como Nombre, Teléfono, Ciudad, etc.</p>
   <div class="modal-grid">
     <label class="full">Nombre de la base<input id="pasteBaseName" placeholder="Ej. Comercios Madrid septiembre"></label>
-    <label>Extensión<select id="pasteExtension"><option value="1502000101">101 · Yesid</option><option value="1502000102">102 · Segundo usuario</option></select></label>
+    <label>Extensión<select id="pasteExtension"><option value="1502000101">101 · Yesid celular</option><option value="1502000102">102 · Usuario 2</option><option value="1502000103">103 · Computador Yesid</option><option value="1502000104">104 · Usuario 4</option><option value="1502000105">105 · Usuario 5</option></select></label>
     <label>Separador<select id="pasteSeparator"><option value="auto">Detectar automáticamente</option><option value="tab">Tabulador</option><option value="comma">Coma</option><option value="semicolon">Punto y coma</option></select></label>
     <label class="full">Datos<textarea id="pasteData" style="min-height:240px" placeholder="Nombre\tTeléfono\tCiudad\nCliente 1\t3001234567\tMadrid"></textarea></label>
     <div class="full toolbar"><button class="btn ghost" onclick="closePaste()">Cancelar</button><button class="btn primary" onclick="importPasted()">Crear base</button></div>
@@ -106,6 +106,7 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function stateBadge(s){let c=['Interesado','Venta'].includes(s)?'ok':['No contestó','Ocupado','Volver a llamar'].includes(s)?'warn':['No interesado','Número incorrecto'].includes(s)?'danger':'';return `<span class="badge ${c}">${esc(s||'Pendiente')}</span>`}
 function fmtDate(v){return v?String(v).slice(0,10):''}
 function fileStem(name){return String(name||'Base').replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim()||'Base de llamadas'}
+function extensionShort(v){return String(v||'1502000101').slice(-3)}
 
 async function init(){
   const {data:{session}}=await sb.auth.getSession();
@@ -137,7 +138,7 @@ async function loadContacts(){
     if(error){$('baseStatus').textContent='Error al cargar contactos: '+error.message;return}
     const batch=data||[];contacts.push(...batch);if(batch.length<page)break;from+=page;if(from>50000)break;
   }
-  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${activeBase.extension==='1502000102'?'102':'101'}`;
+  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extensionShort(activeBase.extension)}`;
   renderContacts();
 }
 
@@ -184,7 +185,7 @@ async function callContact(id){
     const data=await r.json().catch(()=>({}));if(!r.ok||data?.ok===false)throw new Error(data.error||'No fue posible iniciar la llamada.');
     c.intentos=(c.intentos||0)+1;c.ultima_llamada=new Date().toISOString();
     await sb.from('contactos_base_llamadas').update({intentos:c.intentos,ultima_llamada:c.ultima_llamada,actualizado_en:new Date().toISOString()}).eq('id',c.id);
-    renderContacts();alert(`Llamada enviada a la extensión ${activeBase.extension==='1502000102'?'102':'101'}. Contesta la extensión para conectar con ${c.nombre||c.telefono}.`);
+    renderContacts();alert(`Llamada enviada a la extensión ${extensionShort(activeBase.extension)}. Contesta la extensión para conectar con ${c.nombre||c.telefono}.`);
   }catch(e){alert('No se pudo iniciar la llamada. '+String(e.message||e));}
 }
 
@@ -250,7 +251,7 @@ async function importFile(file){
     else if(ext==='json'){const obj=JSON.parse(await file.text());const arr=Array.isArray(obj)?obj:(Object.values(obj).find(v=>Array.isArray(v))||[]);records=objectsToRecords(arr)}
     else{const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:'array'});for(const s of wb.SheetNames){const rows=XLSX.utils.sheet_to_json(wb.Sheets[s],{header:1,raw:false,defval:''});records.push(...matrixToRecords(rows))}}
     records=dedupe(records);if(!records.length)throw new Error('No encontré una columna o datos de teléfono válidos.');
-    const name=prompt('Nombre de esta base:',fileStem(file.name));if(name===null){closeImport();return}const extension=prompt('Extensión para trabajar esta base: escribe 101 o 102','101')==='102'?'1502000102':'1502000101';
+    const name=prompt('Nombre de esta base:',fileStem(file.name));if(name===null){closeImport();return}const extInput=String(prompt('Extensión para trabajar esta base: 101, 102, 103, 104 o 105','101')||'101').trim();const extNum=['101','102','103','104','105'].includes(extInput)?extInput:'101';const extension='1502000'+extNum;
     await createBase(name||fileStem(file.name),file.name,extension,records);
   }catch(e){closeImport();alert('No se pudo importar el archivo. '+String(e.message||e));}
 }

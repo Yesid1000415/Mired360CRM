@@ -8,7 +8,7 @@ const corsHeaders = {
 
 const CUSTOMER_ID = '15020'
 const DEFAULT_ACCOUNT_ID = '1502000101'
-const ALLOWED_ACCOUNT_IDS = new Set(['1502000101', '1502000102'])
+const ALLOWED_ACCOUNT_IDS = new Set(['1502000101', '1502000102', '1502000103', '1502000104', '1502000105'])
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
