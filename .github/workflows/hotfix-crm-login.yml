@@ -1,0 +1,29 @@
+name: Hotfix CRM login
+on:
+  push:
+    paths:
+      - '.github/workflows/hotfix-crm-login.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore stable CRM login
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('\n<script src="callcenter-performance.js"></script>','')
+          s=s.replace('<script src="callcenter-performance.js"></script>\n','')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit hotfix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Restaurar acceso estable al CRM"
+          git push
