@@ -42,6 +42,7 @@ main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;just
     <div class="basebar">
       <label>Base activa<select id="baseSelect" onchange="selectBase(this.value)"><option value="">Selecciona una base</option></select></label>
       <label>Extensión para llamar<select id="extensionSelect" onchange="saveBaseExtension()"><option value="1502000101">101 · Yesid (temporal)</option><option value="1502000102">102 · Asesor 2</option><option value="1502000103">103 · Asesor 3</option><option value="1502000104">104 · Asesor 4</option><option value="1502000105">105 · Asesor 5</option></select></label>
+      <label>Asesor responsable<input id="advisorName" placeholder="Nombre del asesor" onchange="saveAdvisorName()"></label>
       <label>Estado a mostrar<select id="statusFilter" onchange="renderContacts()"><option value="">Todos</option><option>Pendiente</option><option>No contestó</option><option>Ocupado</option><option>Volver a llamar</option><option>Interesado</option><option>No interesado</option><option>Número incorrecto</option><option>Venta</option></select></label>
     </div>
     <div class="status" id="baseStatus"></div>
@@ -155,7 +156,7 @@ async function saveBaseExtension(){
   const {error}=await sb.from('bases_llamadas').update({extension,actualizado_en:new Date().toISOString()}).eq('id',activeBase.id);
   if(error)return alert('No se pudo cambiar la extensión. '+error.message);
   activeBase.extension=extension;const b=bases.find(x=>x.id===activeBase.id);if(b)b.extension=extension;
-  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extensionShort(extension)}`;
+  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extensionShort(extension)}${activeBase.asesor_nombre?' · Asesor: '+activeBase.asesor_nombre:''}`;
 }
 
 function filteredContacts(){
