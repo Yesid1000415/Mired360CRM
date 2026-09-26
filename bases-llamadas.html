@@ -41,7 +41,7 @@ main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;just
   <div class="card">
     <div class="basebar">
       <label>Base activa<select id="baseSelect" onchange="selectBase(this.value)"><option value="">Selecciona una base</option></select></label>
-      <label>Extensión para llamar<select id="extensionSelect" onchange="saveBaseExtension()"><option value="1502000101">101 · Yesid celular</option><option value="1502000102">102 · Usuario 2</option><option value="1502000103">103 · Computador Yesid</option><option value="1502000104">104 · Usuario 4</option><option value="1502000105">105 · Usuario 5</option></select></label>
+      <label>Extensión para llamar<select id="extensionSelect" onchange="saveBaseExtension()"><option value="1502000101">101 · Yesid (temporal)</option><option value="1502000102">102 · Asesor 2</option><option value="1502000103">103 · Asesor 3</option><option value="1502000104">104 · Asesor 4</option><option value="1502000105">105 · Asesor 5</option></select></label>
       <label>Estado a mostrar<select id="statusFilter" onchange="renderContacts()"><option value="">Todos</option><option>Pendiente</option><option>No contestó</option><option>Ocupado</option><option>Volver a llamar</option><option>Interesado</option><option>No interesado</option><option>Número incorrecto</option><option>Venta</option></select></label>
     </div>
     <div class="status" id="baseStatus"></div>
@@ -77,7 +77,7 @@ main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;just
   <p class="small">Puedes pegar filas desde Excel, Google Sheets, un TXT o una lista. Si pegas columnas, procura incluir encabezados como Nombre, Teléfono, Ciudad, etc.</p>
   <div class="modal-grid">
     <label class="full">Nombre de la base<input id="pasteBaseName" placeholder="Ej. Comercios Madrid septiembre"></label>
-    <label>Extensión<select id="pasteExtension"><option value="1502000101">101 · Yesid celular</option><option value="1502000102">102 · Usuario 2</option><option value="1502000103">103 · Computador Yesid</option><option value="1502000104">104 · Usuario 4</option><option value="1502000105">105 · Usuario 5</option></select></label>
+    <label>Extensión<select id="pasteExtension"><option value="1502000101">101 · Yesid (temporal)</option><option value="1502000102">102 · Asesor 2</option><option value="1502000103">103 · Asesor 3</option><option value="1502000104">104 · Asesor 4</option><option value="1502000105">105 · Asesor 5</option></select></label>
     <label>Separador<select id="pasteSeparator"><option value="auto">Detectar automáticamente</option><option value="tab">Tabulador</option><option value="comma">Coma</option><option value="semicolon">Punto y coma</option></select></label>
     <label class="full">Datos<textarea id="pasteData" style="min-height:240px" placeholder="Nombre\tTeléfono\tCiudad\nCliente 1\t3001234567\tMadrid"></textarea></label>
     <div class="full toolbar"><button class="btn ghost" onclick="closePaste()">Cancelar</button><button class="btn primary" onclick="importPasted()">Crear base</button></div>
