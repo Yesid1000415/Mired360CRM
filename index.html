@@ -460,6 +460,11 @@ async function loadMessages(showAlert=false){
   renderChatContacts();
   if(activeChatPhone)renderActiveChat();
 }
+function messageTime(m){
+  const raw=m?.creado_en||m?.timestamp||m?.fecha||m?.updated_at||m?.actualizado_en||'';
+  const d=new Date(raw);
+  return Number.isFinite(d.getTime())?d.getTime():0;
+}
 function groupedChats(){
   const map=new Map();
   for(const m of waMessages){
@@ -469,12 +474,12 @@ function groupedChats(){
     map.get(phone).push(m);
   }
   return [...map.entries()].map(([phone,msgs])=>{
-    msgs.sort((a,b)=>new Date(a.creado_en)-new Date(b.creado_en));
+    msgs.sort((a,b)=>messageTime(a)-messageTime(b));
     const last=msgs[msgs.length-1];
     const lead=leadForPhone(phone);
     const name=lead?.name||last.nombre||phone;
-    return {phone,name,msgs,last};
-  }).sort((a,b)=>new Date(b.last.creado_en)-new Date(a.last.creado_en));
+    return {phone,name,msgs,last,lastTime:Math.max(...msgs.map(messageTime))};
+  }).sort((a,b)=>(Number(unreadChats[b.phone]||0)>0)-(Number(unreadChats[a.phone]||0)>0)||b.lastTime-a.lastTime);
 }
 function saveUnreadChats(){localStorage.setItem('mired360_wa_unread_v1',JSON.stringify(unreadChats));updateWhatsAppBadge();}
 function updateWhatsAppBadge(){const n=Object.values(unreadChats).reduce((a,b)=>a+Number(b||0),0),el=$('waNavBadge');if(!el)return;el.textContent=n>99?'99+':n;el.classList.toggle('hidden',!n);document.title=(n?'('+n+') ':'')+'CRM MIRED360SERVICIOS · WhatsApp API';}
@@ -868,7 +873,7 @@ function startMessageRealtime(){
   requestCrmNotifications();updateWhatsAppBadge();
   messageSubscription=supabaseClient
     .channel('mired360-whatsapp-mensajes')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'whatsapp_mensajes'},payload=>{const m=payload.new||{},key=String(m.id||m.message_id||m.creado_en+'-'+m.telefono);if(m.direccion!=='saliente'&&!knownInboundIds.has(key)){knownInboundIds.add(key);notifyInboundMessage(m);}loadMessages(false);})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'whatsapp_mensajes'},payload=>{const m=payload.new||{},key=String(m.id||m.message_id||m.creado_en+'-'+m.telefono);if(m.direccion!=='saliente'&&!knownInboundIds.has(key)){knownInboundIds.add(key);notifyInboundMessage(m);const phone=normalizeWhatsNumber(m.telefono);waMessages=[...waMessages.filter(x=>String(x.id||x.message_id||'')!==String(m.id||m.message_id||'')),m];renderChatContacts();if(activeChatPhone)renderActiveChat();}loadMessages(false);})
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'whatsapp_mensajes'},()=>loadMessages(false))
     .subscribe();
 }
