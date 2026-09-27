@@ -478,12 +478,15 @@ function groupedChats(){
     const last=msgs[msgs.length-1];
     const lead=leadForPhone(phone);
     const name=lead?.name||last.nombre||phone;
-    return {phone,name,msgs,last,lastTime:Math.max(...msgs.map(messageTime))};
-  }).sort((a,b)=>(Number(unreadChats[b.phone]||0)>0)-(Number(unreadChats[a.phone]||0)>0)||b.lastTime-a.lastTime);
+    return {phone,name,msgs,last,lastTime:Math.max(...msgs.map(messageTime)),unread:Number(unreadChats[phone]||0)};
+  }).sort((a,b)=>{
+    if(a.unread!==b.unread)return b.unread-a.unread;
+    return b.lastTime-a.lastTime;
+  });
 }
 function saveUnreadChats(){localStorage.setItem('mired360_wa_unread_v1',JSON.stringify(unreadChats));updateWhatsAppBadge();}
 function updateWhatsAppBadge(){const n=Object.values(unreadChats).reduce((a,b)=>a+Number(b||0),0),el=$('waNavBadge');if(!el)return;el.textContent=n>99?'99+':n;el.classList.toggle('hidden',!n);document.title=(n?'('+n+') ':'')+'CRM MIRED360SERVICIOS · WhatsApp API';}
-function notifyInboundMessage(m){const phone=normalizeWhatsNumber(m.telefono),lead=leadForPhone(phone),name=lead?.name||m.nombre||phone,preview=chatDisplayText(m);unreadChats[phone]=(unreadChats[phone]||0)+1;saveUnreadChats();if('Notification'in window&&Notification.permission==='granted'&&document.hidden){try{new Notification('Nuevo WhatsApp · '+name,{body:preview||'Nuevo mensaje recibido',tag:'mired360-'+phone});}catch{}}}
+function notifyInboundMessage(m){const phone=normalizeWhatsNumber(m.telefono),lead=leadForPhone(phone),name=lead?.name||m.nombre||phone,preview=chatDisplayText(m);unreadChats[phone]=(unreadChats[phone]||0)+1;saveUnreadChats();renderChatContacts();const list=$('chatContacts');if(list)list.scrollTop=0;if('Notification'in window&&Notification.permission==='granted'&&document.hidden){try{new Notification('Nuevo WhatsApp · '+name,{body:preview||'Nuevo mensaje recibido',tag:'mired360-'+phone});}catch{}}}
 function requestCrmNotifications(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission().catch(()=>{});}
 function renderChatContacts(){
   const box=$('chatContacts'); if(!box)return;
