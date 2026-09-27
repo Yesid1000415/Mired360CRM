@@ -148,7 +148,9 @@ let currentUser=null;
 let waMessages=[];
 let activeChatPhone='';
 let messageSubscription=null;
-let unreadChats=JSON.parse(localStorage.getItem('mired360_wa_unread_v1')||'{}');
+let unreadChats={};
+try{unreadChats=JSON.parse(localStorage.getItem('mired360_wa_unread_v2')||'{}');}catch{unreadChats={};}
+localStorage.removeItem('mired360_wa_unread_v1');
 let knownInboundIds=new Set();
 let notificationsPrimed=false;
 let authorizations=[];
@@ -456,7 +458,7 @@ async function loadMessages(showAlert=false){
     return;
   }
   waMessages=data||[];
-  if(!notificationsPrimed){waMessages.filter(m=>m.direccion!=='saliente').forEach(m=>knownInboundIds.add(String(m.id||m.message_id||m.creado_en+'-'+m.telefono)));notificationsPrimed=true;}
+  if(!notificationsPrimed){waMessages.filter(m=>m.direccion!=='saliente').forEach(m=>knownInboundIds.add(String(m.id||m.message_id||m.creado_en+'-'+m.telefono)));notificationsPrimed=true;unreadChats={};saveUnreadChats();}
   renderChatContacts();
   if(activeChatPhone)renderActiveChat();
 }
@@ -484,7 +486,7 @@ function groupedChats(){
     return b.lastTime-a.lastTime;
   });
 }
-function saveUnreadChats(){localStorage.setItem('mired360_wa_unread_v1',JSON.stringify(unreadChats));updateWhatsAppBadge();}
+function saveUnreadChats(){Object.keys(unreadChats).forEach(p=>{if(!Number(unreadChats[p]||0))delete unreadChats[p];});localStorage.setItem('mired360_wa_unread_v2',JSON.stringify(unreadChats));updateWhatsAppBadge();}
 function updateWhatsAppBadge(){const n=Object.values(unreadChats).reduce((a,b)=>a+Number(b||0),0),el=$('waNavBadge');if(!el)return;el.textContent=n>99?'99+':n;el.classList.toggle('hidden',!n);document.title=(n?'('+n+') ':'')+'CRM MIRED360SERVICIOS · WhatsApp API';}
 function notifyInboundMessage(m){const phone=normalizeWhatsNumber(m.telefono),lead=leadForPhone(phone),name=lead?.name||m.nombre||phone,preview=chatDisplayText(m);unreadChats[phone]=(unreadChats[phone]||0)+1;saveUnreadChats();renderChatContacts();const list=$('chatContacts');if(list)list.scrollTop=0;if('Notification'in window&&Notification.permission==='granted'&&document.hidden){try{new Notification('Nuevo WhatsApp · '+name,{body:preview||'Nuevo mensaje recibido',tag:'mired360-'+phone});}catch{}}}
 function requestCrmNotifications(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission().catch(()=>{});}
