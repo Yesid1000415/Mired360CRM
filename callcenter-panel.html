@@ -34,31 +34,75 @@ const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const modules={
-  bases:{url:'bases-llamadas.html?v=20260928-1',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
+  bases:{url:'bases-llamadas.html?v=20260928-2',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
   whatsapp:{url:'whatsapp-callcenter.html?v=1',title:'💬 WhatsApp Call Center',sub:'Continúa la asesoría con tus propios clientes asignados.'},
   rendimiento:{url:'rendimiento.html?v=20260928-1',title:'🚦 Mi rendimiento',sub:'Consulta tus ventas, meta mensual y avance.'},
   academia:{url:'academia-callcenter-v2.html?v=20260928-3',title:'🎓 Academia Call Center',sub:'Capacitación, progreso y evaluación final.'}
 };
-let current='bases';
-function openModule(key){
+let current='bases',viewerRole='',viewerIsAdvisor=false;
+const frame=document.getElementById('moduleFrame');
+function setActive(key){
   const m=modules[key];if(!m)return;current=key;
-  document.getElementById('moduleFrame').src=m.url;
   document.getElementById('moduleTitle').textContent=m.title;
   document.getElementById('moduleSubtitle').textContent=m.sub;
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   const ids={bases:'navBases',whatsapp:'navWa',rendimiento:'navPerf',academia:'navAcademia'};
   document.getElementById(ids[key])?.classList.add('active');
 }
+function openModule(key){const m=modules[key];if(!m)return;setActive(key);frame.src=m.url}
+function openWhatsappFor(phone,name){
+  setActive('whatsapp');
+  frame.src='whatsapp-callcenter.html?v=1&telefono='+encodeURIComponent(phone||'')+'&nombre='+encodeURIComponent(name||'Cliente');
+}
+function cleanEmbeddedPage(){
+  try{
+    const w=frame.contentWindow,d=frame.contentDocument;if(!w||!d)return;
+    [...d.querySelectorAll('button,a')].forEach(el=>{
+      const t=String(el.textContent||'').trim().toLowerCase();
+      if(t.includes('volver al crm'))el.style.display='none';
+    });
+    if(current==='bases'){
+      const side=d.querySelector('aside.side');if(side)side.style.display='none';
+      const app=d.querySelector('.app');if(app)app.style.gridTemplateColumns='1fr';
+      const top=d.querySelector('main > .top');if(top)top.style.display='none';
+      const main=d.querySelector('main');if(main){main.style.maxWidth='none';main.style.padding='14px'}
+      if(viewerIsAdvisor){
+        const toolbar=d.querySelector('main > .top .toolbar');if(toolbar)toolbar.style.display='none';
+        const ext=d.getElementById('extensionSelect');if(ext){ext.disabled=true;ext.closest('label')?.classList.add('cc-readonly')}
+        const adv=d.getElementById('advisorName');if(adv){adv.disabled=true;adv.closest('label')?.classList.add('cc-readonly')}
+        const notice=d.querySelector('.notice');if(notice)notice.style.display='none';
+        const style=d.createElement('style');style.textContent='.basebar{grid-template-columns:2fr 1fr!important}.cc-readonly{display:none!important}';d.head.appendChild(style);
+      }
+      const addWhatsButtons=()=>{
+        const list=Array.isArray(w.contacts)?w.contacts:[];
+        list.forEach(c=>{
+          const row=d.getElementById('row-'+c.id),actions=row?.querySelector('.row-actions');
+          if(!actions||actions.querySelector('[data-callcenter-wa]'))return;
+          const btn=d.createElement('button');btn.type='button';btn.className='btn ghost';btn.dataset.callcenterWa='1';btn.textContent='💬 WhatsApp';
+          btn.onclick=()=>openWhatsappFor(c.telefono,c.nombre||'Cliente');
+          const callBtn=actions.querySelector('button');if(callBtn)callBtn.insertAdjacentElement('afterend',btn);else actions.prepend(btn);
+        });
+      };
+      if(!w.__miredCallCenterRenderWrapped&&typeof w.renderContacts==='function'){
+        const original=w.renderContacts;
+        w.renderContacts=function(){const r=original.apply(this,arguments);setTimeout(addWhatsButtons,0);return r};
+        w.__miredCallCenterRenderWrapped=true;
+      }
+      addWhatsButtons();setTimeout(addWhatsButtons,500);setTimeout(addWhatsButtons,1400);
+    }
+  }catch(e){console.warn('No se pudo ajustar el módulo incrustado',e)}
+}
+frame.addEventListener('load',()=>{setTimeout(cleanEmbeddedPage,80);setTimeout(cleanEmbeddedPage,600)});
 async function logout(){await sb.auth.signOut();location.href='index.html'}
 async function init(){
   const {data:{session}}=await sb.auth.getSession();
   if(!session?.user){location.href='index.html';return}
   const {data:p,error}=await sb.from('perfiles').select('nombre,rol,grupo,activo').eq('user_id',session.user.id).maybeSingle();
-  const role=String(p?.rol||'').toLowerCase();
-  const allowed=p?.activo!==false&&((role==='asesor'&&p?.grupo==='callcenter')||role==='coordinador'||role==='administrador'||role==='admin');
+  viewerRole=String(p?.rol||'').toLowerCase();viewerIsAdvisor=viewerRole==='asesor'&&p?.grupo==='callcenter';
+  const allowed=p?.activo!==false&&(viewerIsAdvisor||viewerRole==='coordinador'||viewerRole==='administrador'||viewerRole==='admin');
   if(error||!allowed){document.getElementById('loading').innerHTML='<div class="box denied"><b>Acceso no autorizado</b><div style="margin-top:8px">Este panel es exclusivo del proyecto Call Center.</div></div>';return}
   document.getElementById('profileName').textContent=p?.nombre||session.user.email||'Asesor';
-  document.getElementById('profileRole').textContent=role==='asesor'?'Asesor · Call Center':'Coordinación · Call Center';
+  document.getElementById('profileRole').textContent=viewerIsAdvisor?'Asesor · Call Center':'Coordinación · Call Center';
   document.getElementById('loading').style.display='none';
   openModule('bases');
 }
