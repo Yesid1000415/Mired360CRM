@@ -59,8 +59,8 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/Yesid1000415/Mired360CR
     ].filter(Boolean);
     ordered.forEach(b=>nav.appendChild(b));
 
-    const brand=document.querySelector('aside .brand span');
-    if(brand)brand.textContent='MIRED CALL EN CASA · ASESOR';
+    const subtitle=document.querySelector('aside .brand > div:last-child > span');
+    if(subtitle)subtitle.textContent='MIRED CALL EN CASA · ASESOR';
 
     if(redirectOnFirstEntry&&!sessionStorage.getItem('mired_callcenter_landing')){
       sessionStorage.setItem('mired_callcenter_landing','1');
