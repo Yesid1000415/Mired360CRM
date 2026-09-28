@@ -20,6 +20,7 @@
     <button id="navBases" class="active" onclick="openModule('bases')">📞 Bases de llamadas</button>
     <button id="navWa" onclick="openModule('whatsapp')">💬 WhatsApp</button>
     <button id="navPerf" onclick="openModule('rendimiento')">🚦 Mi rendimiento</button>
+    <button id="navQuality" onclick="openModule('calidad')">⭐ Calidad</button>
     <button id="navAcademia" onclick="openModule('academia')">🎓 Academia</button>
   </div>
   <div class="side-footer"><button class="logout" onclick="logout()">Cerrar sesión</button></div>
@@ -34,9 +35,10 @@ const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const modules={
-  bases:{url:'bases-llamadas.html?v=20260928-2',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
+  bases:{url:'bases-llamadas.html?v=20260928-3',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
   whatsapp:{url:'whatsapp-callcenter.html?v=1',title:'💬 WhatsApp Call Center',sub:'Continúa la asesoría con tus propios clientes asignados.'},
   rendimiento:{url:'rendimiento.html?v=20260928-1',title:'🚦 Mi rendimiento',sub:'Consulta tus ventas, meta mensual y avance.'},
+  calidad:{url:'calidad-callcenter.html?v=20260928-1',title:'⭐ Calidad Call Center',sub:'Retroalimentación y motivos de pérdida.'},
   academia:{url:'academia-callcenter-v2.html?v=20260928-3',title:'🎓 Academia Call Center',sub:'Capacitación, progreso y evaluación final.'}
 };
 let current='bases',viewerRole='',viewerIsAdvisor=false;
@@ -46,7 +48,7 @@ function setActive(key){
   document.getElementById('moduleTitle').textContent=m.title;
   document.getElementById('moduleSubtitle').textContent=m.sub;
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  const ids={bases:'navBases',whatsapp:'navWa',rendimiento:'navPerf',academia:'navAcademia'};
+  const ids={bases:'navBases',whatsapp:'navWa',rendimiento:'navPerf',calidad:'navQuality',academia:'navAcademia'};
   document.getElementById(ids[key])?.classList.add('active');
 }
 function openModule(key){const m=modules[key];if(!m)return;setActive(key);frame.src=m.url}
@@ -54,12 +56,43 @@ function openWhatsappFor(phone,name){
   setActive('whatsapp');
   frame.src='whatsapp-callcenter.html?v=1&telefono='+encodeURIComponent(phone||'')+'&nombre='+encodeURIComponent(name||'Cliente');
 }
+async function saveLossReason(id,estado,reason,detail){
+  const {data,error:readError}=await sb.from('contactos_base_llamadas').select('estado').eq('id',id).maybeSingle();
+  if(readError||data?.estado!==estado)return;
+  const patch=['No interesado','Número incorrecto'].includes(estado)
+    ?{motivo_perdida:reason,motivo_perdida_detalle:detail||null,actualizado_en:new Date().toISOString()}
+    :{motivo_perdida:null,motivo_perdida_detalle:null,actualizado_en:new Date().toISOString()};
+  const {error}=await sb.from('contactos_base_llamadas').update(patch).eq('id',id);
+  if(error)alert('El estado se guardó, pero no fue posible guardar el motivo de pérdida. '+error.message);
+}
+function wrapLossReason(w){
+  if(w.__miredLossReasonWrapped||typeof w.quickStatus!=='function')return;
+  const original=w.quickStatus;
+  w.quickStatus=async function(id,estado){
+    let reason=null,detail=null;
+    if(estado==='No interesado'){
+      const choice=w.prompt('Selecciona el motivo de pérdida:\n\n1. Precio\n2. Ya tiene operador\n3. No quiere cambiar de operador\n4. Mala experiencia con Claro\n5. No necesita el servicio\n6. No tiene cobertura\n7. No es titular / no decide\n8. Otro\n\nEscribe el número:','');
+      if(choice===null){setTimeout(()=>w.renderContacts?.(),0);return}
+      const reasons={'1':'Precio','2':'Ya tiene operador','3':'No quiere cambiar de operador','4':'Mala experiencia con Claro','5':'No necesita el servicio','6':'No tiene cobertura','7':'No es titular / no decide','8':'Otro'};
+      reason=reasons[String(choice).trim()];
+      if(!reason){w.alert('Debes seleccionar un motivo válido del 1 al 8.');setTimeout(()=>w.renderContacts?.(),0);return}
+      if(reason==='Otro'){
+        detail=w.prompt('Describe brevemente el motivo:','');
+        if(!String(detail||'').trim()){w.alert('Para “Otro” debes escribir el motivo.');setTimeout(()=>w.renderContacts?.(),0);return}
+        detail=String(detail).trim();
+      }
+    }else if(estado==='Número incorrecto') reason='Número incorrecto';
+    await original.apply(this,arguments);
+    await saveLossReason(id,estado,reason,detail);
+  };
+  w.__miredLossReasonWrapped=true;
+}
 function cleanEmbeddedPage(){
   try{
     const w=frame.contentWindow,d=frame.contentDocument;if(!w||!d)return;
     [...d.querySelectorAll('button,a')].forEach(el=>{
       const t=String(el.textContent||'').trim().toLowerCase();
-      if(t.includes('volver al crm'))el.style.display='none';
+      if(t.includes('volver al crm')||t.includes('← control'))el.style.display='none';
     });
     if(current==='bases'){
       const side=d.querySelector('aside.side');if(side)side.style.display='none';
@@ -73,19 +106,20 @@ function cleanEmbeddedPage(){
         const notice=d.querySelector('.notice');if(notice)notice.style.display='none';
         const style=d.createElement('style');style.textContent='.basebar{grid-template-columns:2fr 1fr!important}.cc-readonly{display:none!important}';d.head.appendChild(style);
       }
+      wrapLossReason(w);
       const addWhatsButtons=()=>{
-        const list=Array.isArray(w.contacts)?w.contacts:[];
-        list.forEach(c=>{
-          const row=d.getElementById('row-'+c.id),actions=row?.querySelector('.row-actions');
-          if(!actions||actions.querySelector('[data-callcenter-wa]'))return;
+        const rows=[...d.querySelectorAll('tbody#rows tr[id^="row-"]')];
+        rows.forEach(row=>{
+          const id=row.id.replace('row-',''),actions=row.querySelector('.row-actions');if(!actions||actions.querySelector('[data-callcenter-wa]'))return;
+          const phoneCell=row.children[1],nameCell=row.children[0];if(!phoneCell)return;
           const btn=d.createElement('button');btn.type='button';btn.className='btn ghost';btn.dataset.callcenterWa='1';btn.textContent='💬 WhatsApp';
-          btn.onclick=()=>openWhatsappFor(c.telefono,c.nombre||'Cliente');
+          btn.onclick=()=>openWhatsappFor(phoneCell.textContent.trim(),nameCell?.querySelector('b')?.textContent||'Cliente');
           const callBtn=actions.querySelector('button');if(callBtn)callBtn.insertAdjacentElement('afterend',btn);else actions.prepend(btn);
         });
       };
       if(!w.__miredCallCenterRenderWrapped&&typeof w.renderContacts==='function'){
-        const original=w.renderContacts;
-        w.renderContacts=function(){const r=original.apply(this,arguments);setTimeout(addWhatsButtons,0);return r};
+        const originalRender=w.renderContacts;
+        w.renderContacts=function(){const r=originalRender.apply(this,arguments);setTimeout(addWhatsButtons,0);return r};
         w.__miredCallCenterRenderWrapped=true;
       }
       addWhatsButtons();setTimeout(addWhatsButtons,500);setTimeout(addWhatsButtons,1400);
