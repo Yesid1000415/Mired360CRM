@@ -4,56 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIRED Call Center · Usuarios</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{margin:0;font-family:Arial,sans-serif;background:#f5f8fc;color:#132238}.wrap{max-width:930px;margin:30px auto;padding:0 15px}.card{background:#fff;border:1px solid #dce6f1;border-radius:18px;padding:20px;margin-bottom:15px;box-shadow:0 10px 30px #0423420c}.head{background:#071a33;color:#fff;padding:20px}.head b{font-size:20px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-size:12px;font-weight:700}input{padding:12px;border:1px solid #cfdceb;border-radius:10px;font-size:15px}.passrow{display:flex;gap:8px}.passrow input{flex:1}.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:800;cursor:pointer;font-size:14px}.btn:disabled{opacity:.55;cursor:not-allowed}.primary{background:#075ecf;color:#fff;box-shadow:0 4px 12px #075ecf33}.primary:hover{background:#054fae}.ghost{background:#fff;border:1px solid #dce6f1;color:#132238}.msg{margin-top:12px;font-size:13px;font-weight:700;min-height:18px;padding:10px 12px;border-radius:10px;display:none}.msg.ok{display:block;background:#eaf8f1;color:#08774b;border:1px solid #bdebd5}.msg.error{display:block;background:#fff1f2;color:#b4232d;border:1px solid #fecdd3}.msg.info{display:block;background:#eef6ff;color:#0756a6;border:1px solid #bdd8f7}.credentials{display:none;margin-top:14px;padding:15px;border-radius:12px;background:#f2fbf7;border:1px solid #bdebd5}.credentials.show{display:block}.credentials code{display:block;margin:6px 0;padding:9px;background:white;border:1px solid #dce6f1;border-radius:8px;font-size:14px}.table{overflow:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:10px;border-bottom:1px solid #dce6f1;text-align:left;font-size:13px}th{background:#f2f7fc}.hint{font-size:12px;color:#60738a;margin-top:5px}@media(max-width:650px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.passrow{flex-direction:column}}
-</style>
+<meta http-equiv="refresh" content="0; url=callcenter-usuarios-v2.html?v=2">
+<script>location.replace('callcenter-usuarios-v2.html?v=2');</script>
 </head>
-<body>
-<div class="head"><div class="wrap" style="margin:0 auto;padding:0 15px"><b>MIRED CALL EN CASA · Nueva Fuerza Comercial</b></div></div>
-<main class="wrap">
-  <div class="card">
-    <h2>Crear asesor Call Center</h2>
-    <p>El asesor tendrá usuario propio del CRM y quedará identificado automáticamente en el grupo <b>Call Center</b>.</p>
-    <div class="grid">
-      <label class="full">Nombre y apellidos<input id="nombre" autocomplete="name" placeholder="Nombre completo"></label>
-      <label>Correo<input id="email" type="email" autocomplete="email" placeholder="correo@ejemplo.com"></label>
-      <label>Contraseña temporal
-        <div class="passrow"><input id="password" type="text" readonly><button type="button" class="btn ghost" id="generar">🔄 Generar otra</button></div>
-        <span class="hint">El sistema genera la contraseña automáticamente. El asesor podrá cambiarla después.</span>
-      </label>
-      <div class="full">
-        <button type="button" class="btn primary" id="crear">➕ Crear usuario Call Center</button>
-        <button type="button" class="btn ghost" id="volver">Volver al CRM</button>
-      </div>
-    </div>
-    <div id="msg" class="msg"></div>
-    <div id="credentials" class="credentials">
-      <b>✅ Usuario creado. Comparte estas credenciales de forma privada:</b>
-      <code id="credEmail"></code>
-      <code id="credPassword"></code>
-      <button type="button" class="btn ghost" id="copiar">📋 Copiar credenciales</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Usuarios Call Center</h2>
-    <div class="table"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Grupo</th><th>Creación</th></tr></thead><tbody id="rows"></tbody></table></div>
-  </div>
-</main>
-<script>
-const URL='https://lpiusomsuswdcraoozdn.supabase.co';
-const KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
-const client=supabase.createClient(URL,KEY);
-const el={nombre:document.getElementById('nombre'),email:document.getElementById('email'),password:document.getElementById('password'),crear:document.getElementById('crear'),generar:document.getElementById('generar'),volver:document.getElementById('volver'),msg:document.getElementById('msg'),rows:document.getElementById('rows'),credentials:document.getElementById('credentials'),credEmail:document.getElementById('credEmail'),credPassword:document.getElementById('credPassword'),copiar:document.getElementById('copiar')};
-let lastCredentials=null;
-function showMessage(text,type='info'){el.msg.className='msg '+type;el.msg.textContent=text}
-function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function generatePassword(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#';const arr=new Uint32Array(12);crypto.getRandomValues(arr);let p='M';for(const n of arr)p+=chars[n%chars.length];el.password.value=p;return p}
-async function loadUsers(){const {data,error}=await client.from('perfiles').select('nombre,email,rol,grupo,creado_en').eq('grupo','callcenter').order('creado_en',{ascending:false});if(error){el.rows.innerHTML='<tr><td colspan="5">'+escapeHtml(error.message)+'</td></tr>';return}el.rows.innerHTML=(data||[]).map(x=>'<tr><td>'+escapeHtml(x.nombre)+'</td><td>'+escapeHtml(x.email)+'</td><td>'+escapeHtml(x.rol)+'</td><td>Call Center</td><td>'+new Date(x.creado_en).toLocaleString('es-CO')+'</td></tr>').join('')||'<tr><td colspan="5">Aún no hay asesores Call Center.</td></tr>'}
-async function init(){generatePassword();const {data:{session}}=await client.auth.getSession();if(!session){alert('Tu sesión terminó. Ingresa nuevamente al CRM.');location.href='index.html';return}const {data:profile,error}=await client.from('perfiles').select('rol').eq('user_id',session.user.id).single();if(error||!profile||!['coordinador','administrador'].includes(profile.rol)){alert('Acceso exclusivo para coordinación.');location.href='index.html';return}await loadUsers()}
-async function createCallCenterUser(){const nombre=el.nombre.value.trim(),email=el.email.value.trim().toLowerCase(),password=el.password.value;if(!nombre){showMessage('Escribe el nombre y apellidos del asesor.','error');el.nombre.focus();return}if(!/^\S+@\S+\.\S+$/.test(email)){showMessage('Escribe un correo electrónico válido.','error');el.email.focus();return}if(password.length<8){generatePassword()}el.crear.disabled=true;el.generar.disabled=true;el.crear.textContent='Creando usuario...';showMessage('Creando el acceso y asignando el grupo Call Center...','info');el.credentials.classList.remove('show');try{const {data:{session}}=await client.auth.getSession();if(!session?.access_token)throw new Error('La sesión venció. Vuelve al CRM e ingresa nuevamente.');const {data,error}=await client.functions.invoke('crear-asesor-v3',{body:{nombre,email,password:el.password.value,grupo:'callcenter'}});if(error){let detail=error.message||'No fue posible crear el usuario.';try{if(error.context){const body=await error.context.clone().json();if(body?.error)detail=body.error}}catch{}throw new Error(detail)}if(!data?.ok)throw new Error(data?.error||'No fue posible crear el usuario.');lastCredentials={email,password:el.password.value};el.credEmail.textContent='Correo: '+email;el.credPassword.textContent='Contraseña temporal: '+el.password.value;el.credentials.classList.add('show');showMessage('✅ Usuario creado correctamente y asignado al grupo Call Center.','ok');el.nombre.value='';el.email.value='';generatePassword();await loadUsers()}catch(error){showMessage('❌ '+(error.message||'No fue posible crear el usuario.'),'error')}finally{el.crear.disabled=false;el.generar.disabled=false;el.crear.textContent='➕ Crear usuario Call Center'}}
-el.crear.addEventListener('click',createCallCenterUser);el.generar.addEventListener('click',generatePassword);el.volver.addEventListener('click',()=>location.href='index.html');el.copiar.addEventListener('click',async()=>{if(!lastCredentials)return;const text='Usuario CRM MIRED Call Center\nCorreo: '+lastCredentials.email+'\nContraseña temporal: '+lastCredentials.password;try{await navigator.clipboard.writeText(text);el.copiar.textContent='✅ Copiado';setTimeout(()=>el.copiar.textContent='📋 Copiar credenciales',1800)}catch{alert(text)}});init();
-</script>
-</body>
+<body style="font-family:Arial,sans-serif;padding:24px">Abriendo la versión estable de creación de asesores Call Center...</body>
 </html>
