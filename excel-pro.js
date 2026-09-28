@@ -85,3 +85,36 @@ function exportExcelPro(){
     alert('No se pudo generar el Excel Pro. '+String(e.message||e));
   }
 }
+
+(function ensureMiredCallCenterMenu(){
+  function addMenuItems(){
+    const nav=document.querySelector('aside nav');
+    if(!nav)return;
+
+    const usersBtn=[...nav.querySelectorAll('button')].find(b=>b.dataset.view==='usuarios');
+    if(usersBtn)usersBtn.textContent='🔐 Crear asesores';
+
+    if(!nav.querySelector('[data-mired-link="callcenter-users"]')){
+      const b=document.createElement('button');
+      b.type='button';
+      b.dataset.miredLink='callcenter-users';
+      b.textContent='👥 Asesores Call Center';
+      b.addEventListener('click',()=>window.location.assign('callcenter-usuarios.html'));
+      if(usersBtn)usersBtn.insertAdjacentElement('afterend',b); else nav.appendChild(b);
+    }
+
+    if(!nav.querySelector('[data-mired-link="academy"]')){
+      const b=document.createElement('button');
+      b.type='button';
+      b.dataset.miredLink='academy';
+      b.textContent='🎓 Academia Call Center';
+      b.addEventListener('click',()=>window.location.assign('academia-callcenter.html'));
+      const ccUsers=nav.querySelector('[data-mired-link="callcenter-users"]');
+      if(ccUsers)ccUsers.insertAdjacentElement('afterend',b); else nav.appendChild(b);
+    }
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addMenuItems);
+  else addMenuItems();
+  setTimeout(addMenuItems,500);
+})();
