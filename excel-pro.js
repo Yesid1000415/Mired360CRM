@@ -190,3 +190,26 @@ window.addEventListener('load',()=>{
     }catch(e){alert(e.message||'No fue posible eliminar el usuario.');}
   };
 });
+
+/* Acceso aislado a WhatsApp Call Center.
+   Se muestra solo a asesores Call Center y a coordinación, sin modificar index.html. */
+window.addEventListener('load',async()=>{
+  try{
+    if(typeof supabaseClient==='undefined')return;
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.user)return;
+    const {data:perfil}=await supabaseClient.from('perfiles').select('rol,grupo,activo').eq('user_id',session.user.id).maybeSingle();
+    if(!perfil||perfil.activo===false)return;
+    const permitido=perfil.grupo==='callcenter'||perfil.rol==='coordinador'||perfil.rol==='administrador';
+    if(!permitido)return;
+    const nav=document.querySelector('aside nav');
+    if(!nav||document.getElementById('whatsappCallCenterNav'))return;
+    const btn=document.createElement('button');
+    btn.id='whatsappCallCenterNav';
+    btn.type='button';
+    btn.textContent='💬 WhatsApp Call Center';
+    btn.addEventListener('click',()=>{location.href='whatsapp-callcenter.html?v=1'});
+    const academia=[...nav.querySelectorAll('button')].find(x=>String(x.textContent||'').includes('Academia Call Center'));
+    if(academia)nav.insertBefore(btn,academia);else nav.appendChild(btn);
+  }catch(e){console.warn('No se pudo agregar acceso WhatsApp Call Center',e)}
+});
