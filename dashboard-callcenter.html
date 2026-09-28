@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Centro de Control Call Center · MIRED360</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--navy:#071a33;--navy2:#0b2d52;--blue:#0f7cff;--cyan:#00b8ff;--bg:#f4f7fb;--card:#fff;--text:#132238;--muted:#6d7f94;--line:#dbe5ef;--green:#159b65;--yellow:#e79a11;--red:#db454b;--violet:#7157d9}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}button,a{font:inherit}.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:18px 20px;position:sticky;top:0;z-index:5;box-shadow:0 7px 24px #071a3322}.topin{max-width:1400px;margin:auto;display:flex;gap:15px;align-items:center;justify-content:space-between}.brand b{font-size:21px}.brand small{display:block;margin-top:4px;color:#97daf7}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:11px;padding:10px 13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.primary{color:#fff;background:linear-gradient(135deg,var(--blue),var(--cyan))}.ghost{background:#fff;color:#17304f;border:1px solid var(--line)}.darkghost{background:#ffffff14;color:#fff;border:1px solid #ffffff2b}.wrap{max-width:1400px;margin:auto;padding:18px}.intro{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}.intro h1{font-size:27px;margin:0}.intro p{margin:6px 0 0;color:var(--muted)}.updated{color:var(--muted);font-size:12px;text-align:right}.grid{display:grid;gap:12px}.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:15px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px;box-shadow:0 8px 26px #071a330c;min-height:114px}.kpi .label{font-size:12px;color:var(--muted);font-weight:700}.kpi .value{font-size:31px;font-weight:900;margin:9px 0 3px}.kpi .hint{font-size:11px;color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 8px 26px #071a330c;margin-bottom:15px}.card h2{font-size:19px;margin:0 0 12px}.alerts{display:grid;gap:8px}.alert{padding:11px 13px;border-radius:12px;border:1px solid var(--line);font-size:13px}.alert.warn{background:#fff8e8;border-color:#efd28f;color:#785100}.alert.danger{background:#fff0f0;border-color:#efb6b8;color:#9a2b31}.alert.info{background:#eef8ff;border-color:#bcdff4;color:#275d80}.alert.ok{background:#eaf8f1;border-color:#b6dfcb;color:#14724c}.team{grid-template-columns:repeat(5,1fr)}.advisor{border:1px solid var(--line);border-radius:16px;padding:15px;background:#fff;min-width:0}.advisor.unassigned{background:#f8fafc;border-style:dashed}.advisor-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.advisor-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.advisor-meta{font-size:11px;color:var(--muted);margin-top:4px}.badge{font-size:10px;font-weight:900;padding:5px 7px;border-radius:999px;white-space:nowrap}.badge.on{background:#e8f8ef;color:#08724a}.badge.off{background:#f1f3f6;color:#637184}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.mini{background:#f6f9fc;border-radius:11px;padding:9px}.mini b{display:block;font-size:19px}.mini small{font-size:10px;color:var(--muted)}.progress{height:8px;background:#e7edf4;border-radius:999px;overflow:hidden;margin-top:13px}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:999px}.progress-label{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--muted);margin-top:5px}.advisor-alerts{display:grid;gap:5px;margin-top:10px}.advisor-alert{font-size:10px;padding:6px 8px;border-radius:8px;background:#fff7e6;color:#7d5700}.two{grid-template-columns:1.1fr .9fr}.funnel{display:grid;gap:9px}.frow{display:grid;grid-template-columns:120px 1fr 48px;gap:9px;align-items:center;font-size:12px}.bar{height:10px;background:#e8eef5;border-radius:999px;overflow:hidden}.bar span{height:100%;display:block;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:999px}.quick{display:grid;grid-template-columns:1fr 1fr;gap:9px}.quick a{text-decoration:none;border:1px solid var(--line);border-radius:13px;padding:13px;background:#f8fbfe;color:#19334f;font-weight:800;font-size:12px}.quick a span{display:block;font-size:20px;margin-bottom:5px}.empty{padding:22px;text-align:center;color:var(--muted)}.loading{min-height:230px;display:grid;place-items:center;color:var(--muted)}.error{color:#a6262d}.footnote{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.45}
+@media(max-width:1150px){.team{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:850px){.kpis{grid-template-columns:repeat(2,1fr)}.team{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.top{position:static}.intro{flex-direction:column}.updated{text-align:left}}
+@media(max-width:520px){.wrap{padding:12px}.top{padding:13px 12px}.topin{align-items:flex-start;flex-direction:column}.actions{width:100%}.actions .btn{flex:1}.intro h1{font-size:23px}.kpis{gap:8px}.kpi{padding:13px;min-height:105px}.kpi .value{font-size:27px}.team{grid-template-columns:1fr}.quick{grid-template-columns:1fr 1fr}.frow{grid-template-columns:100px 1fr 42px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="topin">
+  <div class="brand"><b>MIRED<span style="color:#00b8ff">360</span> · Centro de Control</b><small>Coordinación Call Center</small></div>
+  <div class="actions"><button class="btn darkghost" onclick="location.href='index.html'">← CRM</button><button class="btn primary" id="refreshBtn" onclick="loadDashboard()">↻ Actualizar</button></div>
+</div></div>
+<div class="wrap">
+  <div class="intro"><div><h1>📊 Operación Call Center</h1><p>Una sola vista para saber qué está pasando hoy y dónde intervenir.</p></div><div id="updated" class="updated">Preparando datos...</div></div>
+  <div id="loading" class="card loading">Cargando indicadores...</div>
+  <div id="content" style="display:none">
+    <div class="grid kpis" id="kpis"></div>
+    <div class="card"><h2>🚨 Alertas para coordinación</h2><div id="alerts" class="alerts"></div></div>
+    <div class="card"><h2>👥 Equipo y extensiones</h2><div id="team" class="grid team"></div><div class="footnote">“Contactos llamados hoy” cuenta contactos con una gestión de llamada registrada hoy. No representa múltiples intentos al mismo contacto.</div></div>
+    <div class="grid two">
+      <div class="card"><h2>🔎 Estado de las bases</h2><div id="funnel" class="funnel"></div></div>
+      <div class="card"><h2>⚡ Accesos rápidos</h2><div class="quick">
+        <a href="bases-llamadas.html"><span>📞</span>Bases de llamadas</a>
+        <a href="rendimiento.html"><span>🚦</span>Rendimiento</a>
+        <a href="callcenter-usuarios-v2.html"><span>👥</span>Asesores</a>
+        <a href="academia-callcenter-v2.html"><span>🎓</span>Academia</a>
+        <a href="whatsapp-callcenter.html"><span>💬</span>WhatsApp Call Center</a>
+        <a href="index.html"><span>🏠</span>CRM principal</a>
+      </div></div>
+    </div>
+  </div>
+</div>
+<script>
+const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
+const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const n=v=>Number(v||0);
+function kpi(icon,label,value,hint){return `<div class="kpi"><div class="label">${icon} ${esc(label)}</div><div class="value">${n(value)}</div><div class="hint">${esc(hint||'')}</div></div>`}
+function pct(x,max){return max>0?Math.max(3,Math.round((n(x)/max)*100)):0}
+function advisorCard(a){
+  const assigned=!!a.asesor_user_id, sales=n(a.ventas_mes),meta=Math.max(1,n(a.meta_mensual)||15),progress=Math.min(100,Math.round(sales/meta*100));
+  let extras='';
+  if(n(a.seguimientos_vencidos)>0)extras+=`<div class="advisor-alert">⏰ ${n(a.seguimientos_vencidos)} seguimiento(s) vencido(s)</div>`;
+  if(n(a.whatsapp_no_leidos)>0)extras+=`<div class="advisor-alert">💬 ${n(a.whatsapp_no_leidos)} WhatsApp sin leer</div>`;
+  if(assigned&&n(a.llamados_hoy)===0)extras+=`<div class="advisor-alert">📞 Sin contactos llamados hoy</div>`;
+  return `<div class="advisor ${assigned?'':'unassigned'}">
+    <div class="advisor-head"><div style="min-width:0"><div class="advisor-name">${esc(a.asesor_nombre||'Sin asesor')}</div><div class="advisor-meta">Ext. ${esc(String(a.extension||'').slice(-3))} · ${n(a.bases)} base(s)</div></div><span class="badge ${assigned&&a.asesor_activo?'on':'off'}">${assigned?(a.asesor_activo?'ACTIVO':'INACTIVO'):'LIBRE'}</span></div>
+    <div class="mini-grid"><div class="mini"><b>${n(a.llamados_hoy)}</b><small>Llamados hoy</small></div><div class="mini"><b>${n(a.interesados)}</b><small>Interesados</small></div><div class="mini"><b>${sales}</b><small>Ventas mes</small></div><div class="mini"><b>${n(a.instalados_mes)}</b><small>Instalados mes</small></div></div>
+    <div class="progress"><span style="width:${progress}%"></span></div><div class="progress-label"><span>Meta mensual</span><b>${sales}/${meta}</b></div>
+    <div class="progress-label"><span>Conversión del mes</span><b>${Number(a.conversion_pct||0).toFixed(1)}%</b></div>
+    <div class="advisor-alerts">${extras}</div>
+  </div>`;
+}
+function renderAlerts(data){
+  const t=data.totals||{},un=data.advisors_without_extension||[],ad=data.advisors||[];let arr=[];
+  if(n(t.seguimientos_vencidos)>0)arr.push(`<div class="alert danger">⏰ Hay <b>${n(t.seguimientos_vencidos)}</b> seguimiento(s) vencido(s) que deben atenderse.</div>`);
+  if(n(t.whatsapp_no_leidos)>0)arr.push(`<div class="alert warn">💬 Hay <b>${n(t.whatsapp_no_leidos)}</b> mensaje(s) de WhatsApp sin leer en el equipo.</div>`);
+  if(n(t.extensiones_disponibles)>0)arr.push(`<div class="alert info">☎️ Hay <b>${n(t.extensiones_disponibles)}</b> extensión(es) activa(s) todavía sin asesor asignado.</div>`);
+  if(un.length)arr.push(`<div class="alert info">👤 Asesores activos sin extensión: <b>${un.map(x=>esc(x.nombre||x.email||'Asesor')).join(', ')}</b>.</div>`);
+  const zero=ad.filter(x=>x.asesor_user_id&&x.asesor_activo&&n(x.llamados_hoy)===0);
+  if(zero.length)arr.push(`<div class="alert warn">📞 Sin actividad de llamada registrada hoy: <b>${zero.map(x=>esc(x.asesor_nombre)).join(', ')}</b>.</div>`);
+  if(!arr.length)arr.push('<div class="alert ok">✅ No hay alertas críticas en este momento.</div>');
+  document.getElementById('alerts').innerHTML=arr.join('');
+}
+function render(data){
+  const t=data.totals||{};
+  document.getElementById('kpis').innerHTML=[
+    kpi('👥','Asesores activos',t.asesores_activos,`${n(t.extensiones_asignadas)} extensión(es) asignada(s)`),
+    kpi('📞','Contactos llamados hoy',t.llamados_hoy,`${n(t.total_contactos)} contactos cargados`),
+    kpi('🔥','Interesados',t.interesados,'Interesados actuales en las bases'),
+    kpi('💰','Ventas hoy',t.ventas_hoy,`${n(t.ventas_mes)} venta(s) en el mes`),
+    kpi('📅','Seguimientos vencidos',t.seguimientos_vencidos,'Requieren atención'),
+    kpi('💬','WhatsApp sin leer',t.whatsapp_no_leidos,'Conversaciones del equipo'),
+    kpi('🛠️','Instalados este mes',t.instalados_mes,'Prospectos del Call Center'),
+    kpi('⏳','Pendientes por gestionar',t.pendientes,`${n(t.gestionados)} ya gestionados`)
+  ].join('');
+  renderAlerts(data);
+  const advisors=data.advisors||[];
+  document.getElementById('team').innerHTML=advisors.length?advisors.map(advisorCard).join(''):'<div class="empty">No hay extensiones activas.</div>';
+  const sts=data.statuses||[],max=Math.max(1,...sts.map(x=>n(x.cantidad)));
+  document.getElementById('funnel').innerHTML=sts.length?sts.map(x=>`<div class="frow"><b>${esc(x.estado)}</b><div class="bar"><span style="width:${pct(x.cantidad,max)}%"></span></div><b>${n(x.cantidad)}</b></div>`).join(''):'<div class="empty">Aún no hay contactos gestionados.</div>';
+  document.getElementById('updated').textContent='Actualizado: '+new Date(data.generated_at||Date.now()).toLocaleString('es-CO');
+}
+async function loadDashboard(){
+  const btn=document.getElementById('refreshBtn');btn.disabled=true;btn.textContent='Actualizando...';
+  try{
+    const {data:{session}}=await sb.auth.getSession();if(!session?.user){location.href='index.html';return}
+    const {data:p,error:pe}=await sb.from('perfiles').select('rol,activo').eq('user_id',session.user.id).maybeSingle();if(pe)throw pe;
+    const role=String(p?.rol||'').toLowerCase();if(p?.activo===false||!['coordinador','administrador','admin'].includes(role))throw new Error('Este tablero es exclusivo para coordinación.');
+    const {data,error}=await sb.rpc('callcenter_dashboard_coordinacion');if(error)throw error;
+    render(data||{});document.getElementById('loading').style.display='none';document.getElementById('content').style.display='block';
+  }catch(e){document.getElementById('loading').innerHTML=`<div class="error"><b>No se pudo cargar el dashboard.</b><div style="margin-top:8px">${esc(e.message||e)}</div></div>`}
+  finally{btn.disabled=false;btn.textContent='↻ Actualizar'}
+}
+loadDashboard();
+setInterval(()=>{if(document.visibilityState==='visible')loadDashboard()},60000);
+</script>
+</body>
+</html>
