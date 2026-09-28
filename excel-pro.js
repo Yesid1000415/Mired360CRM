@@ -1,7 +1,7 @@
 /*
   MIRED360 CRM - cargador estable + modo Call Center.
   Conserva la versión funcional anterior y agrega únicamente la separación
-  de navegación para asesores del grupo callcenter y acceso de coordinación.
+  de navegación para asesores del grupo callcenter y accesos de coordinación.
 */
 document.write('<script src="https://cdn.jsdelivr.net/gh/Yesid1000415/Mired360CRM@dff82d2014c5fc3e9f2b4fe11bcc30e6ed8a7b2f/excel-pro.js"><\/script>');
 
@@ -48,6 +48,19 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/Yesid1000415/Mired360CR
     return btn;
   }
 
+  function ensureCoordinatorQualityButton(nav){
+    let btn=document.getElementById('callCenterQualityNav');
+    if(btn)return btn;
+    btn=document.createElement('button');
+    btn.id='callCenterQualityNav';
+    btn.type='button';
+    btn.textContent='⭐ Calidad Call Center';
+    btn.addEventListener('click',()=>{location.href='calidad-callcenter.html?v=1'});
+    const dashboard=document.getElementById('callCenterDashboardNav');
+    if(dashboard)dashboard.insertAdjacentElement('afterend',btn);else nav.appendChild(btn);
+    return btn;
+  }
+
   async function applyCallCenterMode(redirectToPanel=false){
     const perfil=await getCallCenterProfile();
     if(!perfil||perfil.activo===false)return false;
@@ -56,7 +69,7 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/Yesid1000415/Mired360CR
     const isCoordinator=['coordinador','administrador','admin'].includes(role);
 
     const nav=document.querySelector('aside nav');
-    if(isCoordinator&&nav)ensureCoordinatorDashboardButton(nav);
+    if(isCoordinator&&nav){ensureCoordinatorDashboardButton(nav);ensureCoordinatorQualityButton(nav)}
     if(!isCallCenter)return false;
 
     if(nav){
@@ -78,7 +91,7 @@ document.write('<script src="https://cdn.jsdelivr.net/gh/Yesid1000415/Mired360CR
     }
 
     if(redirectToPanel){
-      location.replace('callcenter-panel.html?v=1');
+      location.replace('callcenter-panel.html?v=2');
     }
     return true;
   }
