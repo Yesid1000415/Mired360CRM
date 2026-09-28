@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIRED Call en Casa · Panel del asesor</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button{font:inherit}.app{min-height:100vh;display:grid;grid-template-columns:260px 1fr}.side{background:linear-gradient(180deg,var(--n),#061426);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand small{display:block;color:#7fdfff;letter-spacing:1.2px;margin-top:3px}.profile{padding:12px;background:#ffffff0d;border:1px solid #ffffff1f;border-radius:13px;margin-bottom:14px}.profile b,.profile small{display:block}.profile small{color:#a8bfd6;margin-top:4px}.nav{display:grid;gap:6px}.nav button{width:100%;border:0;background:transparent;color:#d4e2ef;text-align:left;padding:13px;border-radius:12px;cursor:pointer;font-weight:700}.nav button:hover,.nav button.active{background:rgba(0,184,255,.16);color:#fff}.side-footer{position:absolute;left:14px;right:14px;bottom:18px}.logout{width:100%;border:1px solid #ffffff33;background:transparent;color:#fff;padding:10px;border-radius:11px;cursor:pointer}.main{min-width:0;display:flex;flex-direction:column;height:100vh}.top{padding:17px 20px;background:#fff;border-bottom:1px solid var(--l);display:flex;justify-content:space-between;gap:10px;align-items:center}.top h1{font-size:20px;margin:0}.top p{margin:4px 0 0;color:var(--m);font-size:12px}.status{font-size:12px;color:var(--ok);font-weight:700}.frame{flex:1;width:100%;border:0;background:var(--bg)}.loading{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:20}.loading .box{background:#fff;border:1px solid var(--l);border-radius:18px;padding:24px;text-align:center;box-shadow:0 15px 40px #071a3315}.denied{color:#b4232d}@media(max-width:800px){.app{grid-template-columns:1fr}.side{position:static;height:auto;padding:12px}.brand,.profile,.side-footer{display:none}.nav{display:flex;overflow:auto}.nav button{width:auto;white-space:nowrap}.main{height:calc(100vh - 58px)}.top{padding:12px}.top p{display:none}}
+</style>
+</head>
+<body>
+<div id="loading" class="loading"><div class="box"><b>MIRED Call en Casa</b><div style="margin-top:7px;color:#708199">Validando acceso...</div></div></div>
+<div class="app">
+<aside class="side">
+  <div class="brand"><div class="logo">M</div><div><b>MIRED<span style="color:#00b8ff">360</span></b><small>CALL EN CASA</small></div></div>
+  <div class="profile"><b id="profileName">Asesor</b><small id="profileRole">Equipo Call Center</small></div>
+  <div class="nav">
+    <button id="navBases" class="active" onclick="openModule('bases')">📞 Bases de llamadas</button>
+    <button id="navWa" onclick="openModule('whatsapp')">💬 WhatsApp</button>
+    <button id="navPerf" onclick="openModule('rendimiento')">🚦 Mi rendimiento</button>
+    <button id="navAcademia" onclick="openModule('academia')">🎓 Academia</button>
+  </div>
+  <div class="side-footer"><button class="logout" onclick="logout()">Cerrar sesión</button></div>
+</aside>
+<section class="main">
+  <div class="top"><div><h1 id="moduleTitle">📞 Bases de llamadas</h1><p id="moduleSubtitle">Gestiona únicamente la base que te fue asignada.</p></div><div class="status">● Conectado</div></div>
+  <iframe id="moduleFrame" class="frame" title="Módulo Call Center"></iframe>
+</section>
+</div>
+<script>
+const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
+const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const modules={
+  bases:{url:'bases-llamadas.html?v=20260928-1',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
+  whatsapp:{url:'whatsapp-callcenter.html?v=1',title:'💬 WhatsApp Call Center',sub:'Continúa la asesoría con tus propios clientes asignados.'},
+  rendimiento:{url:'rendimiento.html?v=20260928-1',title:'🚦 Mi rendimiento',sub:'Consulta tus ventas, meta mensual y avance.'},
+  academia:{url:'academia-callcenter-v2.html?v=20260928-3',title:'🎓 Academia Call Center',sub:'Capacitación, progreso y evaluación final.'}
+};
+let current='bases';
+function openModule(key){
+  const m=modules[key];if(!m)return;current=key;
+  document.getElementById('moduleFrame').src=m.url;
+  document.getElementById('moduleTitle').textContent=m.title;
+  document.getElementById('moduleSubtitle').textContent=m.sub;
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  const ids={bases:'navBases',whatsapp:'navWa',rendimiento:'navPerf',academia:'navAcademia'};
+  document.getElementById(ids[key])?.classList.add('active');
+}
+async function logout(){await sb.auth.signOut();location.href='index.html'}
+async function init(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session?.user){location.href='index.html';return}
+  const {data:p,error}=await sb.from('perfiles').select('nombre,rol,grupo,activo').eq('user_id',session.user.id).maybeSingle();
+  const role=String(p?.rol||'').toLowerCase();
+  const allowed=p?.activo!==false&&((role==='asesor'&&p?.grupo==='callcenter')||role==='coordinador'||role==='administrador'||role==='admin');
+  if(error||!allowed){document.getElementById('loading').innerHTML='<div class="box denied"><b>Acceso no autorizado</b><div style="margin-top:8px">Este panel es exclusivo del proyecto Call Center.</div></div>';return}
+  document.getElementById('profileName').textContent=p?.nombre||session.user.email||'Asesor';
+  document.getElementById('profileRole').textContent=role==='asesor'?'Asesor · Call Center':'Coordinación · Call Center';
+  document.getElementById('loading').style.display='none';
+  openModule('bases');
+}
+init();
+</script>
+</body>
+</html>
