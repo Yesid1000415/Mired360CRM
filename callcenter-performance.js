@@ -66,17 +66,17 @@
       const {data:{session}}=await supabaseClient.auth.getSession();if(!session?.user)return;
       ensureStyles();const host=ensureHost();if(!host)return;
       const [{data:profile},{data:rows,error}]=await Promise.all([
-        supabaseClient.from('perfiles').select('user_id,nombre,email,rol').eq('user_id',session.user.id).maybeSingle(),
+        supabaseClient.from('perfiles').select('user_id,nombre,email,rol,grupo').eq('user_id',session.user.id).maybeSingle(),
         supabaseClient.rpc('callcenter_ranking_mes')
       ]);
       if(error){host.innerHTML='<div class="cc-muted">No fue posible cargar el rendimiento del Call Center.</div>';return}
-      const list=rows||[],role=roleKey(profile?.rol),isCoord=role==='coordinador'||role==='admin',own=list.find(x=>x.asesor_user_id===session.user.id)||null;
+      const list=rows||[],role=roleKey(profile?.rol),isCoord=role==='coordinador'||role==='admin'||role==='administrador',own=list.find(x=>x.asesor_user_id===session.user.id)||null;
       const ranked=list.filter(x=>x.asesor_user_id).sort((a,b)=>Number(b.ventas_mes)-Number(a.ventas_mes)||String(a.asesor_nombre||'').localeCompare(String(b.asesor_nombre||'')));
       const leader=ranked[0]||null,eligibleLeader=leader&&Number(leader.ventas_mes)>Number(leader.meta_mensual||META_DEFAULT);
       const prizeText=eligibleLeader?`Actualmente lidera <b>${esc(leader.asesor_nombre||'')}</b> con <b>${Number(leader.ventas_mes)} ventas</b>.`:'El premio se activa para quien cierre el mes con más ventas y haya superado la meta de 15.';
       let html=`<div class="cc-head"><div><h2>🚦 Rendimiento Call Center</h2><p>Meta mensual: 15 ventas · 💎 Diamante al superar la meta</p></div><button class="btn ghost" type="button" onclick="window.loadCallCenterPerformance()">Actualizar</button></div>`;
       if(isCoord){
-        const {data:advisors}=await supabaseClient.from('perfiles').select('user_id,nombre,email,rol').eq('rol','asesor').order('nombre');
+        const {data:advisors}=await supabaseClient.from('perfiles').select('user_id,nombre,email,rol,grupo').eq('rol','asesor').eq('grupo','callcenter').order('nombre');
         html+=`<div class="cc-prize"><h3>🏆 Premio Sorpresa MIRED360</h3><div>El asesor con más ventas del mes, superando la meta, recibe un premio sorpresa.</div><div class="cc-muted" style="margin-top:5px">${prizeText}</div></div><div class="cc-team">${list.map(x=>statusHtml(x,'Extensión '+shortExt(x.extension),adminControls(x,advisors||[]))).join('')}</div>`;
       }else{
         html+=`<div class="cc-mine">${own?statusHtml(own,'Mi rendimiento'):'<div class="cc-status gray"><b>Mi rendimiento</b><div class="cc-sales">—</div><div class="cc-muted">Aún no tienes una extensión asignada.</div></div>'}<div class="cc-prize"><h3>🏆 Premio Sorpresa MIRED360</h3><strong>Supera la meta y busca el primer lugar.</strong><div class="cc-muted" style="margin-top:7px">${prizeText}</div><div class="cc-muted" style="margin-top:7px">El premio puede ser un bono, una entrada a cine, un detalle u otra sorpresa.</div></div></div>`;
@@ -89,4 +89,27 @@
   window.saveCallCenterExtension=saveAssignment;
   document.addEventListener('DOMContentLoaded',()=>setTimeout(loadPerformance,500));
   if(typeof supabaseClient!=='undefined')supabaseClient.auth.onAuthStateChange(event=>{if(event==='SIGNED_IN'||event==='TOKEN_REFRESHED')setTimeout(loadPerformance,300)});
+})();
+
+(function(){
+  function addCallCenterNavigation(){
+    const nav=document.querySelector('aside nav');
+    if(!nav)return;
+    let users=[...nav.querySelectorAll('button')].find(b=>b.dataset.view==='usuarios');
+    if(users){users.textContent='🔐 Crear asesores';}
+    else{
+      users=document.createElement('button');
+      users.type='button';users.dataset.view='usuarios';users.textContent='🔐 Crear asesores';
+      users.onclick=()=>{if(typeof showView==='function')showView('usuarios')};
+      nav.appendChild(users);
+    }
+    if(!nav.querySelector('[data-link="callcenter-usuarios.html"]')){
+      const b=document.createElement('button');b.type='button';b.dataset.link='callcenter-usuarios.html';b.textContent='👥 Asesores Call Center';b.onclick=()=>location.assign('callcenter-usuarios.html');nav.appendChild(b);
+    }
+    if(!nav.querySelector('[data-link="academia-callcenter.html"]')){
+      const b=document.createElement('button');b.type='button';b.dataset.link='academia-callcenter.html';b.textContent='🎓 Academia Call Center';b.onclick=()=>location.assign('academia-callcenter.html');nav.appendChild(b);
+    }
+  }
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(addCallCenterNavigation,150));
+  setTimeout(addCallCenterNavigation,1200);
 })();
