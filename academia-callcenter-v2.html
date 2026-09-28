@@ -6,19 +6,38 @@
 <title>Academia MIRED Call Center</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--n:#071a33;--n2:#0b2d52;--b:#0f7cff;--c:#00b8ff;--bg:#f5f8fc;--t:#132238;--m:#6c7c90;--l:#dce6f1;--ok:#08774b;--d:#b4232d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,textarea{font:inherit}.hidden{display:none!important}.top{background:linear-gradient(135deg,var(--n),var(--n2));color:white;padding:18px}.topin{max-width:1060px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-weight:900}.brand small{display:block;color:#9bdfff;font-weight:600;margin-top:3px}.wrap{max-width:1060px;margin:22px auto;padding:0 14px 35px}.card,.hero,.qcard{background:white;border:1px solid var(--l);border-radius:18px;box-shadow:0 10px 28px #0423420e}.card{padding:18px;margin-bottom:14px}.hero{padding:22px;background:linear-gradient(135deg,#fff,#eef7ff)}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l);color:var(--t)}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border-radius:999px;background:#eef6ff;border:1px solid #cce5ff;color:#0756a6;font-size:12px;font-weight:800}.profile{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.stat{background:#fff;border:1px solid var(--l);border-radius:13px;padding:12px}.stat small{display:block;color:var(--m);font-size:11px;margin-bottom:5px}.status{padding:14px;border-radius:13px;background:#eef8ff;border:1px solid #c6eaff;color:#27577a;font-weight:700}.status.error{background:#fff1f2;border-color:#fecdd3;color:var(--d)}.progress{height:11px;background:#e6eef7;border-radius:999px;overflow:hidden;margin:12px 0}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--b),var(--c))}.qcard{padding:18px;margin:14px 0}.qnum{font-size:12px;font-weight:800;color:var(--b);margin-bottom:7px}.qtext{font-size:16px;font-weight:800;line-height:1.45;margin-bottom:12px}.option{display:block;border:1px solid var(--l);border-radius:11px;padding:11px;margin:7px 0;cursor:pointer}.option:hover{background:#f6fbff}.option input{width:auto;margin-right:7px}.qcard textarea{width:100%;min-height:110px;padding:11px;border:1px solid #cfdceb;border-radius:11px;resize:vertical}.actions{display:flex;justify-content:space-between;gap:10px}.result{text-align:center}.score{width:145px;height:145px;border-radius:50%;border:11px solid #dcecf8;margin:18px auto;display:grid;place-items:center;font-size:34px;font-weight:900;color:var(--b)}.areas{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}.area{border:1px solid var(--l);border-radius:12px;padding:12px}.area small{display:block;color:var(--m);margin-top:4px}.ok{color:var(--ok)}.bad{color:var(--d)}@media(max-width:720px){.profile,.areas{grid-template-columns:1fr 1fr}.topin{align-items:flex-start;flex-direction:column}}@media(max-width:520px){.profile,.areas{grid-template-columns:1fr}}
+:root{--n:#071a33;--n2:#0b2d52;--b:#0f7cff;--c:#00b8ff;--bg:#f5f8fc;--t:#132238;--m:#6c7c90;--l:#dce6f1;--ok:#08774b;--d:#b4232d;--w:#996000}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,textarea{font:inherit}.hidden{display:none!important}.top{background:linear-gradient(135deg,var(--n),var(--n2));color:white;padding:18px}.topin{max-width:1120px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-weight:900}.brand small{display:block;color:#9bdfff;font-weight:600;margin-top:3px}.wrap{max-width:1120px;margin:22px auto;padding:0 14px 35px}.card,.hero,.qcard{background:white;border:1px solid var(--l);border-radius:18px;box-shadow:0 10px 28px #0423420e}.card{padding:18px;margin-bottom:14px}.hero{padding:22px;background:linear-gradient(135deg,#fff,#eef7ff)}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:800;cursor:pointer}.btn:disabled{opacity:.5;cursor:not-allowed}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l);color:var(--t)}.danger{background:#fff1f2;color:var(--d);border:1px solid #fecdd3}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border-radius:999px;background:#eef6ff;border:1px solid #cce5ff;color:#0756a6;font-size:12px;font-weight:800}.profile{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.stat{background:#fff;border:1px solid var(--l);border-radius:13px;padding:12px}.stat small{display:block;color:var(--m);font-size:11px;margin-bottom:5px}.status{padding:14px;border-radius:13px;background:#eef8ff;border:1px solid #c6eaff;color:#27577a;font-weight:700}.status.error{background:#fff1f2;border-color:#fecdd3;color:var(--d)}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}.tab{border:1px solid var(--l);background:#fff;padding:10px 14px;border-radius:11px;font-weight:800;cursor:pointer}.tab.active{background:#071a33;color:#fff;border-color:#071a33}.coursegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.module{background:#fff;border:1px solid var(--l);border-radius:16px;padding:17px;box-shadow:0 8px 22px #0423420b;position:relative}.module.done{border-color:#9ad8bd;background:#f8fffb}.module .num{font-size:11px;color:var(--b);font-weight:900;letter-spacing:.5px}.module h3{margin:7px 0 8px}.module p{color:var(--m);line-height:1.45;margin:0 0 12px}.donebadge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eaf8f1;color:var(--ok);font-size:11px;font-weight:900}.courseprogress{height:14px;background:#e6eef7;border-radius:999px;overflow:hidden;margin:10px 0}.courseprogress>div{height:100%;width:0;background:linear-gradient(90deg,var(--b),var(--c));transition:.25s}.lesson{line-height:1.6}.lesson h2{margin-top:0}.lesson h3{margin-top:20px}.lesson .box{background:#f7fbff;border:1px solid #d9e9f7;border-radius:13px;padding:14px;margin:12px 0}.lesson .route{font-weight:900;color:#0756a6;text-align:center;padding:12px;background:#eef8ff;border-radius:12px}.lesson ul{padding-left:21px}.lesson li{margin:6px 0}.lesson .script{background:#071a33;color:#fff;padding:14px;border-radius:13px;line-height:1.55}.lesson .warning{background:#fff8e8;border:1px solid #f5d897;color:#755000;padding:13px;border-radius:12px}.lesson .success{background:#eaf8f1;border:1px solid #bdebd5;color:#08774b;padding:13px;border-radius:12px}.lesson-actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}.progress{height:11px;background:#e6eef7;border-radius:999px;overflow:hidden;margin:12px 0}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--b),var(--c))}.qcard{padding:18px;margin:14px 0}.qnum{font-size:12px;font-weight:800;color:var(--b);margin-bottom:7px}.qtext{font-size:16px;font-weight:800;line-height:1.45;margin-bottom:12px}.option{display:block;border:1px solid var(--l);border-radius:11px;padding:11px;margin:7px 0;cursor:pointer}.option:hover{background:#f6fbff}.option input{width:auto;margin-right:7px}.qcard textarea{width:100%;min-height:110px;padding:11px;border:1px solid #cfdceb;border-radius:11px;resize:vertical}.actions{display:flex;justify-content:space-between;gap:10px}.result{text-align:center}.score{width:145px;height:145px;border-radius:50%;border:11px solid #dcecf8;margin:18px auto;display:grid;place-items:center;font-size:34px;font-weight:900;color:var(--b)}.areas{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}.area{border:1px solid var(--l);border-radius:12px;padding:12px}.area small{display:block;color:var(--m);margin-top:4px}.ok{color:var(--ok)}.bad{color:var(--d)}.warn{color:var(--w)}.summarygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.summarybox{padding:16px;border:1px solid var(--l);border-radius:14px;background:#fff}.summarybox strong{font-size:25px;display:block;margin-top:6px}.lock{padding:13px;background:#fff8e8;border:1px solid #f5d897;color:#755000;border-radius:12px;margin:12px 0}.cert{padding:14px;background:#eaf8f1;border:1px solid #bdebd5;color:#08774b;border-radius:12px;font-weight:800}@media(max-width:760px){.profile,.areas,.coursegrid,.summarygrid{grid-template-columns:1fr 1fr}.topin{align-items:flex-start;flex-direction:column}}@media(max-width:540px){.profile,.areas,.coursegrid,.summarygrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="top"><div class="topin"><div class="brand">ACADEMIA MIRED CALL EN CASA<small>Nueva Fuerza Comercial · Claro Hogar y PYMES</small></div><button class="btn ghost" onclick="location.href='index.html'">Volver al CRM</button></div></div>
 <main class="wrap">
 <section id="checking" class="card"><div id="checkingText" class="status">Validando tu sesión del CRM...</div></section>
-<section id="home" class="hidden">
-  <div class="hero"><h1>Evaluación final</h1><p>Tu usuario del CRM identifica automáticamente quién presenta la evaluación.</p><div class="chips"><span class="chip">40 preguntas</span><span class="chip">100 puntos</span><span class="chip">Aprobación: 80</span><span class="chip">Resultado automático</span></div></div>
-  <div class="profile"><div class="stat"><small>ASESOR</small><b id="advisorName">-</b></div><div class="stat"><small>CORREO</small><b id="advisorEmail">-</b></div><div class="stat"><small>GRUPO</small><b id="advisorGroup">-</b></div><div class="stat"><small>PRÓXIMO INTENTO</small><b id="nextAttempt">1</b></div></div>
-  <div class="card"><h2>Evaluación de certificación</h2><p>Las preguntas y opciones cambian de orden en cada intento. Al terminar recibirás tu calificación y el resultado por áreas.</p><button id="startBtn" class="btn primary">Iniciar evaluación</button></div>
-  <div class="card"><h2>Mis resultados</h2><div id="historyBox">Sin intentos anteriores.</div></div>
+<section id="app" class="hidden">
+  <div class="hero"><h1>Academia MIRED Call en Casa</h1><p>Capacitación integral para asesores de la nueva fuerza comercial Call Center.</p><div class="chips"><span class="chip">6 módulos</span><span class="chip">Curso práctico</span><span class="chip">40 preguntas finales</span><span class="chip">Aprobación: 80/100</span></div></div>
+  <div class="profile"><div class="stat"><small>ASESOR</small><b id="advisorName">-</b></div><div class="stat"><small>CORREO</small><b id="advisorEmail">-</b></div><div class="stat"><small>GRUPO</small><b id="advisorGroup">-</b></div><div class="stat"><small>PROGRESO</small><b id="profileProgress">0%</b></div></div>
+  <div class="tabs"><button class="tab active" data-tab="course">📘 Curso</button><button class="tab" data-tab="progress">📊 Mi progreso</button><button class="tab" data-tab="evaluation">📝 Evaluación final</button></div>
+
+  <section id="courseView">
+    <div class="card"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><h2 style="margin:0">Ruta de formación</h2><p style="margin:5px 0 0;color:var(--m)">Completa los seis módulos para habilitar la evaluación final.</p></div><b id="courseCount">0 de 6 módulos</b></div><div class="courseprogress"><div id="courseBar"></div></div></div>
+    <div id="courseGrid" class="coursegrid"></div>
+  </section>
+
+  <section id="lessonView" class="hidden"><div class="card lesson" id="lessonContent"></div></section>
+
+  <section id="progressView" class="hidden">
+    <div class="summarygrid"><div class="summarybox"><small>MÓDULOS COMPLETADOS</small><strong id="sumModules">0/6</strong></div><div class="summarybox"><small>PROGRESO DEL CURSO</small><strong id="sumPercent">0%</strong></div><div class="summarybox"><small>MEJOR EVALUACIÓN</small><strong id="sumScore">—</strong></div></div>
+    <div class="card" style="margin-top:14px"><h2>Estado de formación</h2><div id="progressModules"></div></div>
+    <div class="card"><h2>Historial de evaluaciones</h2><div id="historyBox">Sin intentos anteriores.</div></div>
+  </section>
+
+  <section id="evaluationView" class="hidden">
+    <div class="hero"><h1>Evaluación final</h1><p>Comprueba que dominas el proceso comercial completo antes de iniciar operación.</p><div class="chips"><span class="chip">40 preguntas</span><span class="chip">100 puntos</span><span class="chip">Aprobación: 80</span><span class="chip">Resultado automático</span></div></div>
+    <div id="evaluationLock" class="lock">🔒 Debes completar los 6 módulos del curso antes de presentar la evaluación.</div>
+    <div class="card"><h2>Certificación de conocimientos</h2><p>Las preguntas y opciones cambian de orden en cada intento. Al terminar recibirás tu calificación y resultado por áreas.</p><button id="startBtn" class="btn primary" disabled>Iniciar evaluación</button><p id="attemptInfo" style="color:var(--m)"></p></div>
+  </section>
 </section>
+
 <section id="exam" class="hidden">
   <div class="hero"><h1>Evaluación en curso</h1><p id="examUser"></p><div class="progress"><div id="progressBar"></div></div><p id="progressText">0 de 40 respondidas</p></div>
   <form id="examForm"></form>
@@ -34,77 +53,149 @@ const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const QUESTIONS_URL=SUPABASE_URL+'/functions/v1/preguntas-academia-callcenter';
 const GRADE_URL=SUPABASE_URL+'/functions/v1/calificar-academia';
 const $=id=>document.getElementById(id);
-let client=null,currentUser=null,profile=null,questions=[];
+let client=null,currentUser=null,profile=null,questions=[],completed=[],history=[];
+
+const modules=[
+ {id:'m1',title:'Modelo MIRED Call en Casa',summary:'Conoce el propósito, herramientas, responsabilidades y ruta completa de la operación.',content:`
+ <h2>Módulo 1 · Modelo MIRED Call en Casa</h2>
+ <p><b>Objetivo:</b> entender cómo funciona la operación y qué se espera de cada asesor.</p>
+ <div class="success"><b>Idea central:</b> No somos personas realizando llamadas desde casa. Somos una operación comercial conectada desde diferentes lugares.</div>
+ <h3>¿Qué entrega MIRED?</h3><ul><li>CRM comercial para registrar y hacer seguimiento.</li><li>Bases de llamadas y herramientas de contacto.</li><li>Telefonía IP / plataforma Comuniquémonos.</li><li>WhatsApp y grupo de soporte.</li><li>Ofertas, material comercial y backoffice.</li><li>Proceso de cargue, agendamiento, instalación y cobro de comisiones.</li></ul>
+ <h3>¿Qué coloca el asesor?</h3><ul><li>Disciplina y puntualidad.</li><li>Conocimiento de la oferta.</li><li>Escucha y capacidad de sondeo.</li><li>Registro correcto de cada gestión.</li><li>Seguimiento hasta la instalación.</li><li>Resultados.</li></ul>
+ <div class="route">BASE → LLAMADA → CONTACTO → SONDEO → COBERTURA → OFERTA → CIERRE → CRM → CARGUE → AGENDAMIENTO → INSTALACIÓN → SEGUIMIENTO → COMISIÓN</div>
+ <h3>Las 10 reglas de oro</h3><ol><li>No llamar sin CRM abierto.</li><li>No ofrecer antes de sondear.</li><li>No inventar promociones.</li><li>No prometer cobertura sin validar.</li><li>No dejar llamadas sin registrar.</li><li>No abandonar interesados.</li><li>No abandonar ventas cargadas.</li><li>No compartir información de clientes.</li><li>No discutir con clientes.</li><li>No considerar terminada una venta hasta la instalación.</li></ol>`},
+ {id:'m2',title:'Bases, telefonía y llamada profesional',summary:'Aprende a trabajar las bases, usar la telefonía y proyectar una imagen comercial profesional.',content:`
+ <h2>Módulo 2 · Bases, telefonía y llamada profesional</h2>
+ <p><b>Objetivo:</b> realizar llamadas organizadas, respetuosas y con intención comercial.</p>
+ <h3>Antes de llamar</h3><ul><li>Abre el CRM y ubica la base asignada.</li><li>Ten claro qué campaña y producto estás gestionando.</li><li>Revisa la información disponible del contacto.</li><li>Evita ruido, televisión o conversaciones alrededor.</li><li>Usa un tono claro, seguro y cordial.</li></ul>
+ <h3>Apertura recomendada</h3><div class="script">“Muy buenas tardes, ¿hablo con el señor Carlos? Don Carlos, mucho gusto. Mi nombre es Andrea, asesora del área comercial de servicios Claro Hogar. Lo contacto porque tenemos disponibilidad de nuevas alternativas de internet para su sector y quisiera hacerle una consulta muy rápida.”</div>
+ <h3>Comportamiento durante la llamada</h3><ul><li>Preséntate y explica el motivo de forma breve.</li><li>No hables demasiado rápido.</li><li>No interrumpas al cliente.</li><li>Usa el nombre del cliente con naturalidad.</li><li>No critiques al operador que tenga actualmente.</li><li>Si pide llamada posterior, registra fecha y hora.</li></ul>
+ <div class="warning"><b>Importante:</b> una base no se “quema” llamando sin estrategia. Cada contacto debe quedar clasificado correctamente para poder retomarlo.</div>`},
+ {id:'m3',title:'Sondeo, cobertura y tecnología',summary:'Identifica la necesidad y valida si la dirección trabaja con HFC/bidireccional o FTTH/fibra.',content:`
+ <h2>Módulo 3 · Sondeo, cobertura y tecnología</h2>
+ <p><b>Objetivo:</b> recomendar solo lo que realmente aplica para la dirección y necesidad del cliente.</p>
+ <h3>Preguntas de sondeo</h3><ul><li>¿Qué operador tiene actualmente?</li><li>¿Cuánto paga aproximadamente?</li><li>¿Qué velocidad maneja?</li><li>¿Cuántas personas usan el servicio?</li><li>¿Trabajan o estudian desde casa?</li><li>¿Usan streaming, videojuegos o varios televisores?</li><li>¿Tienen problemas de WiFi?</li><li>¿Necesitan televisión?</li></ul>
+ <div class="success"><b>Regla principal:</b> primero se valida la dirección y la cobertura. Después se recomienda el plan.</div>
+ <h3>HFC / red bidireccional</h3><p>HFC significa <b>Hybrid Fiber Coaxial</b>. Es una red híbrida que combina fibra óptica y cable coaxial. Para la capacitación comercial tomamos como referencia ofertas de hasta aproximadamente <b>500 Mb</b>, según disponibilidad vigente.</p>
+ <h3>FTTH / fibra óptica</h3><p>FTTH significa <b>Fiber To The Home</b>: fibra óptica hasta el hogar. Para esta tecnología se manejan alternativas de hasta aproximadamente <b>900 Mb</b>, según la oferta y cobertura vigente.</p>
+ <div class="script">“Antes de recomendarle un plan necesito validar su dirección, porque según la zona podemos tener cobertura en fibra óptica o en red bidireccional, y cada tecnología maneja velocidades y ofertas diferentes.”</div>
+ <h3>Cómo aprender cada plan</h3><ul><li>Tecnología.</li><li>Velocidad disponible.</li><li>Qué incluye.</li><li>Televisión y complementos.</li><li>Cliente ideal.</li><li>Cómo explicarlo de forma sencilla.</li><li>Objeciones frecuentes.</li><li>Cierre recomendado.</li></ul>
+ <div class="warning">Los precios y promociones pueden cambiar. Nunca memorices una promoción como si fuera permanente: consulta siempre la oferta vigente del sistema o catálogo autorizado.</div>`},
+ {id:'m4',title:'Argumentación, objeciones y cierre',summary:'Convierte el sondeo en una recomendación clara y aprende a avanzar frente a objeciones.',content:`
+ <h2>Módulo 4 · Argumentación, objeciones y cierre</h2>
+ <p><b>Objetivo:</b> llevar la conversación desde la necesidad hasta una decisión concreta.</p>
+ <h3>No vendas megas: vende solución</h3><p>La recomendación debe conectar la necesidad con el beneficio. Si hay varios equipos, trabajo desde casa y streaming, explica por qué una mayor capacidad puede dar una mejor experiencia. Si el cliente necesita televisión, presenta el paquete que aplique.</p>
+ <h3>Objeciones frecuentes</h3>
+ <div class="box"><b>“Estoy bien con mi operador.”</b><br>“Perfecto. Permítame mostrarle qué alternativa tenemos disponible para que pueda comparar.”</div>
+ <div class="box"><b>“Está caro.”</b><br>Antes de bajar precio, pregunta: “¿Contra qué precio o servicio lo está comparando?”</div>
+ <div class="box"><b>“Mándeme la información por WhatsApp.”</b><br>Confirma primero dirección/cobertura y dos datos clave para enviar opciones que sí aplican.</div>
+ <div class="box"><b>“Lo voy a pensar.”</b><br>Pregunta qué punto necesita revisar: precio, velocidad, instalación, permanencia, televisión u otro.</div>
+ <div class="box"><b>“No tengo tiempo.”</b><br>Programa una llamada concreta y déjala registrada.</div>
+ <h3>Cierre</h3><div class="script">“Ya confirmamos que en su dirección tenemos cobertura y esta alternativa se ajusta a lo que me comentó. Si le parece, avancemos con los datos necesarios para dejar la solicitud registrada y gestionar la instalación.”</div>
+ <div class="success">El cierre no es presionar. Es ayudar al cliente a avanzar al siguiente paso con claridad.</div>`},
+ {id:'m5',title:'CRM, WhatsApp y soporte',summary:'Registra cada gestión, usa WhatsApp como apoyo y aprende cuándo escalar una novedad.',content:`
+ <h2>Módulo 5 · CRM, WhatsApp y soporte</h2>
+ <p><b>Objetivo:</b> que ninguna oportunidad se pierda por falta de registro o seguimiento.</p>
+ <h3>Qué registrar después de cada llamada</h3><ul><li>Resultado del contacto.</li><li>Operador actual y valor aproximado cuando aplique.</li><li>Necesidad detectada.</li><li>Cobertura pendiente o confirmada.</li><li>Plan u oferta conversada.</li><li>Objeción principal.</li><li>Fecha y hora del próximo contacto.</li></ul>
+ <div class="box"><b>Observación útil:</b> “Cliente con Movistar, paga aprox. $82.000, interesado en mayor velocidad; llamar después de las 6 p. m.”</div>
+ <div class="warning"><b>Observación inútil:</b> “Interesado” o “Llamar luego”. Eso no permite continuar bien la gestión.</div>
+ <h3>WhatsApp</h3><ul><li>Úsalo para continuar una conversación, no para reemplazar el sondeo.</li><li>Envía información que corresponda a la cobertura validada.</li><li>Evita saturar al cliente con catálogos sin contexto.</li><li>Registra en CRM lo que se envió y el siguiente paso.</li></ul>
+ <h3>Grupo de soporte</h3><p>Cuando necesites ayuda, envía información completa:</p><div class="script">ASESOR / CLIENTE / CIUDAD / DIRECCIÓN / PRODUCTO / NOVEDAD</div>
+ <p>Entre más clara sea la novedad, más rápido puede ayudarte soporte.</p>`},
+ {id:'m6',title:'Venta, agendamiento, instalación y comisión',summary:'Domina el recorrido posterior al cierre: cargue, validación, agenda, instalación, seguimiento y pago.',content:`
+ <h2>Módulo 6 · Venta, agendamiento, instalación y comisión</h2>
+ <p><b>Objetivo:</b> entender que aceptar la oferta no significa que la venta ya terminó.</p>
+ <h3>Después del cierre</h3><ol><li>Completa los datos correctamente.</li><li>Registra la venta en el CRM.</li><li>Realiza o solicita el cargue según el proceso.</li><li>Verifica validaciones pendientes.</li><li>Confirma agendamiento.</li><li>Haz seguimiento a la instalación.</li><li>Gestiona novedades o reagendamientos.</li><li>Confirma que el servicio quedó instalado.</li><li>Continúa al proceso de cobro de comisión.</li></ol>
+ <div class="route">VENTA ACEPTADA ≠ VENTA TERMINADA · LA META ES INSTALACIÓN CORRECTA</div>
+ <h3>Si el técnico no llega</h3><p>No cierres el caso ni abandones al cliente. Revisa la novedad, contacta al cliente, solicita soporte y gestiona el reagendamiento.</p>
+ <h3>Calidad</h3><p>La venta debe ser clara, verificable y coherente con lo ofrecido. Nunca prometas condiciones que no aparecen en la oferta autorizada.</p>
+ <h3>Comisiones</h3><p>El pago depende de las condiciones comerciales vigentes y del servicio correctamente instalado. El CRM permite gestionar el cobro de comisiones con la información requerida.</p>
+ <div class="success"><b>Resultado esperado:</b> asesor que llama, vende, registra, acompaña e instala. Ese es el ciclo completo de MIRED Call en Casa.</div>`}
+];
 
 function setCheck(text,error=false){const x=$('checkingText');x.textContent=text;x.className='status'+(error?' error':'')}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function shuffle(arr){arr=[...arr];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 function timeout(p,ms,msg){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error(msg)),ms))])}
+function pct(){return Math.round(completed.length/modules.length*100)}
+function courseDone(){return modules.every(m=>completed.includes(m.id))}
 
 async function init(){
  try{
    if(!window.supabase)throw new Error('No se pudo cargar el componente de conexión. Actualiza la página.');
    client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-   setCheck('Validando tu sesión del CRM...');
    const sessionResult=await timeout(client.auth.getSession(),8000,'La sesión tardó demasiado en responder.');
    const session=sessionResult?.data?.session;
    if(!session){setCheck('No encontramos una sesión activa. Vuelve al CRM, inicia sesión y entra nuevamente a Academia.',true);return}
    currentUser=session.user;
-   setCheck('Identificando tu perfil...');
    const profileResult=await timeout(client.from('perfiles').select('nombre,email,rol,grupo').eq('user_id',currentUser.id).single(),8000,'No fue posible leer tu perfil.');
    if(profileResult.error)throw profileResult.error;
    profile=profileResult.data;
    if(!profile)throw new Error('No se encontró tu perfil de usuario.');
    const allowed=profile.grupo==='callcenter'||profile.rol==='coordinador'||profile.rol==='administrador';
    if(!allowed){setCheck('Esta Academia es exclusiva para la fuerza comercial Call Center.',true);return}
-   $('advisorName').textContent=profile.nombre||'Asesor';
-   $('advisorEmail').textContent=profile.email||currentUser.email||'';
-   $('advisorGroup').textContent=profile.grupo==='callcenter'?'Call Center':'Coordinación';
-   $('checking').classList.add('hidden');
-   $('home').classList.remove('hidden');
-   await loadHistory();
+   $('advisorName').textContent=profile.nombre||'Asesor';$('advisorEmail').textContent=profile.email||currentUser.email||'';$('advisorGroup').textContent=profile.grupo==='callcenter'?'Call Center':'Coordinación';
+   await Promise.all([loadCourseProgress(),loadHistory()]);
+   $('checking').classList.add('hidden');$('app').classList.remove('hidden');renderCourse();renderProgress();updateCourseUi();
  }catch(err){console.error(err);setCheck('No fue posible abrir la Academia: '+(err?.message||err),true)}
 }
 
+async function loadCourseProgress(){
+ const r=await client.from('academia_progreso').select('modulos_completados,curso_completado').eq('user_id',currentUser.id).maybeSingle();
+ if(r.error)throw r.error;
+ if(r.data){completed=Array.isArray(r.data.modulos_completados)?r.data.modulos_completados:[];return}
+ const ins=await client.from('academia_progreso').insert({user_id:currentUser.id,modulos_completados:[],curso_completado:false});
+ if(ins.error)throw ins.error;completed=[];
+}
+
+async function saveCourseProgress(){
+ const done=courseDone();
+ const r=await client.from('academia_progreso').update({modulos_completados:completed,curso_completado:done,actualizado_en:new Date().toISOString()}).eq('user_id',currentUser.id);
+ if(r.error)throw r.error;
+}
+
 async function loadHistory(){
- try{
-   const r=await client.from('academia_evaluaciones').select('intento,puntaje,aprobado,creado_en').eq('user_id',currentUser.id).order('intento',{ascending:false});
-   if(r.error)throw r.error;
-   const a=r.data||[];
-   $('nextAttempt').textContent=(a[0]?.intento||0)+1;
-   $('historyBox').innerHTML=a.length?a.slice(0,6).map(v=>'<div style="padding:8px 0;border-bottom:1px solid #dce6f1"><b>Intento '+v.intento+'</b> · '+Math.round(v.puntaje)+'/100 · '+(v.aprobado?'Aprobado':'Refuerzo')+'<br><small>'+new Date(v.creado_en).toLocaleString('es-CO')+'</small></div>').join(''):'Sin intentos anteriores.';
- }catch(err){$('historyBox').innerHTML='<span class="bad">No fue posible cargar el historial, pero puedes presentar la evaluación.</span>'}
+ try{const r=await client.from('academia_evaluaciones').select('intento,puntaje,aprobado,creado_en').eq('user_id',currentUser.id).order('intento',{ascending:false});if(r.error)throw r.error;history=r.data||[]}catch{history=[]}
+}
+
+function updateCourseUi(){
+ const percent=pct();$('profileProgress').textContent=percent+'%';$('courseBar').style.width=percent+'%';$('courseCount').textContent=completed.length+' de '+modules.length+' módulos';$('sumModules').textContent=completed.length+'/'+modules.length;$('sumPercent').textContent=percent+'%';$('sumScore').textContent=history.length?Math.max(...history.map(x=>Number(x.puntaje||0)))+'/100':'—';
+ const done=courseDone();$('startBtn').disabled=!done;$('evaluationLock').classList.toggle('hidden',done);$('attemptInfo').textContent=done?'Curso completado. Ya puedes presentar la evaluación.':'Completa primero todos los módulos.';
+ $('historyBox').innerHTML=history.length?history.slice(0,8).map(v=>'<div style="padding:8px 0;border-bottom:1px solid #dce6f1"><b>Intento '+v.intento+'</b> · '+Math.round(v.puntaje)+'/100 · '+(v.aprobado?'Aprobado':'Refuerzo')+'<br><small>'+new Date(v.creado_en).toLocaleString('es-CO')+'</small></div>').join(''):'Sin intentos anteriores.';
+}
+
+function renderCourse(){
+ $('courseGrid').innerHTML=modules.map((m,i)=>{const done=completed.includes(m.id);return '<div class="module '+(done?'done':'')+'"><div class="num">MÓDULO '+(i+1)+'</div><h3>'+esc(m.title)+'</h3><p>'+esc(m.summary)+'</p>'+(done?'<span class="donebadge">✓ Completado</span><br><br>':'')+'<button class="btn '+(done?'ghost':'primary')+'" onclick="window.openAcademyModule(\''+m.id+'\')">'+(done?'Repasar módulo':'Abrir módulo')+'</button></div>'}).join('');
+}
+
+function renderProgress(){
+ $('progressModules').innerHTML=modules.map((m,i)=>'<div style="padding:11px 0;border-bottom:1px solid #e6eef7;display:flex;justify-content:space-between;gap:10px"><span><b>Módulo '+(i+1)+':</b> '+esc(m.title)+'</span><b class="'+(completed.includes(m.id)?'ok':'warn')+'">'+(completed.includes(m.id)?'✓ Completado':'Pendiente')+'</b></div>').join('');
+ updateCourseUi();
+}
+
+window.openAcademyModule=function(id){const m=modules.find(x=>x.id===id);if(!m)return;$('courseView').classList.add('hidden');$('progressView').classList.add('hidden');$('evaluationView').classList.add('hidden');$('lessonView').classList.remove('hidden');const done=completed.includes(id);$('lessonContent').innerHTML=m.content+'<div class="lesson-actions"><button class="btn ghost" onclick="window.backToCourse()">← Volver al curso</button><button class="btn '+(done?'ghost':'primary')+'" onclick="window.completeAcademyModule(\''+id+'\')">'+(done?'✓ Módulo completado':'Marcar módulo como completado')+'</button></div>';window.scrollTo(0,0)};
+window.backToCourse=function(){$('lessonView').classList.add('hidden');$('courseView').classList.remove('hidden');window.scrollTo(0,0)};
+window.completeAcademyModule=async function(id){if(!completed.includes(id))completed.push(id);try{await saveCourseProgress();renderCourse();renderProgress();updateCourseUi();window.backToCourse();if(courseDone())alert('¡Curso completado! Ya tienes habilitada la evaluación final.')}catch(e){alert('No fue posible guardar el progreso: '+(e?.message||e))}};
+
+function switchTab(tab){
+ $('lessonView').classList.add('hidden');$('courseView').classList.toggle('hidden',tab!=='course');$('progressView').classList.toggle('hidden',tab!=='progress');$('evaluationView').classList.toggle('hidden',tab!=='evaluation');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='progress')renderProgress();window.scrollTo(0,0)
 }
 
 function collectAnswers(){const out={};for(const q of questions){const id=q.id;if(q.type==='open')out[id]=document.querySelector('textarea[name="'+id+'"]')?.value.trim()||'';else out[id]=document.querySelector('input[name="'+id+'"]:checked')?.value||''}return out}
 function updateProgress(){const a=collectAnswers();const n=Object.values(a).filter(v=>String(v).trim()).length;$('progressBar').style.width=(n/40*100)+'%';$('progressText').textContent=n+' de 40 respondidas'}
 
 async function startExam(){
+ if(!courseDone()){alert('Completa primero los 6 módulos del curso.');return}
  const btn=$('startBtn');btn.disabled=true;btn.textContent='Cargando preguntas...';
- try{
-   const response=await timeout(fetch(QUESTIONS_URL,{cache:'no-store'}),10000,'No fue posible conectar con el banco de preguntas.');
-   if(!response.ok)throw new Error('El banco de preguntas respondió con error '+response.status+'.');
-   const raw=await response.json();
-   if(!Array.isArray(raw)||raw.length!==40)throw new Error('El banco de preguntas no devolvió las 40 preguntas.');
-   questions=shuffle(raw).map(q=>{const [id,type,text,...opts]=q;return {id,type,text,opts:opts.length?shuffle(opts):[]}});
-   $('home').classList.add('hidden');$('exam').classList.remove('hidden');$('examUser').textContent=profile.nombre||'Asesor';
-   $('examForm').innerHTML=questions.map((q,i)=>'<div class="qcard"><div class="qnum">Pregunta '+(i+1)+' de 40 · '+(q.type==='vf'?'Verdadero/Falso':q.type==='mc'?'Selección múltiple':q.type==='case'?'Caso práctico':'Respuesta escrita')+'</div><div class="qtext">'+esc(q.text)+'</div>'+(q.opts.length?q.opts.map(o=>'<label class="option"><input type="radio" name="'+q.id+'" value="'+o[0]+'"> '+esc(o[1])+'</label>').join(''):'<textarea name="'+q.id+'" placeholder="Escribe tu respuesta..."></textarea>')+'</div>').join('');
-   $('examForm').addEventListener('input',updateProgress);$('examForm').addEventListener('change',updateProgress);updateProgress();window.scrollTo(0,0);
- }catch(err){alert('No se pudo cargar la evaluación: '+(err?.message||err))}finally{btn.disabled=false;btn.textContent='Iniciar evaluación'}
+ try{const response=await timeout(fetch(QUESTIONS_URL,{cache:'no-store'}),10000,'No fue posible conectar con el banco de preguntas.');if(!response.ok)throw new Error('El banco de preguntas respondió con error '+response.status+'.');const raw=await response.json();if(!Array.isArray(raw)||raw.length!==40)throw new Error('El banco de preguntas no devolvió las 40 preguntas.');questions=shuffle(raw).map(q=>{const [id,type,text,...opts]=q;return {id,type,text,opts:opts.length?shuffle(opts):[]}});$('app').classList.add('hidden');$('exam').classList.remove('hidden');$('examUser').textContent=profile.nombre||'Asesor';$('examForm').innerHTML=questions.map((q,i)=>'<div class="qcard"><div class="qnum">Pregunta '+(i+1)+' de 40 · '+(q.type==='vf'?'Verdadero/Falso':q.type==='mc'?'Selección múltiple':q.type==='case'?'Caso práctico':'Respuesta escrita')+'</div><div class="qtext">'+esc(q.text)+'</div>'+(q.opts.length?q.opts.map(o=>'<label class="option"><input type="radio" name="'+q.id+'" value="'+o[0]+'"> '+esc(o[1])+'</label>').join(''):'<textarea name="'+q.id+'" placeholder="Escribe tu respuesta..."></textarea>')+'</div>').join('');$('examForm').addEventListener('input',updateProgress);$('examForm').addEventListener('change',updateProgress);updateProgress();window.scrollTo(0,0)}catch(err){alert('No se pudo cargar la evaluación: '+(err?.message||err))}finally{btn.disabled=!courseDone();btn.textContent='Iniciar evaluación'}
 }
 
 async function finishExam(){
- const answers=collectAnswers();const missing=Object.values(answers).filter(v=>!String(v).trim()).length;if(missing&&!confirm('Faltan '+missing+' pregunta(s). ¿Finalizar de todas formas?'))return;
- const btn=$('finishBtn');btn.disabled=true;btn.textContent='Calificando...';
- try{
-   const {data:{session}}=await client.auth.getSession();if(!session)throw new Error('Tu sesión venció.');
-   const r=await fetch(GRADE_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},body:JSON.stringify({respuestas:answers})});
-   const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||'No fue posible calificar.');
-   $('exam').classList.add('hidden');$('result').classList.remove('hidden');$('resultName').textContent=profile.nombre||'Asesor';$('score').textContent=Math.round(data.puntaje);$('resultStatus').textContent=data.aprobado?'APROBADO':'REQUIERE REFUERZO';$('resultStatus').className=data.aprobado?'ok':'bad';$('attemptText').textContent='Intento '+data.intento+' · '+Math.round(data.puntaje)+'/100';$('areas').innerHTML=Object.entries(data.desglose||{}).map(([k,v])=>'<div class="area"><b>'+esc(k)+'</b><small>'+Math.round(v.obtenido)+' de '+v.maximo+' puntos</small></div>').join('');window.scrollTo(0,0);
- }catch(err){alert(err?.message||err)}finally{btn.disabled=false;btn.textContent='Finalizar y calificar'}
+ const answers=collectAnswers();const missing=Object.values(answers).filter(v=>!String(v).trim()).length;if(missing&&!confirm('Faltan '+missing+' pregunta(s). ¿Finalizar de todas formas?'))return;const btn=$('finishBtn');btn.disabled=true;btn.textContent='Calificando...';
+ try{const {data:{session}}=await client.auth.getSession();if(!session)throw new Error('Tu sesión venció.');const r=await fetch(GRADE_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},body:JSON.stringify({respuestas:answers})});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||'No fue posible calificar.');$('exam').classList.add('hidden');$('result').classList.remove('hidden');$('resultName').textContent=profile.nombre||'Asesor';$('score').textContent=Math.round(data.puntaje);$('resultStatus').textContent=data.aprobado?'APROBADO':'REQUIERE REFUERZO';$('resultStatus').className=data.aprobado?'ok':'bad';$('attemptText').textContent='Intento '+data.intento+' · '+Math.round(data.puntaje)+'/100';$('areas').innerHTML=Object.entries(data.desglose||{}).map(([k,v])=>'<div class="area"><b>'+esc(k)+'</b><small>'+Math.round(v.obtenido)+' de '+v.maximo+' puntos</small></div>').join('');window.scrollTo(0,0)}catch(err){alert(err?.message||err)}finally{btn.disabled=false;btn.textContent='Finalizar y calificar'}
 }
 
-document.addEventListener('DOMContentLoaded',()=>{$('startBtn').addEventListener('click',startExam);$('cancelBtn').addEventListener('click',()=>{if(confirm('¿Cancelar? Este intento no se guardará.'))location.reload()});$('finishBtn').addEventListener('click',finishExam);init()});
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));$('startBtn').addEventListener('click',startExam);$('cancelBtn').addEventListener('click',()=>{if(confirm('¿Cancelar? Este intento no se guardará.'))location.reload()});$('finishBtn').addEventListener('click',finishExam);init()});
 })();
 </script>
 </body>
