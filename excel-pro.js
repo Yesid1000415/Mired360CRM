@@ -85,3 +85,108 @@ function exportExcelPro(){
     alert('No se pudo generar el Excel Pro. '+String(e.message||e));
   }
 }
+
+/* Administración segura de usuarios de asesores.
+   Se carga después del CRM y reemplaza únicamente las funciones de la sección Usuarios. */
+window.addEventListener('load',()=>{
+  const ADMIN_ADVISOR_URL='https://lpiusomsuswdcraoozdn.supabase.co/functions/v1/administrar-asesor';
+  window.miredAdvisorAdminCache=[];
+
+  const html=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  const groupLabel=g=>g==='callcenter'?'Call Center':'Asesores actuales';
+
+  async function advisorAdminRequest(payload){
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('La sesión terminó. Ingresa nuevamente al CRM.');
+    const res=await fetch(ADMIN_ADVISOR_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(data.error||'No fue posible realizar la operación.');
+    return data;
+  }
+
+  function prepareAdvisorTable(){
+    const table=document.querySelector('#usuarios table');
+    if(!table)return;
+    const head=table.querySelector('thead tr');
+    if(head)head.innerHTML='<th>Nombre</th><th>Correo</th><th>Grupo</th><th>Estado</th><th>Fecha de creación</th><th>Acciones</th>';
+    table.style.minWidth='1050px';
+  }
+
+  window.loadAdvisorUsers=async function(){
+    prepareAdvisorTable();
+    const {data,error}=await supabaseClient.from('perfiles').select('user_id,nombre,email,rol,grupo,activo,creado_en').order('creado_en',{ascending:false});
+    const rows=document.getElementById('advisorUsersRows');
+    if(!rows)return;
+    if(error){rows.innerHTML='<tr><td colspan="6" class="empty">No fue posible cargar los usuarios: '+html(error.message)+'</td></tr>';return;}
+    const advisors=(data||[]).filter(x=>x.rol==='asesor');
+    window.miredAdvisorAdminCache=advisors;
+    const count=document.getElementById('advisorUsersCount');
+    if(count)count.textContent=advisors.length+' asesor(es)';
+    rows.innerHTML=advisors.map(x=>{
+      const active=x.activo!==false;
+      return `<tr>
+        <td><b>${html(x.nombre||'')}</b></td>
+        <td>${html(x.email||'')}</td>
+        <td><span class="badge">${html(groupLabel(x.grupo))}</span></td>
+        <td><span class="badge ${active?'ok':'danger'}">${active?'Activo':'Desactivado'}</span></td>
+        <td>${html(new Date(x.creado_en).toLocaleDateString('es-CO'))}</td>
+        <td style="white-space:nowrap">
+          <button class="btn ghost" onclick="editAdvisor('${x.user_id}')">✏️ Editar</button>
+          <button class="btn ghost" onclick="toggleAdvisor('${x.user_id}',${active?'false':'true'})">${active?'⛔ Desactivar':'✅ Reactivar'}</button>
+          <button class="btn danger-btn" onclick="deleteTestAdvisor('${x.user_id}')">🗑️ Eliminar prueba</button>
+        </td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="6" class="empty">Aún no hay asesores registrados.</td></tr>';
+  };
+
+  window.editAdvisor=async function(userId){
+    const x=window.miredAdvisorAdminCache.find(a=>a.user_id===userId);
+    if(!x)return;
+    const nombre=prompt('Nombre y apellidos del asesor:',x.nombre||'');
+    if(nombre===null)return;
+    const email=prompt('Correo electrónico del asesor:',x.email||'');
+    if(email===null)return;
+    const grupoActual=x.grupo==='callcenter'?'callcenter':'asesores_actuales';
+    const grupo=prompt('Grupo comercial:\n\nEscribe: callcenter o asesores_actuales',grupoActual);
+    if(grupo===null)return;
+    const g=String(grupo).trim().toLowerCase();
+    if(!['callcenter','asesores_actuales'].includes(g)){alert('Grupo no válido. Usa callcenter o asesores_actuales.');return;}
+    if(!nombre.trim()||!/^\S+@\S+\.\S+$/.test(email.trim())){alert('Nombre o correo no válidos.');return;}
+    if(!confirm('¿Guardar los cambios de '+(x.nombre||x.email)+'?'))return;
+    try{
+      const data=await advisorAdminRequest({action:'edit',user_id:userId,nombre:nombre.trim(),email:email.trim(),grupo:g});
+      await window.loadAdvisorUsers();
+      alert(data.message||'Asesor actualizado correctamente.');
+    }catch(e){alert(e.message||'No fue posible editar el asesor.');}
+  };
+
+  window.toggleAdvisor=async function(userId,activar){
+    const x=window.miredAdvisorAdminCache.find(a=>a.user_id===userId);
+    if(!x)return;
+    const action=activar?'reactivar':'desactivar';
+    const text=activar?'podrá volver a ingresar al CRM':'no podrá ingresar al CRM, pero todo su historial se conservará';
+    if(!confirm(`¿${action.charAt(0).toUpperCase()+action.slice(1)} a ${x.nombre||x.email}?\n\nEl asesor ${text}.`))return;
+    try{
+      const data=await advisorAdminRequest({action:'toggle',user_id:userId,activar:Boolean(activar)});
+      await window.loadAdvisorUsers();
+      alert(data.message||'Estado actualizado.');
+    }catch(e){alert(e.message||'No fue posible cambiar el estado.');}
+  };
+
+  window.deleteTestAdvisor=async function(userId){
+    const x=window.miredAdvisorAdminCache.find(a=>a.user_id===userId);
+    if(!x)return;
+    if(!confirm(`ELIMINACIÓN PERMANENTE\n\nEsta opción es solamente para usuarios de prueba sin actividad.\n\n¿Quieres intentar eliminar a ${x.nombre||x.email}?`))return;
+    const verify=prompt('Para confirmar escribe exactamente: ELIMINAR');
+    if(verify!=='ELIMINAR')return;
+    try{
+      const data=await advisorAdminRequest({action:'delete',user_id:userId});
+      await window.loadAdvisorUsers();
+      alert(data.message||'Usuario eliminado definitivamente.');
+    }catch(e){alert(e.message||'No fue posible eliminar el usuario.');}
+  };
+});
