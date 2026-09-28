@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Academia MIRED Call Center</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--n:#071a33;--n2:#0b2d52;--b:#0f7cff;--c:#00b8ff;--bg:#f5f8fc;--t:#132238;--m:#6c7c90;--l:#dce6f1;--ok:#08774b;--d:#b4232d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,textarea{font:inherit}.hidden{display:none!important}.top{background:linear-gradient(135deg,var(--n),var(--n2));color:white;padding:18px}.topin{max-width:1060px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-weight:900}.brand small{display:block;color:#9bdfff;font-weight:600;margin-top:3px}.wrap{max-width:1060px;margin:22px auto;padding:0 14px 35px}.card,.hero,.qcard{background:white;border:1px solid var(--l);border-radius:18px;box-shadow:0 10px 28px #0423420e}.card{padding:18px;margin-bottom:14px}.hero{padding:22px;background:linear-gradient(135deg,#fff,#eef7ff)}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l);color:var(--t)}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border-radius:999px;background:#eef6ff;border:1px solid #cce5ff;color:#0756a6;font-size:12px;font-weight:800}.profile{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.stat{background:#fff;border:1px solid var(--l);border-radius:13px;padding:12px}.stat small{display:block;color:var(--m);font-size:11px;margin-bottom:5px}.status{padding:14px;border-radius:13px;background:#eef8ff;border:1px solid #c6eaff;color:#27577a;font-weight:700}.status.error{background:#fff1f2;border-color:#fecdd3;color:var(--d)}.progress{height:11px;background:#e6eef7;border-radius:999px;overflow:hidden;margin:12px 0}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--b),var(--c))}.qcard{padding:18px;margin:14px 0}.qnum{font-size:12px;font-weight:800;color:var(--b);margin-bottom:7px}.qtext{font-size:16px;font-weight:800;line-height:1.45;margin-bottom:12px}.option{display:block;border:1px solid var(--l);border-radius:11px;padding:11px;margin:7px 0;cursor:pointer}.option:hover{background:#f6fbff}.option input{width:auto;margin-right:7px}.qcard textarea{width:100%;min-height:110px;padding:11px;border:1px solid #cfdceb;border-radius:11px;resize:vertical}.actions{display:flex;justify-content:space-between;gap:10px}.result{text-align:center}.score{width:145px;height:145px;border-radius:50%;border:11px solid #dcecf8;margin:18px auto;display:grid;place-items:center;font-size:34px;font-weight:900;color:var(--b)}.areas{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}.area{border:1px solid var(--l);border-radius:12px;padding:12px}.area small{display:block;color:var(--m);margin-top:4px}.ok{color:var(--ok)}.bad{color:var(--d)}@media(max-width:720px){.profile,.areas{grid-template-columns:1fr 1fr}.topin{align-items:flex-start;flex-direction:column}}@media(max-width:520px){.profile,.areas{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top"><div class="topin"><div class="brand">ACADEMIA MIRED CALL EN CASA<small>Nueva Fuerza Comercial · Claro Hogar y PYMES</small></div><button class="btn ghost" onclick="location.href='index.html'">Volver al CRM</button></div></div>
+<main class="wrap">
+<section id="checking" class="card"><div id="checkingText" class="status">Validando tu sesión del CRM...</div></section>
+<section id="home" class="hidden">
+  <div class="hero"><h1>Evaluación final</h1><p>Tu usuario del CRM identifica automáticamente quién presenta la evaluación.</p><div class="chips"><span class="chip">40 preguntas</span><span class="chip">100 puntos</span><span class="chip">Aprobación: 80</span><span class="chip">Resultado automático</span></div></div>
+  <div class="profile"><div class="stat"><small>ASESOR</small><b id="advisorName">-</b></div><div class="stat"><small>CORREO</small><b id="advisorEmail">-</b></div><div class="stat"><small>GRUPO</small><b id="advisorGroup">-</b></div><div class="stat"><small>PRÓXIMO INTENTO</small><b id="nextAttempt">1</b></div></div>
+  <div class="card"><h2>Evaluación de certificación</h2><p>Las preguntas y opciones cambian de orden en cada intento. Al terminar recibirás tu calificación y el resultado por áreas.</p><button id="startBtn" class="btn primary">Iniciar evaluación</button></div>
+  <div class="card"><h2>Mis resultados</h2><div id="historyBox">Sin intentos anteriores.</div></div>
+</section>
+<section id="exam" class="hidden">
+  <div class="hero"><h1>Evaluación en curso</h1><p id="examUser"></p><div class="progress"><div id="progressBar"></div></div><p id="progressText">0 de 40 respondidas</p></div>
+  <form id="examForm"></form>
+  <div class="card actions"><button type="button" id="cancelBtn" class="btn ghost">Cancelar</button><button type="button" id="finishBtn" class="btn primary">Finalizar y calificar</button></div>
+</section>
+<section id="result" class="hidden"><div class="card result"><h1>Resultado final</h1><p id="resultName"></p><div id="score" class="score">0</div><h2 id="resultStatus"></h2><p id="attemptText"></p><div id="areas" class="areas"></div><br><button class="btn primary" onclick="location.reload()">Volver a Academia</button></div></section>
+</main>
+<script>
+(function(){
+'use strict';
+const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
+const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
+const QUESTIONS_URL=SUPABASE_URL+'/functions/v1/preguntas-academia-callcenter';
+const GRADE_URL=SUPABASE_URL+'/functions/v1/calificar-academia';
+const $=id=>document.getElementById(id);
+let client=null,currentUser=null,profile=null,questions=[];
+
+function setCheck(text,error=false){const x=$('checkingText');x.textContent=text;x.className='status'+(error?' error':'')}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function shuffle(arr){arr=[...arr];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function timeout(p,ms,msg){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error(msg)),ms))])}
+
+async function init(){
+ try{
+   if(!window.supabase)throw new Error('No se pudo cargar el componente de conexión. Actualiza la página.');
+   client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+   setCheck('Validando tu sesión del CRM...');
+   const sessionResult=await timeout(client.auth.getSession(),8000,'La sesión tardó demasiado en responder.');
+   const session=sessionResult?.data?.session;
+   if(!session){setCheck('No encontramos una sesión activa. Vuelve al CRM, inicia sesión y entra nuevamente a Academia.',true);return}
+   currentUser=session.user;
+   setCheck('Identificando tu perfil...');
+   const profileResult=await timeout(client.from('perfiles').select('nombre,email,rol,grupo').eq('user_id',currentUser.id).single(),8000,'No fue posible leer tu perfil.');
+   if(profileResult.error)throw profileResult.error;
+   profile=profileResult.data;
+   if(!profile)throw new Error('No se encontró tu perfil de usuario.');
+   const allowed=profile.grupo==='callcenter'||profile.rol==='coordinador'||profile.rol==='administrador';
+   if(!allowed){setCheck('Esta Academia es exclusiva para la fuerza comercial Call Center.',true);return}
+   $('advisorName').textContent=profile.nombre||'Asesor';
+   $('advisorEmail').textContent=profile.email||currentUser.email||'';
+   $('advisorGroup').textContent=profile.grupo==='callcenter'?'Call Center':'Coordinación';
+   $('checking').classList.add('hidden');
+   $('home').classList.remove('hidden');
+   await loadHistory();
+ }catch(err){console.error(err);setCheck('No fue posible abrir la Academia: '+(err?.message||err),true)}
+}
+
+async function loadHistory(){
+ try{
+   const r=await client.from('academia_evaluaciones').select('intento,puntaje,aprobado,creado_en').eq('user_id',currentUser.id).order('intento',{ascending:false});
+   if(r.error)throw r.error;
+   const a=r.data||[];
+   $('nextAttempt').textContent=(a[0]?.intento||0)+1;
+   $('historyBox').innerHTML=a.length?a.slice(0,6).map(v=>'<div style="padding:8px 0;border-bottom:1px solid #dce6f1"><b>Intento '+v.intento+'</b> · '+Math.round(v.puntaje)+'/100 · '+(v.aprobado?'Aprobado':'Refuerzo')+'<br><small>'+new Date(v.creado_en).toLocaleString('es-CO')+'</small></div>').join(''):'Sin intentos anteriores.';
+ }catch(err){$('historyBox').innerHTML='<span class="bad">No fue posible cargar el historial, pero puedes presentar la evaluación.</span>'}
+}
+
+function collectAnswers(){const out={};for(const q of questions){const id=q.id;if(q.type==='open')out[id]=document.querySelector('textarea[name="'+id+'"]')?.value.trim()||'';else out[id]=document.querySelector('input[name="'+id+'"]:checked')?.value||''}return out}
+function updateProgress(){const a=collectAnswers();const n=Object.values(a).filter(v=>String(v).trim()).length;$('progressBar').style.width=(n/40*100)+'%';$('progressText').textContent=n+' de 40 respondidas'}
+
+async function startExam(){
+ const btn=$('startBtn');btn.disabled=true;btn.textContent='Cargando preguntas...';
+ try{
+   const response=await timeout(fetch(QUESTIONS_URL,{cache:'no-store'}),10000,'No fue posible conectar con el banco de preguntas.');
+   if(!response.ok)throw new Error('El banco de preguntas respondió con error '+response.status+'.');
+   const raw=await response.json();
+   if(!Array.isArray(raw)||raw.length!==40)throw new Error('El banco de preguntas no devolvió las 40 preguntas.');
+   questions=shuffle(raw).map(q=>{const [id,type,text,...opts]=q;return {id,type,text,opts:opts.length?shuffle(opts):[]}});
+   $('home').classList.add('hidden');$('exam').classList.remove('hidden');$('examUser').textContent=profile.nombre||'Asesor';
+   $('examForm').innerHTML=questions.map((q,i)=>'<div class="qcard"><div class="qnum">Pregunta '+(i+1)+' de 40 · '+(q.type==='vf'?'Verdadero/Falso':q.type==='mc'?'Selección múltiple':q.type==='case'?'Caso práctico':'Respuesta escrita')+'</div><div class="qtext">'+esc(q.text)+'</div>'+(q.opts.length?q.opts.map(o=>'<label class="option"><input type="radio" name="'+q.id+'" value="'+o[0]+'"> '+esc(o[1])+'</label>').join(''):'<textarea name="'+q.id+'" placeholder="Escribe tu respuesta..."></textarea>')+'</div>').join('');
+   $('examForm').addEventListener('input',updateProgress);$('examForm').addEventListener('change',updateProgress);updateProgress();window.scrollTo(0,0);
+ }catch(err){alert('No se pudo cargar la evaluación: '+(err?.message||err))}finally{btn.disabled=false;btn.textContent='Iniciar evaluación'}
+}
+
+async function finishExam(){
+ const answers=collectAnswers();const missing=Object.values(answers).filter(v=>!String(v).trim()).length;if(missing&&!confirm('Faltan '+missing+' pregunta(s). ¿Finalizar de todas formas?'))return;
+ const btn=$('finishBtn');btn.disabled=true;btn.textContent='Calificando...';
+ try{
+   const {data:{session}}=await client.auth.getSession();if(!session)throw new Error('Tu sesión venció.');
+   const r=await fetch(GRADE_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY},body:JSON.stringify({respuestas:answers})});
+   const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||'No fue posible calificar.');
+   $('exam').classList.add('hidden');$('result').classList.remove('hidden');$('resultName').textContent=profile.nombre||'Asesor';$('score').textContent=Math.round(data.puntaje);$('resultStatus').textContent=data.aprobado?'APROBADO':'REQUIERE REFUERZO';$('resultStatus').className=data.aprobado?'ok':'bad';$('attemptText').textContent='Intento '+data.intento+' · '+Math.round(data.puntaje)+'/100';$('areas').innerHTML=Object.entries(data.desglose||{}).map(([k,v])=>'<div class="area"><b>'+esc(k)+'</b><small>'+Math.round(v.obtenido)+' de '+v.maximo+' puntos</small></div>').join('');window.scrollTo(0,0);
+ }catch(err){alert(err?.message||err)}finally{btn.disabled=false;btn.textContent='Finalizar y calificar'}
+}
+
+document.addEventListener('DOMContentLoaded',()=>{$('startBtn').addEventListener('click',startExam);$('cancelBtn').addEventListener('click',()=>{if(confirm('¿Cancelar? Este intento no se guardará.'))location.reload()});$('finishBtn').addEventListener('click',finishExam);init()});
+})();
+</script>
+</body>
+</html>
