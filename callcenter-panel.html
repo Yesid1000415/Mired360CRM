@@ -19,6 +19,7 @@
   <div class="nav">
     <button id="navBases" class="active" onclick="openModule('bases')">📞 Bases de llamadas</button>
     <button id="navWa" onclick="openModule('whatsapp')">💬 WhatsApp</button>
+    <button onclick="openSupport()">📍 Validar dirección / Soporte</button>
     <button id="navSale" onclick="openModule('venta')">🧾 Subir venta</button>
     <button id="navClaims" onclick="openModule('comisiones')">💰 Cobro de comisiones</button>
     <button id="navPerf" onclick="openModule('rendimiento')">🚦 Mi rendimiento</button>
@@ -36,6 +37,7 @@
 const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const SUPPORT_GROUP='https://chat.whatsapp.com/H0CwFWhVDe8JmWCfL7WoEA';
 const modules={
   bases:{url:'bases-llamadas.html?v=20260928-3',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
   whatsapp:{url:'whatsapp-callcenter.html?v=1',title:'💬 WhatsApp Call Center',sub:'Continúa la asesoría con tus propios clientes asignados.'},
@@ -56,6 +58,7 @@ function setActive(key){
   document.getElementById(ids[key])?.classList.add('active');
 }
 function openModule(key){const m=modules[key];if(!m)return;setActive(key);frame.src=m.url}
+function openSupport(){window.open(SUPPORT_GROUP,'_blank','noopener,noreferrer')}
 function openWhatsappFor(phone,name){
   setActive('whatsapp');
   frame.src='whatsapp-callcenter.html?v=1&telefono='+encodeURIComponent(phone||'')+'&nombre='+encodeURIComponent(name||'Cliente');
