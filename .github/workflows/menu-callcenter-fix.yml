@@ -1,0 +1,34 @@
+name: Fix Call Center menu
+on:
+  push:
+    paths:
+      - '.github/workflows/menu-callcenter-fix.yml'
+permissions:
+  contents: write
+jobs:
+  patch-menu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index menu
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old='''<button data-view="usuarios">🔐 Usuarios asesores</button><button type="button" data-link="reclutamiento.html">🎯 Reclutamiento</button>'''
+          new='''<button data-view="usuarios">🔐 Crear asesores</button><button type="button" data-link="callcenter-usuarios.html">👥 Asesores Call Center</button><button type="button" data-link="academia-callcenter.html">🎓 Academia Call Center</button><button type="button" data-link="reclutamiento.html">🎯 Reclutamiento</button>'''
+          if old not in s:
+              raise SystemExit('No se encontró el bloque esperado del menú')
+          s=s.replace(old,new,1)
+          s=s.replace('height:100vh}.brand','height:100vh;overflow-y:auto}.brand',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit menu fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Mostrar accesos Call Center en menú CRM"
+          git push
