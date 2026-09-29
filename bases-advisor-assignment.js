@@ -1,14 +1,23 @@
 (function(){
   let advisorDirectory=[];
-  let loading=false;
+  let extensionDirectory=[];
+  let loadingAdvisors=false;
+  let loadingExtensions=false;
 
   function esc(v){
     return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
   }
 
-  function optionHtml(a){
+  function shortExt(v){return String(v||'').slice(-3)}
+
+  function advisorOptionHtml(a){
     const name=esc(a.nombre||a.email||'Asesor');
     return `<option value="${name}" data-user-id="${a.user_id}">${name}</option>`;
+  }
+
+  function extensionOptionHtml(e){
+    const label=e.asesor_nombre||'Sin asesor asignado';
+    return `<option value="${esc(e.extension)}">${esc(shortExt(e.extension))} · ${esc(label)}</option>`;
   }
 
   function ensureSaveButton(select){
@@ -25,9 +34,43 @@
     if(label)label.appendChild(btn);
   }
 
+  async function setupExtensionSelectors(){
+    if(loadingExtensions)return;
+    loadingExtensions=true;
+    try{
+      const {data,error}=await sb.from('callcenter_extensiones')
+        .select('extension,asesor_user_id,asesor_nombre,activa')
+        .eq('activa',true)
+        .order('extension',{ascending:true});
+
+      if(error){
+        console.error('No se pudieron cargar extensiones',error);
+        return;
+      }
+
+      extensionDirectory=data||[];
+      const html=extensionDirectory.map(extensionOptionHtml).join('');
+      const main=document.getElementById('extensionSelect');
+      const paste=document.getElementById('pasteExtension');
+
+      if(main){
+        const current=(typeof activeBase!=='undefined' && activeBase?.extension) ? activeBase.extension : main.value;
+        main.innerHTML=html;
+        if(current && [...main.options].some(o=>o.value===current))main.value=current;
+      }
+      if(paste){
+        const current=paste.value;
+        paste.innerHTML=html;
+        if(current && [...paste.options].some(o=>o.value===current))paste.value=current;
+      }
+    } finally {
+      loadingExtensions=false;
+    }
+  }
+
   async function setupAdvisorSelector(){
-    if(loading)return;
-    loading=true;
+    if(loadingAdvisors)return;
+    loadingAdvisors=true;
     try{
       const current=document.getElementById('advisorName');
       if(!current)return;
@@ -55,10 +98,10 @@
       }
 
       advisorDirectory=data||[];
-      select.innerHTML='<option value="">Sin asesor asignado</option>'+advisorDirectory.map(optionHtml).join('');
+      select.innerHTML='<option value="">Sin asesor asignado</option>'+advisorDirectory.map(advisorOptionHtml).join('');
       syncCurrentAdvisor();
     } finally {
-      loading=false;
+      loadingAdvisors=false;
     }
   }
 
@@ -99,7 +142,6 @@
         p_base_id:activeBase.id,
         p_asesor_user_id:advisorUserId||null
       });
-
       if(error)throw error;
 
       const saved=Array.isArray(data)?data[0]:data;
@@ -116,6 +158,7 @@
         if(status)status.textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extensionShort(activeBase.extension)}${activeBase.asesor_nombre?' · Asesor: '+activeBase.asesor_nombre:''}`;
       }
 
+      await setupExtensionSelectors();
       alert(activeBase.asesor_nombre
         ? 'Base asignada correctamente a '+activeBase.asesor_nombre+'.'
         : 'La base quedó sin asesor asignado.');
@@ -135,14 +178,18 @@
   if(originalSelectBase){
     window.selectBase=async function(id){
       const result=await originalSelectBase(id);
-      setTimeout(syncCurrentAdvisor,50);
+      setTimeout(()=>{
+        syncCurrentAdvisor();
+        setupExtensionSelectors();
+      },50);
       return result;
     };
   }
 
   function start(){
+    setupExtensionSelectors();
     setupAdvisorSelector();
-    setTimeout(setupAdvisorSelector,800);
+    setTimeout(()=>{setupExtensionSelectors();setupAdvisorSelector();},800);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);
