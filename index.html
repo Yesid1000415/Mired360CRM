@@ -376,7 +376,7 @@ async function delLead(id){
 }
 
 function leadAttention(l){
-  if(['Instalado','No interesado'].includes(l.status))return null;
+  if(['Venta','Pendiente instalación','Instalado','No interesado'].includes(l.status))return null;
   const t=today();
   if(l.nextFollow&&l.nextFollow<t)return {rank:0,label:'Vencido',cls:'danger'};
   if(l.nextFollow===t)return {rank:1,label:'Hoy',cls:'warn'};
@@ -384,12 +384,25 @@ function leadAttention(l){
   if(l.nextFollow)return {rank:3,label:'Próximo',cls:''};
   return null;
 }
+function addDaysISO(days){const d=new Date();d.setDate(d.getDate()+days);return d.toISOString().slice(0,10);}
+async function quickFollow(id,days){
+  const l=leads.find(x=>String(x.id)===String(id));if(!l)return;
+  const date=addDaysISO(days);
+  const {error}=await supabaseClient.from('prospectos').update({proximo_seguimiento:date,actualizado_en:new Date().toISOString()}).eq('id',id);
+  if(error){alert('No se pudo programar el seguimiento. '+error.message);return;}
+  await loadLeads();
+}
+function manageToday(id){
+  const l=leads.find(x=>String(x.id)===String(id));if(!l)return;
+  openLead(id);
+  if(!$('nextFollow').value)$('nextFollow').value=addDaysISO(1);
+}
 function renderAttention(){
   const items=leads.map(l=>({l,a:leadAttention(l)})).filter(x=>x.a).sort((x,y)=>x.a.rank-y.a.rank||(x.l.nextFollow||'9999').localeCompare(y.l.nextFollow||'9999'));
   const counts={Vencido:0,Hoy:0,'Sin fecha':0,Próximo:0};items.forEach(x=>counts[x.a.label]++);
   const s=$('attentionSummary');if(s)s.innerHTML=['Vencido','Hoy','Sin fecha','Próximo'].map(k=>`<div class="stage"><b>${k}</b><strong>${counts[k]}</strong><span>prospectos</span></div>`).join('');
   const box=$('attentionBox');if(!box)return;
-  box.innerHTML=items.slice(0,8).map(({l,a})=>`<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--l);flex-wrap:wrap"><div><b>${escapeHtml(l.name||'Sin nombre')}</b> · ${badge(l.status)}<br><small>${escapeHtml(l.city||'')} ${l.nextFollow?'· '+escapeHtml(l.nextFollow):'· Sin seguimiento programado'} · <b>${a.label}</b></small></div><div><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a> <button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button> <button class="btn ghost" onclick="openLead('${l.id}')">Gestionar</button></div></div>`).join('')||'<div class="empty">Todo al día. No hay prospectos pendientes de atención.</div>';
+  box.innerHTML=items.slice(0,8).map(({l,a})=>`<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--l);flex-wrap:wrap"><div><b>${escapeHtml(l.name||'Sin nombre')}</b> · ${badge(l.status)}<br><small>${escapeHtml(l.city||'')} ${l.nextFollow?'· '+escapeHtml(l.nextFollow):'· Sin seguimiento programado'} · <b>${a.label}</b></small></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a> <button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button> <button class="btn ghost" onclick="manageToday('${l.id}')">Gestionar</button> <button class="btn ghost" onclick="quickFollow('${l.id}',1)">Mañana</button> <button class="btn ghost" onclick="quickFollow('${l.id}',3)">+3 días</button></div></div>`).join('')||'<div class="empty">Todo al día. No hay prospectos pendientes de atención.</div>';
 }
 function render(){
   renderAttention();
