@@ -37,7 +37,13 @@
 .chat-empty{padding:24px;color:var(--m);text-align:center}
 @media(max-width:850px){.chat-layout{grid-template-columns:1fr}.chat-contacts{max-height:260px}.chat-messages{min-height:360px}}
 
-</style>
+@media(max-width:700px){
+  #attentionSummary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #attentionSummary .stage{min-width:0;padding:12px}
+  .attention-item{display:block!important}
+  .attention-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
+  .attention-actions a,.attention-actions button{width:100%;min-width:0;text-align:center;padding:9px 5px;font-size:12px;white-space:nowrap}
+}</style>
 </head>
 <body>
 <div id="loginPage" class="login-page">
@@ -402,7 +408,13 @@ function renderAttention(){
   const counts={Vencido:0,Hoy:0,'Sin fecha':0,Próximo:0};items.forEach(x=>counts[x.a.label]++);
   const s=$('attentionSummary');if(s)s.innerHTML=['Vencido','Hoy','Sin fecha','Próximo'].map(k=>`<div class="stage"><b>${k}</b><strong>${counts[k]}</strong><span>prospectos</span></div>`).join('');
   const box=$('attentionBox');if(!box)return;
-  box.innerHTML=items.slice(0,8).map(({l,a})=>`<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--l);flex-wrap:wrap"><div><b>${escapeHtml(l.name||'Sin nombre')}</b> · ${badge(l.status)}<br><small>${escapeHtml(l.city||'')} ${l.nextFollow?'· '+escapeHtml(l.nextFollow):'· Sin seguimiento programado'} · <b>${a.label}</b></small></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a> <button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button> <button class="btn ghost" onclick="manageToday('${l.id}')">Gestionar</button> <button class="btn ghost" onclick="quickFollow('${l.id}',1)">Mañana</button> <button class="btn ghost" onclick="quickFollow('${l.id}',3)">+3 días</button></div></div>`).join('')||'<div class="empty">Todo al día. No hay prospectos pendientes de atención.</div>';
+  const urgent=items.filter(x=>x.a.label==='Vencido'||x.a.label==='Hoy');
+  const noDate=items.filter(x=>x.a.label==='Sin fecha').slice(0,3);
+  const upcoming=items.filter(x=>x.a.label==='Próximo').slice(0,1);
+  const visible=[...urgent,...noDate,...upcoming].slice(0,6);
+  const action=(l,a)=>`<div class="attention-item" style="padding:12px 0;border-top:1px solid var(--l)"><div style="min-width:0"><b>${escapeHtml(l.name||'Sin nombre')}</b> · ${badge(l.status)}<br><small>${escapeHtml(l.city||'')} ${l.nextFollow?'· '+escapeHtml(l.nextFollow):'· Sin seguimiento programado'} · <b>${a.label}</b></small></div><div class="attention-actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:9px"><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a><button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button><button class="btn ghost" onclick="manageToday('${l.id}')">Gestionar</button><button class="btn ghost" onclick="quickFollow('${l.id}',1)">Mañana</button><button class="btn ghost" onclick="quickFollow('${l.id}',3)">+3 días</button></div></div>`;
+  box.innerHTML=visible.map(({l,a})=>action(l,a)).join('')||'<div class="empty">Todo al día. No hay prospectos pendientes de atención.</div>';
+  if(items.length>visible.length)box.innerHTML+=`<div style="padding-top:12px;text-align:center"><button class="btn ghost" onclick="showView('seguimientos')">Ver todos los pendientes (${items.length})</button></div>`;
 }
 function render(){
   renderAttention();
