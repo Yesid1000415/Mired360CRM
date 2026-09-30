@@ -453,7 +453,7 @@ async function loadMessages(showAlert=false){
   const {data,error}=await supabaseClient
     .from('whatsapp_mensajes')
     .select('*')
-    .order('creado_en',{ascending:true})
+    .order('creado_en',{ascending:false})
     .limit(3000);
 
   if(error){
@@ -904,7 +904,7 @@ function startMessageRealtime(){
   requestCrmNotifications();updateWhatsAppBadge();
   messageSubscription=supabaseClient
     .channel('mired360-whatsapp-mensajes')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'whatsapp_mensajes'},payload=>{const m=payload.new||{},key=String(m.id||m.message_id||m.creado_en+'-'+m.telefono);if(m.direccion!=='saliente'&&!knownInboundIds.has(key)){knownInboundIds.add(key);notifyInboundMessage(m);const phone=normalizeWhatsNumber(m.telefono);waMessages=[...waMessages.filter(x=>String(x.id||x.message_id||'')!==String(m.id||m.message_id||'')),m];renderChatContacts();if(activeChatPhone)renderActiveChat();}loadMessages(false);})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'whatsapp_mensajes'},payload=>{const m=payload.new||{},key=String(m.id||m.wamid||m.message_id||m.creado_en+'-'+m.telefono);waMessages=[m,...waMessages.filter(x=>String(x.id||x.wamid||x.message_id||'')!==String(m.id||m.wamid||m.message_id||''))];if(m.direccion!=='saliente'&&!knownInboundIds.has(key)){knownInboundIds.add(key);notifyInboundMessage(m);}else{renderChatContacts();}if(activeChatPhone===normalizeWhatsNumber(m.telefono))renderActiveChat();setTimeout(()=>loadMessages(false),300);})
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'whatsapp_mensajes'},()=>loadMessages(false))
     .subscribe();
 }
