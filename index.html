@@ -81,6 +81,10 @@
   <div class="chat-list">
     <div class="chat-list-head">
       <input id="chatSearch" placeholder="Buscar nombre o teléfono...">
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn ghost" id="chatFilterAll" onclick="setChatFilter('all')">Todos</button>
+        <button class="btn ghost" id="chatFilterUnread" onclick="setChatFilter('unread')">🔵 Sin leer <span id="chatUnreadCount">0</span></button>
+      </div>
     </div>
     <div class="chat-contacts" id="chatContacts">
       <div class="chat-empty">Cargando conversaciones...</div>
@@ -153,6 +157,7 @@ try{unreadChats=JSON.parse(localStorage.getItem('mired360_wa_unread_v2')||'{}');
 localStorage.removeItem('mired360_wa_unread_v1');
 let knownInboundIds=new Set();
 let notificationsPrimed=false;
+let chatFilter='all';
 let authorizations=[];
 let commissionClaims=[];
 let advisorUsers=[];
@@ -488,12 +493,19 @@ function groupedChats(){
 }
 function saveUnreadChats(){Object.keys(unreadChats).forEach(p=>{if(!Number(unreadChats[p]||0))delete unreadChats[p];});localStorage.setItem('mired360_wa_unread_v2',JSON.stringify(unreadChats));updateWhatsAppBadge();}
 function updateWhatsAppBadge(){const n=Object.keys(unreadChats).filter(p=>Number(unreadChats[p]||0)>0).length,el=$('waNavBadge');if(!el)return;el.textContent=n>99?'99+':n;el.classList.toggle('hidden',!n);document.title=(n?'('+n+') ':'')+'CRM MIRED360SERVICIOS · WhatsApp API';}
-function notifyInboundMessage(m){const phone=normalizeWhatsNumber(m.telefono),lead=leadForPhone(phone),name=lead?.name||m.nombre||phone,preview=chatDisplayText(m);if(phone===activeChatPhone&&!document.hidden){delete unreadChats[phone];saveUnreadChats();}else{unreadChats[phone]=1;saveUnreadChats();}renderChatContacts();const list=$('chatContacts');if(list)list.scrollTop=0;if('Notification'in window&&Notification.permission==='granted'&&document.hidden){try{new Notification('Nuevo WhatsApp · '+name,{body:preview||'Nuevo mensaje recibido',tag:'mired360-'+phone});}catch{}}}
+function notifyInboundMessage(m){const phone=normalizeWhatsNumber(m.telefono),lead=leadForPhone(phone),name=lead?.name||m.nombre||phone,preview=chatDisplayText(m);unreadChats[phone]=1;saveUnreadChats();renderChatContacts();const list=$('chatContacts');if(list)list.scrollTop=0;if('Notification'in window&&Notification.permission==='granted'&&document.hidden){try{new Notification('Nuevo WhatsApp · '+name,{body:preview||'Nuevo mensaje recibido',tag:'mired360-'+phone});}catch{}}}
 function requestCrmNotifications(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission().catch(()=>{});}
+function setChatFilter(mode){chatFilter=mode==='unread'?'unread':'all';renderChatContacts();}
 function renderChatContacts(){
   const box=$('chatContacts'); if(!box)return;
   const q=($('chatSearch')?.value||'').toLowerCase();
-  const groups=groupedChats().filter(g=>(g.name+' '+g.phone).toLowerCase().includes(q));
+  const allGroups=groupedChats();
+  const unreadTotal=allGroups.filter(g=>Number(unreadChats[g.phone]||0)>0).length;
+  const count=$('chatUnreadCount');if(count)count.textContent=unreadTotal;
+  const allBtn=$('chatFilterAll'),unreadBtn=$('chatFilterUnread');
+  if(allBtn)allBtn.classList.toggle('primary',chatFilter==='all');
+  if(unreadBtn)unreadBtn.classList.toggle('primary',chatFilter==='unread');
+  const groups=allGroups.filter(g=>(chatFilter!=='unread'||Number(unreadChats[g.phone]||0)>0)&&((g.name+' '+g.phone).toLowerCase().includes(q)));
   box.innerHTML=groups.map(g=>{
     const active=g.phone===activeChatPhone?' active':'';
     const unread=Number(unreadChats[g.phone]||0),unreadClass=unread?' unread':'';
