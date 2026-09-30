@@ -69,7 +69,7 @@
   <div class="pipeline" style="margin-bottom:12px">
     <div class="stage" role="button" tabindex="0" onclick="window.open('https://app.metricool.com/','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>📣 Redes</small><strong style="font-size:16px">Facebook activo ↗</strong><small>Publicaciones programadas en Metricool</small></div>
     <div class="stage" role="button" tabindex="0" onclick="window.open('https://analytics.google.com/','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>🌐 Web</small><strong style="font-size:16px">GA4 activo ↗</strong><small>Tráfico y clics a WhatsApp medidos</small></div>
-    <div class="stage" role="button" tabindex="0" onclick="showView('prospectos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>👥 Comercial</small><strong style="font-size:16px">CRM activo →</strong><small>Prioridad automática de prospectos</small></div>
+    <div class="stage" role="button" tabindex="0" onclick="showView('prospectos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>👥 Comercial</small><strong id="controlCrmMain" style="font-size:16px">CRM activo →</strong><small id="controlCrmDetail">Calculando actividad...</small></div>
     <div class="stage" role="button" tabindex="0" onclick="window.open('https://mired360servicios.com/admin-referidos.html','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>🤝 Crecimiento</small><strong style="font-size:16px">Referidos activo ↗</strong><small>Registro y seguimiento independiente</small></div>
   </div>
   <div class="attention-actions" style="display:flex;gap:8px;flex-wrap:wrap">
@@ -448,6 +448,11 @@ function renderAttention(){
 }
 function render(){
   renderAttention();
+  const controlPending=leads.filter(l=>leadAttention(l)).length;
+  const controlSales=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)).length;
+  const controlMain=$('controlCrmMain'), controlDetail=$('controlCrmDetail');
+  if(controlMain)controlMain.textContent=leads.length+' prospectos →';
+  if(controlDetail)controlDetail.textContent=controlPending+' por atender · '+controlSales+' ventas';
   $('kPros').textContent=leads.length;
   $('kFollow').textContent=leads.filter(l=>l.nextFollow===today()&&!['Instalado','No interesado'].includes(l.status)).length;
   $('kSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)).length;
