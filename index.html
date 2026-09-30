@@ -70,7 +70,7 @@
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" onclick="startDirectWhatsApp()">+ Nuevo WhatsApp</button>
     <button class="btn ghost" onclick="document.getElementById('waExcelFile').click()">📄 Importar Excel</button>
-    <input id="waExcelFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importWhatsAppExcel(this.files[0]);this.value=''">
+    <input id="waExcelFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleWhatsAppExcelInput(event)">
     <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
   </div>
 </header>
@@ -549,6 +549,20 @@ async function startDirectWhatsApp(){
 let waImportQueue=[];
 let waImportRunning=false;
 
+async function handleWhatsAppExcelInput(event){
+  const input=event?.target;
+  const file=input?.files?.[0];
+  if(!file){alert('No se seleccionó ningún archivo.');return;}
+  try{
+    await importWhatsAppExcel(file);
+  }catch(e){
+    console.error('Error importando Excel WhatsApp',e);
+    alert('No se pudo procesar el Excel: '+String(e?.message||e));
+  }finally{
+    if(input)input.value='';
+  }
+}
+
 function extractPhonesFromWorkbook(workbook){
   const phones=[];
   for(const sheetName of workbook.SheetNames){
@@ -567,8 +581,8 @@ function extractPhonesFromWorkbook(workbook){
 }
 
 async function importWhatsAppExcel(file){
-  if(!file)return;
-  if(typeof XLSX==='undefined')return alert('No se pudo cargar el lector de Excel. Actualiza la página e inténtalo nuevamente.');
+  if(!file){alert('No se recibió el archivo de Excel.');return;}
+  if(typeof XLSX==='undefined'){alert('No se pudo cargar el lector de Excel. Actualiza la página e inténtalo nuevamente.');return;}
   try{
     const buffer=await file.arrayBuffer();
     const workbook=XLSX.read(buffer,{type:'array'});
