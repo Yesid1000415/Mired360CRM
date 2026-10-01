@@ -89,7 +89,7 @@
 <header>
   <div>
     <h1>WhatsApp</h1>
-    <p>Bandeja de conversaciones del número conectado a WhatsApp Cloud API.</p>
+    <p>Bandeja API del 3133938312. Atención temporal desde WhatsApp 3229432085.</p>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" onclick="startDirectWhatsApp()">+ Nuevo WhatsApp</button>
@@ -116,6 +116,7 @@
   </div>
 
   <div class="chat-panel">
+    <div class="notice" style="margin-bottom:12px"><b>Atención temporal: 3229432085.</b> Abre el chat en WhatsApp con la sesión de ese número. Los mensajes enviados allí no se sincronizan con esta bandeja API.<br><button class="btn primary" type="button" onclick="openTemporaryWhatsApp()">Abrir chat en WhatsApp</button></div>
     <div class="chat-head" id="chatHead">
       <b>Selecciona una conversación</b>
       <small>Los mensajes entrantes aparecerán aquí.</small>
@@ -147,7 +148,7 @@
 <section class="view" id="comisiones"><header><div><h1>Cobro de comisiones</h1><p>Revise, apruebe, descargue y administre las solicitudes enviadas por los asesores.</p></div><div><button class="btn ghost" onclick="exportCommissionClaims()">Exportar CSV</button> <button class="btn ghost" onclick="loadCommissionClaims()">↻ Actualizar</button></div></header><div class="grid kpis"><div class="card kpi"><small>Solicitudes</small><strong id="cTotal">0</strong></div><div class="card kpi"><small>Servicios</small><strong id="cServices">0</strong></div><div class="card kpi"><small>Pendientes</small><strong id="cPending">0</strong></div><div class="card kpi"><small>Pagadas</small><strong id="cPaid">0</strong></div></div><div class="card"><p class="notice" style="margin-top:0">Los asesores no pueden modificar ni borrar registros. Los controles administrativos de esta sección son exclusivos para coordinación.</p><div class="toolbar"><input id="commissionSearch" placeholder="Buscar solicitud, asesor, cédula, Nequi, orden o cuenta..." oninput="renderCommissionClaims()"><select id="commissionStatus" onchange="renderCommissionClaims()"><option value="">Todos los estados</option><option>Pendiente</option><option>Aprobado</option><option>Pagado</option><option>Rechazado</option></select></div><div class="table-wrap"><table><thead><tr><th>Solicitud</th><th>Fecha</th><th>Asesor</th><th>Cédula</th><th>Nequi</th><th>Servicios</th><th>Coordinador</th><th>Estado</th><th>Observación</th><th>Acciones</th></tr></thead><tbody id="commissionRows"><tr><td colspan="10" class="empty">Cargando solicitudes...</td></tr></tbody></table></div></div></section>
 <section class="view" id="usuarios"><header><div><h1>Usuarios de asesores</h1><p>Cree accesos individuales para autorizaciones y cobro de comisiones.</p></div><button class="btn ghost" onclick="loadAdvisorUsers()">↻ Actualizar</button></header><div class="grid two"><div class="card"><h2>Crear nuevo usuario</h2><p class="notice">El usuario quedará confirmado automáticamente con rol <b>asesor</b>. Comparta la contraseña temporal de manera privada.</p><div class="form-grid" style="margin-top:14px"><label class="full">Nombre y apellidos<input id="advisorUserName" autocomplete="name"></label><label class="full">Correo electrónico<input id="advisorUserEmail" type="email" autocomplete="off"></label><label>Contraseña temporal<input id="advisorUserPassword" type="text" autocomplete="off" minlength="8"></label><label>&nbsp;<button class="btn ghost" type="button" onclick="generateAdvisorPassword()">Generar contraseña</button></label><div class="full"><button class="btn primary" id="createAdvisorBtn" onclick="createAdvisorUser()">Crear usuario de asesor</button></div><div class="full login-error" id="advisorUserMessage"></div></div></div><div class="card"><h2>Seguridad del acceso</h2><div class="notice">Cada asesor utiliza un solo usuario para autorizaciones y comisiones. Solo verá sus propios registros. Desde el Portal de Asesores podrá cambiar o recuperar su contraseña.</div><p><b>Portal de Asesores</b></p><a class="btn ghost" href="asesores.html" target="_blank" style="text-decoration:none">Abrir portal</a></div></div><div class="card" style="margin-top:15px"><div class="section"><h2>Usuarios registrados</h2><span class="muted" id="advisorUsersCount"></span></div><div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Fecha de creación</th><th>Acción</th></tr></thead><tbody id="advisorUsersRows"><tr><td colspan="5" class="empty">Cargando usuarios...</td></tr></tbody></table></div></div></section>
 <section class="view" id="publicidad"><header><div><h1>Publicidad</h1><p>Registre inversión y mida resultados.</p></div></header><div class="grid two"><div class="card"><h2>Resumen</h2><p>Inversión: <b id="adSpend">$0</b></p><p>Ventas atribuidas: <b id="adSales">0</b></p></div><div class="card"><h2>Registrar campaña</h2><div class="form-grid"><label>Nombre<input id="adName"></label><label>Canal<select id="adChannel"><option>Facebook</option><option>Instagram</option><option>Google</option><option>Orgánico</option><option>Otro</option></select></label><label>Inversión<input id="adAmount" type="number"></label><label>Fecha<input id="adDate" type="date"></label><div class="full"><button class="btn primary" onclick="addAd()">Guardar campaña</button></div></div></div></div><div class="card" style="margin-top:15px"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Campaña</th><th>Canal</th><th>Inversión</th></tr></thead><tbody id="adRows"></tbody></table></div></div></section>
-<section class="view" id="config"><header><div><h1>Configuración</h1><p>Cuenta, sincronización y respaldo.</p></div></header><div class="grid two"><div class="card"><label>Nombre comercial<input id="businessName" value="MIRED360SERVICIOS"></label><br><label>WhatsApp principal<input id="businessPhone" value="573133938312"></label><br><button class="btn primary" onclick="saveSettings()">Guardar</button><br><br><button class="btn ghost" onclick="migrateLocalLeads()">Migrar prospectos locales a Supabase</button><br><br><button class="btn danger-btn" onclick="logoutCRM()">Cerrar sesión</button></div><div class="card"><div class="notice"><b>Prospectos:</b> se guardan en Supabase. La sección Publicidad y la configuración general siguen guardándose localmente en este navegador por ahora.</div></div></div></section>
+<section class="view" id="config"><header><div><h1>Configuración</h1><p>Cuenta, sincronización y respaldo.</p></div></header><div class="grid two"><div class="card"><label>Nombre comercial<input id="businessName" value="MIRED360SERVICIOS"></label><br><label>WhatsApp de contacto público<input id="businessPhone" value="573229432085"></label><br><button class="btn primary" onclick="saveSettings()">Guardar</button><br><br><button class="btn ghost" onclick="migrateLocalLeads()">Migrar prospectos locales a Supabase</button><br><br><button class="btn danger-btn" onclick="logoutCRM()">Cerrar sesión</button></div><div class="card"><div class="notice"><b>Contacto público:</b> 3229432085. Este ajuste no cambia el número de la API (3133938312).<br><b>Medición:</b> los clics se registran en GA4 y los formularios siguen guardando prospectos en el CRM. Los chats del número temporal requieren atención en WhatsApp.<br><b>Prospectos:</b> se guardan en Supabase. La sección Publicidad y la configuración general siguen guardándose localmente en este navegador por ahora.</div></div></div></section>
 </main>
 </div>
 
@@ -594,6 +595,12 @@ function renderChatContacts(){
       <span>${escapeHtml(g.phone)} · ${formatMsgTime(g.last.creado_en)}</span>
     </button>`;
   }).join('')||'<div class="chat-empty">No hay conversaciones todavía.</div>';
+}
+function openTemporaryWhatsApp(){
+  if(!activeChatPhone)return alert('Selecciona primero una conversación.');
+  const phone=normalizeWhatsNumber(activeChatPhone);
+  if(!/^57\d{10}$/.test(phone))return alert('El contacto no tiene un número válido.');
+  window.open('https://wa.me/'+phone,'_blank','noopener,noreferrer');
 }
 function openChat(phone){
   activeChatPhone=normalizeWhatsNumber(phone);
@@ -1090,7 +1097,8 @@ $('filterStatus').innerHTML+=STAGES.map(s=>`<option>${s}</option>`).join('');
 $('adDate').value=today();
 const settings=JSON.parse(localStorage.getItem('mired360_settings_v1')||'{}');
 if(settings.businessName)$('businessName').value=settings.businessName;
-if(settings.businessPhone)$('businessPhone').value=settings.businessPhone;
+if(settings.businessPhone && normalizeWhatsNumber(settings.businessPhone)!=='573133938312')$('businessPhone').value=settings.businessPhone;
+else {settings.businessPhone='573229432085';localStorage.setItem('mired360_settings_v1',JSON.stringify(settings));}
 renderAds();
 
 (async()=>{
