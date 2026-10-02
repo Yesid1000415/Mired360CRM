@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIRED360 · Pagos y Recargas Sandbox</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--n:#071a33;--b:#0f7cff;--c:#00b8ff;--bg:#f4f7fb;--t:#15243a;--m:#687b93;--l:#d9e4ef;--ok:#12835b;--w:#b56a00}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}header{background:linear-gradient(135deg,var(--n),#0b315b);color:#fff;padding:22px}header .wrap{max-width:1100px;margin:auto;display:flex;justify-content:space-between;gap:12px;align-items:center}.brand{font-size:24px;font-weight:900}.brand span{color:var(--c)}.tag{padding:7px 10px;border-radius:999px;background:#ffefc7;color:#7a4a00;font-size:12px;font-weight:800}.wrap2{max-width:1100px;margin:22px auto;padding:0 14px}.notice{padding:13px;border:1px solid #ffd88a;background:#fff7e3;border-radius:14px;margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:18px;box-shadow:0 8px 24px #102a4310}.card h2{margin:0 0 12px;font-size:18px}.full{grid-column:1/-1}.fields{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}label{font-size:12px;font-weight:700;color:#52657c;display:grid;gap:5px}input,select{width:100%;padding:11px;border:1px solid #cbd9e7;border-radius:10px;font:inherit}.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l)}.result{margin-top:12px;background:#071a33;color:#d9f3ff;padding:13px;border-radius:12px;white-space:pre-wrap;overflow:auto;min-height:48px;font:12px/1.5 monospace}.login{max-width:430px;margin:70px auto;background:#fff;border:1px solid var(--l);border-radius:20px;padding:22px}.login label{margin:10px 0}.hidden{display:none!important}.topactions{display:flex;gap:8px;flex-wrap:wrap}.status{font-size:12px;color:var(--m);margin-top:8px}@media(max-width:760px){.grid,.fields{grid-template-columns:1fr}.full{grid-column:auto}header .wrap{align-items:flex-start;flex-direction:column}}
+</style></head><body>
+<header><div class="wrap"><div><div class="brand">MIRED<span>360</span> · Pagos y Recargas</div><small>Integración Practisistemas</small></div><div class="topactions"><span class="tag">SANDBOX · NO MUEVE DINERO REAL</span><button id="back" class="btn ghost" onclick="location.href='index.html'">← CRM</button><button id="logout" class="btn ghost hidden">Salir</button></div></div></header>
+<div id="login" class="login"><h2>Acceso seguro</h2><p>Usa tu usuario de MIRED360 CRM.</p><label>Correo<input id="email" type="email"></label><label>Contraseña<input id="password" type="password"></label><button id="loginBtn" class="btn primary" style="width:100%">Ingresar</button><div id="loginMsg" class="status"></div></div>
+<main id="app" class="wrap2 hidden"><div class="notice"><b>Modo de pruebas.</b> Las operaciones de esta pantalla usan el laboratorio de Practi y no realizan recargas ni pagos reales.</div>
+<div class="grid">
+<section class="card"><h2>💰 Saldo Sandbox</h2><p>Consulta el saldo actual del comercio de laboratorio.</p><button class="btn primary" onclick="run('saldo',{})">Consultar saldo</button><div id="r-saldo" class="result">Sin consultar.</div></section>
+<section class="card"><h2>📦 Productos Claro</h2><p>Consulta los paquetes disponibles en el catálogo de laboratorio.</p><button class="btn primary" onclick="run('productos',{producto:'pc'})">Consultar productos</button><div id="r-productos" class="result">Sin consultar.</div></section>
+<section class="card"><h2>📱 Recarga de prueba</h2><div class="fields"><label>Celular<input id="recCel" value="3100000015" inputmode="numeric"></label><label>Valor<input id="recVal" value="1000" inputmode="numeric"></label></div><button class="btn primary" style="margin-top:12px" onclick="recarga()">Enviar recarga simulada</button><div id="r-recarga" class="result">Sin enviar.</div></section>
+<section class="card"><h2>🔎 Consultar estado</h2><div class="fields"><label>ID transacción<input id="estId" inputmode="numeric"></label><label>Fecha<input id="estFecha" type="date"></label></div><button class="btn primary" style="margin-top:12px" onclick="estado()">Consultar estado</button><div id="r-estado" class="result">Sin consultar.</div></section>
+<section class="card full"><h2>🧾 Factura Claro · laboratorio</h2><div class="fields"><label>Convenio<input id="facConv" value="72"></label><label>Referencia<input id="facRef" value="3100000015" inputmode="numeric"></label></div><div class="topactions" style="margin-top:12px"><button class="btn primary" onclick="consultarFactura()">1. Consultar factura</button><button id="payBtn" class="btn ghost" disabled onclick="pagarFactura()">2. Pagar factura simulada</button></div><div id="r-factura" class="result">Primero consulta la factura.</div></section>
+</div></main>
+<script>
+const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
+const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let factura=null;
+const $=id=>document.getElementById(id);
+const pretty=x=>JSON.stringify(x,null,2);
+function localDate(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Bogota'}).format(new Date())}
+$('estFecha').value=localDate();
+async function sessionUI(){const {data:{session}}=await sb.auth.getSession();$('login').classList.toggle('hidden',!!session);$('app').classList.toggle('hidden',!session);$('logout').classList.toggle('hidden',!session)}
+$('loginBtn').onclick=async()=>{ $('loginMsg').textContent='Ingresando...'; const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value}); $('loginMsg').textContent=error?error.message:''; await sessionUI(); };
+$('logout').onclick=async()=>{await sb.auth.signOut();await sessionUI()};
+async function invoke(body){const {data,error}=await sb.functions.invoke('practi-sandbox',{body});if(error)throw error;return data}
+async function run(action,body,target='r-'+action){const el=$(target);el.textContent='Procesando...';try{const data=await invoke({action,...body});el.textContent=pretty(data);return data}catch(e){el.textContent='ERROR: '+(e.message||e);throw e}}
+async function recarga(){const id=String(Date.now());$('estId').value=id;$('estFecha').value=localDate();await run('recarga',{idtrans:id,celular:$('recCel').value.trim(),valor:$('recVal').value.trim(),operador:'cm'})}
+async function estado(){await run('estado',{idtrans:$('estId').value.trim(),fecha:$('estFecha').value},'r-estado')}
+async function consultarFactura(){const id=String(Date.now());const data=await run('consultar_factura',{idtrans:id,convenio:$('facConv').value.trim(),referencia:$('facRef').value.trim()},'r-factura');const d=data?.data?.data?.data;if(data?.data?.data?.estado==='00'&&d?.estado==='00'&&d?.idPre&&d?.valorPago){factura={idtrans:id,referencia:$('facRef').value.trim(),idPre:String(d.idPre),valor:String(d.valorPago)};$('payBtn').disabled=false;$('estId').value=id;$('estFecha').value=localDate()}else{factura=null;$('payBtn').disabled=true}}
+async function pagarFactura(){if(!factura)return;await run('pagar_factura',factura,'r-factura')}
+sb.auth.onAuthStateChange(()=>sessionUI());sessionUI();
+</script></body></html>
