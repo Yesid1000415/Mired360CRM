@@ -20,6 +20,7 @@
     <button id="navBases" class="active" onclick="openModule('bases')">📞 Bases de llamadas</button>
     <button id="navWa" onclick="openModule('whatsapp')">💬 WhatsApp</button>
     <button onclick="openSupport()">📍 Validar dirección / Soporte</button>
+    <button onclick="openModule('red')" id="navRed">🌎 Red comercial / Telegram</button>
     <button id="navSale" onclick="openModule('venta')">🧾 Subir venta</button>
     <button id="navClaims" onclick="openModule('comisiones')">💰 Cobro de comisiones</button>
     <button id="navPerf" onclick="openModule('rendimiento')">🚦 Mi rendimiento</button>
@@ -39,6 +40,7 @@ const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const SUPPORT_GROUP='https://chat.whatsapp.com/H0CwFWhVDe8JmWCfL7WoEA';
 const modules={
+  red:{url:'red-comercial.html',title:'🌎 Red comercial',sub:'Perfil, clientes propios, soporte y avisos para Colombia y Venezuela.'},
   bases:{url:'bases-llamadas.html?v=20260928-3',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
   whatsapp:{url:'whatsapp-callcenter.html?v=1',title:'💬 WhatsApp Call Center',sub:'Continúa la asesoría con tus propios clientes asignados.'},
   venta:{url:'autorizacion.html?v=20260928-cc1',title:'🧾 Subir venta',sub:'Registra la venta y genera la autorización del cliente.'},
@@ -54,7 +56,7 @@ function setActive(key){
   document.getElementById('moduleTitle').textContent=m.title;
   document.getElementById('moduleSubtitle').textContent=m.sub;
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  const ids={bases:'navBases',whatsapp:'navWa',venta:'navSale',comisiones:'navClaims',rendimiento:'navPerf',calidad:'navQuality',academia:'navAcademia'};
+  const ids={red:'navRed',bases:'navBases',whatsapp:'navWa',venta:'navSale',comisiones:'navClaims',rendimiento:'navPerf',calidad:'navQuality',academia:'navAcademia'};
   document.getElementById(ids[key])?.classList.add('active');
 }
 function openModule(key){const m=modules[key];if(!m)return;setActive(key);frame.src=m.url}
