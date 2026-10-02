@@ -8,6 +8,7 @@
 <style>
 :root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button{font:inherit}.app{min-height:100vh;display:grid;grid-template-columns:260px 1fr}.side{background:linear-gradient(180deg,var(--n),#061426);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand small{display:block;color:#7fdfff;letter-spacing:1.2px;margin-top:3px}.profile{padding:12px;background:#ffffff0d;border:1px solid #ffffff1f;border-radius:13px;margin-bottom:14px}.profile b,.profile small{display:block}.profile small{color:#a8bfd6;margin-top:4px}.nav{display:grid;gap:6px;max-height:calc(100vh - 205px);overflow:auto}.nav button{width:100%;border:0;background:transparent;color:#d4e2ef;text-align:left;padding:13px;border-radius:12px;cursor:pointer;font-weight:700}.nav button:hover,.nav button.active{background:rgba(0,184,255,.16);color:#fff}.side-footer{position:absolute;left:14px;right:14px;bottom:18px}.logout{width:100%;border:1px solid #ffffff33;background:transparent;color:#fff;padding:10px;border-radius:11px;cursor:pointer}.main{min-width:0;display:flex;flex-direction:column;height:100vh}.top{padding:17px 20px;background:#fff;border-bottom:1px solid var(--l);display:flex;justify-content:space-between;gap:10px;align-items:center}.top h1{font-size:20px;margin:0}.top p{margin:4px 0 0;color:var(--m);font-size:12px}.status{font-size:12px;color:var(--ok);font-weight:700}.frame{flex:1;width:100%;border:0;background:var(--bg)}.loading{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:20}.loading .box{background:#fff;border:1px solid var(--l);border-radius:18px;padding:24px;text-align:center;box-shadow:0 15px 40px #071a3315}.denied{color:#b4232d}@media(max-width:800px){.app{grid-template-columns:1fr}.side{position:static;height:auto;padding:12px}.brand,.profile,.side-footer{display:none}.nav{display:flex;overflow:auto;max-height:none}.nav button{width:auto;white-space:nowrap}.main{height:calc(100vh - 58px)}.top{padding:12px}.top p{display:none}}
+.office-card{border:1px solid var(--l);background:#fff;border-radius:16px;padding:18px;text-align:left;cursor:pointer;display:grid;gap:8px;font-size:25px;box-shadow:0 8px 25px #071a330a}.office-card b{font-size:15px;color:var(--n2)}.office-card span{font-size:12px;color:var(--m);line-height:1.4}.office-card:hover{border-color:#9fdcff;transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -17,9 +18,10 @@
   <div class="brand"><div class="logo">M</div><div><b>MIRED<span style="color:#00b8ff">360</span></b><small>CALL EN CASA</small></div></div>
   <div class="profile"><b id="profileName">Asesor</b><small id="profileRole">Equipo Call Center</small></div>
   <div class="nav">
+    <button id="navHome" class="active" onclick="openModule('inicio')">🏠 Mi oficina</button>
     <button id="navBases" class="active" onclick="openModule('bases')">📞 Bases de llamadas</button>
     <button id="navWa" onclick="openModule('whatsapp')">💬 WhatsApp</button>
-    <button onclick="openSupport()">📍 Validar dirección / Soporte</button>
+    <button id="navSupport" onclick="openModule('soporte')">📍 Validar dirección / Soporte</button>
     <button onclick="openModule('red')" id="navRed">🌎 Red comercial / Telegram</button>
     <button id="navSale" onclick="openModule('venta')">🧾 Subir venta</button>
     <button id="navClaims" onclick="openModule('comisiones')">💰 Cobro de comisiones</button>
@@ -30,8 +32,24 @@
   <div class="side-footer"><button class="logout" onclick="logout()">Cerrar sesión</button></div>
 </aside>
 <section class="main">
-  <div class="top"><div><h1 id="moduleTitle">📞 Bases de llamadas</h1><p id="moduleSubtitle">Gestiona únicamente la base que te fue asignada.</p></div><div class="status">● Conectado</div></div>
-  <iframe id="moduleFrame" class="frame" title="Módulo Call Center"></iframe>
+  <div class="top"><div><h1 id="moduleTitle">🏠 Mi oficina Call Center</h1><p id="moduleSubtitle">Todo tu trabajo diario en un solo lugar.</p></div><div class="status">● Conectado</div></div>
+  <div id="officeHome" class="frame" style="padding:22px;overflow:auto">
+    <div style="max-width:1050px;margin:auto">
+      <section style="background:linear-gradient(135deg,#071a33,#0b4f83);color:white;border-radius:20px;padding:25px;margin-bottom:16px"><h2 style="margin:0 0 7px">Tu oficina MIRED Call Center</h2><p style="margin:0;color:#cbeaff">Aquí encuentras todo lo necesario para gestionar tu jornada sin salir del panel.</p></section>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px">
+        <button class="office-card" onclick="openModule('bases')">📞<b>Bases y llamadas</b><span>Gestiona tus contactos asignados.</span></button>
+        <button class="office-card" onclick="openModule('whatsapp')">💬<b>WhatsApp</b><span>Atiende tus conversaciones.</span></button>
+        <button class="office-card" onclick="openModule('soporte')">📍<b>Soporte y validación</b><span>Accede al canal de validaciones.</span></button>
+        <button class="office-card" onclick="openModule('venta')">🧾<b>Subir venta</b><span>Registra y documenta tus ventas.</span></button>
+        <button class="office-card" onclick="openModule('comisiones')">💰<b>Comisiones</b><span>Consulta y solicita tus pagos.</span></button>
+        <button class="office-card" onclick="openModule('rendimiento')">🚦<b>Mi rendimiento</b><span>Revisa tu avance comercial.</span></button>
+        <button class="office-card" onclick="openModule('calidad')">⭐<b>Calidad</b><span>Consulta retroalimentación.</span></button>
+        <button class="office-card" onclick="openModule('academia')">🎓<b>Academia</b><span>Capacitación y evaluación.</span></button>
+        <button class="office-card" onclick="openModule('red')">🌎<b>Telegram y avisos</b><span>Información para Colombia y Venezuela.</span></button>
+      </div>
+    </div>
+  </div>
+  <iframe id="moduleFrame" class="frame" title="Módulo Call Center" style="display:none"></iframe>
 </section>
 </div>
 <script>
@@ -40,6 +58,8 @@ const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const SUPPORT_GROUP='https://chat.whatsapp.com/H0CwFWhVDe8JmWCfL7WoEA';
 const modules={
+  inicio:{url:null,title:'🏠 Mi oficina Call Center',sub:'Todo tu trabajo diario en un solo lugar.'},
+  soporte:{url:null,title:'📍 Validar dirección / Soporte',sub:'Canal oficial para validaciones y soporte de la operación.'},
   red:{url:'red-comercial.html',title:'🌎 Red comercial',sub:'Perfil, clientes propios, soporte y avisos para Colombia y Venezuela.'},
   bases:{url:'bases-llamadas.html?v=20260928-3',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
   whatsapp:{url:'whatsapp-callcenter.html?v=1',title:'💬 WhatsApp Call Center',sub:'Continúa la asesoría con tus propios clientes asignados.'},
@@ -49,18 +69,18 @@ const modules={
   calidad:{url:'calidad-callcenter.html?v=20260928-1',title:'⭐ Calidad Call Center',sub:'Retroalimentación y motivos de pérdida.'},
   academia:{url:'academia-callcenter-v2.html?v=20260928-3',title:'🎓 Academia Call Center',sub:'Capacitación, progreso y evaluación final.'}
 };
-let current='bases',viewerRole='',viewerIsAdvisor=false,viewerName='';
+let current='inicio',viewerRole='',viewerIsAdvisor=false,viewerName='';
 const frame=document.getElementById('moduleFrame');
 function setActive(key){
   const m=modules[key];if(!m)return;current=key;
   document.getElementById('moduleTitle').textContent=m.title;
   document.getElementById('moduleSubtitle').textContent=m.sub;
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  const ids={red:'navRed',bases:'navBases',whatsapp:'navWa',venta:'navSale',comisiones:'navClaims',rendimiento:'navPerf',calidad:'navQuality',academia:'navAcademia'};
+  const ids={inicio:'navHome',soporte:'navSupport',red:'navRed',bases:'navBases',whatsapp:'navWa',venta:'navSale',comisiones:'navClaims',rendimiento:'navPerf',calidad:'navQuality',academia:'navAcademia'};
   document.getElementById(ids[key])?.classList.add('active');
 }
-function openModule(key){const m=modules[key];if(!m)return;setActive(key);frame.src=m.url}
-function openSupport(){window.open(SUPPORT_GROUP,'_blank','noopener,noreferrer')}
+function openModule(key){const m=modules[key];if(!m)return;setActive(key);const home=document.getElementById('officeHome');if(key==='inicio'){frame.style.display='none';home.style.display='block';return}home.style.display='none';frame.style.display='block';if(key==='soporte'){frame.src='callcenter-soporte.html?v=20261001-1';return}frame.src=m.url}
+function openSupport(){openModule('soporte')}
 function openWhatsappFor(phone,name){
   setActive('whatsapp');
   frame.src='whatsapp-callcenter.html?v=1&telefono='+encodeURIComponent(phone||'')+'&nombre='+encodeURIComponent(name||'Cliente');
@@ -99,6 +119,7 @@ function wrapLossReason(w){
 function cleanEmbeddedPage(){
   try{
     const w=frame.contentWindow,d=frame.contentDocument;if(!w||!d)return;
+    [...d.querySelectorAll('a,button')].forEach(el=>{const t=String(el.textContent||'').trim().toLowerCase();const href=String(el.getAttribute?.('href')||'').toLowerCase();if(t.includes('volver al crm')||t.includes('portal de asesores')||t==='coordinación'||href==='index.html'||href==='asesores.html')el.style.display='none'});
     [...d.querySelectorAll('button,a')].forEach(el=>{
       const t=String(el.textContent||'').trim().toLowerCase();
       if(t.includes('volver al crm')||t.includes('← control')||t.includes('portal de asesores'))el.style.display='none';
@@ -153,7 +174,7 @@ async function init(){
   document.getElementById('profileName').textContent=viewerName;
   document.getElementById('profileRole').textContent=viewerIsAdvisor?'Asesor · Call Center':'Coordinación · Call Center';
   document.getElementById('loading').style.display='none';
-  openModule('bases');
+  openModule('inicio');
 }
 init();
 </script>
