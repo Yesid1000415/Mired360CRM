@@ -162,7 +162,7 @@ function cleanEmbeddedPage(){
     }
   }catch(e){console.warn('No se pudo ajustar el módulo incrustado',e)}
 }
-frame.addEventListener('load',()=>{setTimeout(cleanEmbeddedPage,80);setTimeout(cleanEmbeddedPage,600)});
+frame.addEventListener('load',async()=>{setTimeout(cleanEmbeddedPage,80);setTimeout(cleanEmbeddedPage,600);if(current==='comisiones'){try{const {data:{session}}=await sb.auth.getSession();if(session?.access_token&&frame.contentWindow)frame.contentWindow.postMessage({type:'MIRED360_SESSION',access_token:session.access_token,refresh_token:session.refresh_token},location.origin)}catch(e){console.warn('No se pudo transferir la sesión a comisiones',e)}}});
 async function logout(){await sb.auth.signOut();location.href='index.html'}
 async function init(){
   const {data:{session}}=await sb.auth.getSession();
