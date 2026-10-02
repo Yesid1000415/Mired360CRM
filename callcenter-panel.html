@@ -64,7 +64,7 @@ const modules={
   bases:{url:'bases-llamadas.html?v=20260928-3',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
   whatsapp:{url:'whatsapp-callcenter.html?v=1',title:'💬 WhatsApp Call Center',sub:'Continúa la asesoría con tus propios clientes asignados.'},
   venta:{url:'autorizacion.html?v=20261001-venta-agil1',title:'🧾 Ingreso de venta',sub:'Registra los datos validados del cliente. La auditoría se realiza posteriormente por llamada.'},
-  comisiones:{url:'cobro-comisiones.html?v=20261001-nologin4',title:'💰 Cobro de comisiones',sub:'Colombia: $100.000 COP. Venezuela: equivalente en USD de $100.000 COP por acceso instalado y auditado.'},
+  comisiones:{url:'cobro-comisiones.html?v=20261001-sessionbridge5',title:'💰 Cobro de comisiones',sub:'Colombia: $100.000 COP. Venezuela: equivalente en USD de $100.000 COP por acceso instalado y auditado.'},
   rendimiento:{url:'rendimiento.html?v=20260928-1',title:'🚦 Mi rendimiento',sub:'Consulta tus ventas, meta mensual y avance.'},
   calidad:{url:'calidad-callcenter.html?v=20260928-1',title:'⭐ Calidad Call Center',sub:'Retroalimentación y motivos de pérdida.'},
   academia:{url:'academia-callcenter-v2.html?v=20260928-3',title:'🎓 Academia Call Center',sub:'Capacitación, progreso y evaluación final.'}
@@ -162,6 +162,7 @@ function cleanEmbeddedPage(){
     }
   }catch(e){console.warn('No se pudo ajustar el módulo incrustado',e)}
 }
+window.addEventListener('message',async e=>{if(e.origin!==location.origin||e.data?.type!=='MIRED360_REQUEST_SESSION'||!frame.contentWindow)return;try{const {data:{session}}=await sb.auth.getSession();if(session?.access_token)frame.contentWindow.postMessage({type:'MIRED360_SESSION',access_token:session.access_token,refresh_token:session.refresh_token},location.origin)}catch(err){console.warn('No se pudo responder la solicitud de sesión',err)}});
 frame.addEventListener('load',async()=>{setTimeout(cleanEmbeddedPage,80);setTimeout(cleanEmbeddedPage,600);if(current==='comisiones'){try{const {data:{session}}=await sb.auth.getSession();if(session?.access_token&&frame.contentWindow)frame.contentWindow.postMessage({type:'MIRED360_SESSION',access_token:session.access_token,refresh_token:session.refresh_token},location.origin)}catch(e){console.warn('No se pudo transferir la sesión a comisiones',e)}}});
 async function logout(){await sb.auth.signOut();location.href='index.html'}
 async function init(){
