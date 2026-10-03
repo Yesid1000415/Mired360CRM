@@ -14,7 +14,9 @@
 <section class="card"><h2>📱 Recarga de prueba</h2><div class="fields"><label>Celular<input id="recCel" value="3100000015" inputmode="numeric"></label><label>Valor<input id="recVal" value="1000" inputmode="numeric"></label></div><button class="btn primary" style="margin-top:12px" onclick="recarga()">Enviar recarga simulada</button><div id="r-recarga" class="result">Sin enviar.</div></section>
 <section class="card"><h2>🔎 Consultar estado</h2><div class="fields"><label>ID transacción<input id="estId" inputmode="numeric"></label><label>Fecha<input id="estFecha" type="date"></label></div><button class="btn primary" style="margin-top:12px" onclick="estado()">Consultar estado</button><div id="r-estado" class="result">Sin consultar.</div></section>
 <section class="card full"><h2>🧾 Factura Claro · laboratorio</h2><div class="fields"><label>Convenio<input id="facConv" value="72"></label><label>Referencia<input id="facRef" value="3100000015" inputmode="numeric"></label></div><div class="topactions" style="margin-top:12px"><button class="btn primary" onclick="consultarFactura()">1. Consultar factura</button><button id="payBtn" class="btn ghost" disabled onclick="pagarFactura()">2. Pagar factura simulada</button></div><div id="r-factura" class="result">Primero consulta la factura.</div></section>
-</div></main>
+</div>
+<section class="card full" style="margin-top:15px"><h2>📋 Historial de operaciones</h2><p class="status">Registro automático de recargas y pagos ejecutados desde este módulo.</p><button class="btn ghost" onclick="cargarHistorial()">Actualizar historial</button><div id="historial" class="result">Cargando...</div></section>
+</main>
 <script>
 const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
@@ -24,14 +26,15 @@ const $=id=>document.getElementById(id);
 const pretty=x=>JSON.stringify(x,null,2);
 function localDate(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Bogota'}).format(new Date())}
 $('estFecha').value=localDate();
-async function sessionUI(){const {data:{session}}=await sb.auth.getSession();$('login').classList.toggle('hidden',!!session);$('app').classList.toggle('hidden',!session);$('logout').classList.toggle('hidden',!session)}
+async function sessionUI(){const {data:{session}}=await sb.auth.getSession();$('login').classList.toggle('hidden',!!session);$('app').classList.toggle('hidden',!session);$('logout').classList.toggle('hidden',!session);if(session)await cargarHistorial()}
 $('loginBtn').onclick=async()=>{ $('loginMsg').textContent='Ingresando...'; const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value}); $('loginMsg').textContent=error?error.message:''; await sessionUI(); };
 $('logout').onclick=async()=>{await sb.auth.signOut();await sessionUI()};
 async function invoke(body){const {data,error}=await sb.functions.invoke('practi-sandbox',{body});if(error)throw error;return data}
 async function run(action,body,target='r-'+action){const el=$(target);el.textContent='Procesando...';try{const data=await invoke({action,...body});el.textContent=pretty(data);return data}catch(e){el.textContent='ERROR: '+(e.message||e);throw e}}
-async function recarga(){const id=String(Date.now());$('estId').value=id;$('estFecha').value=localDate();await run('recarga',{idtrans:id,celular:$('recCel').value.trim(),valor:$('recVal').value.trim(),operador:'cm'})}
-async function estado(){await run('estado',{idtrans:$('estId').value.trim(),fecha:$('estFecha').value},'r-estado')}
-async function consultarFactura(){const id=String(Date.now());const data=await run('consultar_factura',{idtrans:id,convenio:$('facConv').value.trim(),referencia:$('facRef').value.trim()},'r-factura');const d=data?.data?.data?.data;if(data?.data?.data?.estado==='00'&&d?.estado==='00'&&d?.idPre&&d?.valorPago){factura={idtrans:id,referencia:$('facRef').value.trim(),idPre:String(d.idPre),valor:String(d.valorPago)};$('payBtn').disabled=false;$('estId').value=id;$('estFecha').value=localDate()}else{factura=null;$('payBtn').disabled=true}}
-async function pagarFactura(){if(!factura)return;await run('pagar_factura',factura,'r-factura')}
+async function recarga(){const id=String(Date.now());$('estId').value=id;$('estFecha').value=localDate();await run('recarga',{idtrans:id,celular:$('recCel').value.trim(),valor:$('recVal').value.trim(),operador:'cm'});await cargarHistorial()}
+async function estado(){await run('estado',{idtrans:$('estId').value.trim(),fecha:$('estFecha').value},'r-estado');await cargarHistorial()}
+async function consultarFactura(){const id=String(Date.now());const data=await run('consultar_factura',{idtrans:id,convenio:$('facConv').value.trim(),referencia:$('facRef').value.trim()},'r-factura');const p=data?.data||{};const d=p?.datos||p?.data?.datos||p?.data||{};const valor=d?.valorPago??d?.valor??d?.valorFactura??d?.valor_pago;if(String(p?.estado??d?.estado)==='00'&&d?.idPre&&valor){factura={idtrans:id,referencia:$('facRef').value.trim(),idPre:String(d.idPre),valor:String(valor),convenio:$('facConv').value.trim()};$('payBtn').disabled=false;$('estId').value=id;$('estFecha').value=localDate()}else{factura=null;$('payBtn').disabled=true}}
+async function pagarFactura(){if(!factura)return;await run('pagar_factura',factura,'r-factura');await cargarHistorial()}
+async function cargarHistorial(){const el=$('historial');if(!el)return;const {data,error}=await sb.from('practi_transacciones').select('tipo,idtrans,referencia,valor,estado,respuesta,codigoaut,creado_en').order('creado_en',{ascending:false}).limit(30);if(error){el.textContent='Historial no disponible: '+error.message;return}if(!data?.length){el.textContent='Aún no hay operaciones registradas desde MIRED360.';return}el.textContent=data.map(x=>{const fecha=new Date(x.creado_en).toLocaleString('es-CO');const valor=x.valor?('$ '+Number(x.valor).toLocaleString('es-CO')):'—';return fecha+' · '+x.tipo.toUpperCase()+' · '+valor+' · '+(x.estado||'')+' '+(x.respuesta||'')+' · ID '+x.idtrans}).join('\n')}
 sb.auth.onAuthStateChange(()=>sessionUI());sessionUI();
 </script></body></html>
