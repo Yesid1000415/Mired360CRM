@@ -29,7 +29,7 @@
     <button id="navQuality" onclick="openModule('calidad')">⭐ Calidad</button>
     <button id="navAcademia" onclick="openModule('academia')">🎓 Academia</button>
   </div>
-  <div class="side-footer"><button class="logout" onclick="logout()">Cerrar sesión</button></div>
+  <div class="side-footer"><button class="logout" style="margin-bottom:8px" onclick="changePassword()">🔐 Cambiar contraseña</button><button class="logout" onclick="logout()">Cerrar sesión</button></div>
 </aside>
 <section class="main">
   <div class="top"><div><h1 id="moduleTitle">🏠 Mi oficina Call Center</h1><p id="moduleSubtitle">Todo tu trabajo diario en un solo lugar.</p></div><div class="status">● Conectado</div></div>
@@ -164,6 +164,17 @@ function cleanEmbeddedPage(){
 }
 window.addEventListener('message',async e=>{if(e.origin!==location.origin||e.data?.type!=='MIRED360_REQUEST_SESSION'||!frame.contentWindow)return;try{const {data:{session}}=await sb.auth.getSession();if(session?.access_token)frame.contentWindow.postMessage({type:'MIRED360_SESSION',access_token:session.access_token,refresh_token:session.refresh_token},location.origin)}catch(err){console.warn('No se pudo responder la solicitud de sesión',err)}});
 frame.addEventListener('load',async()=>{setTimeout(cleanEmbeddedPage,80);setTimeout(cleanEmbeddedPage,600);if(current==='comisiones'){try{const {data:{session}}=await sb.auth.getSession();if(session?.access_token&&frame.contentWindow)frame.contentWindow.postMessage({type:'MIRED360_SESSION',access_token:session.access_token,refresh_token:session.refresh_token},location.origin)}catch(e){console.warn('No se pudo transferir la sesión a comisiones',e)}}});
+async function changePassword(){
+  const password=prompt('Escribe tu nueva contraseña (mínimo 8 caracteres):');
+  if(password===null)return;
+  if(password.length<8){alert('La contraseña debe tener mínimo 8 caracteres.');return}
+  const confirmPassword=prompt('Confirma la nueva contraseña:');
+  if(confirmPassword===null)return;
+  if(password!==confirmPassword){alert('Las contraseñas no coinciden. Intenta nuevamente.');return}
+  const {error}=await sb.auth.updateUser({password});
+  if(error){alert('No fue posible cambiar la contraseña. '+error.message);return}
+  alert('Contraseña actualizada correctamente.');
+}
 async function logout(){await sb.auth.signOut();location.href='index.html'}
 async function init(){
   const {data:{session}}=await sb.auth.getSession();
