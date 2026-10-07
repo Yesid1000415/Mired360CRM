@@ -34,6 +34,7 @@ async function practi(path: string, body: Record<string, unknown>) {
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return new Response(JSON.stringify({ error: "Método no permitido" }), { status: 405, headers: cors });
+  let operationPending = false;
   try {
     const authHeader = req.headers.get("Authorization") ?? "";
     const supabaseUrl = env("SUPABASE_URL");
@@ -54,13 +55,23 @@ Deno.serve(async (req: Request) => {
       const base = Deno.env.get("PRACTI_PRODUCTION_BASE_URL");
       let https = false;
       try { https = !!base && new URL(base).protocol === "https:"; } catch {}
-      return new Response(JSON.stringify({ production: true, enabled: productionEnabled(), configured: missing.length === 0 && https, missing, https, terminal_configured: !!Deno.env.get("PRACTI_PRODUCTION_TERMINAL") }), { headers: cors });
+      return new Response(JSON.stringify({ production: true, enabled: productionEnabled(), configured: missing.length === 0 && https, missing, https, money_enabled: true }), { headers: cors });
     }
 
     if (!productionEnabled()) return new Response(JSON.stringify({ sandbox: false, production: true, enabled: false, error: "Producción Practi aún no habilitada" }), { status: 423, headers: cors });
 
     const admin = createClient(supabaseUrl, serviceKey); const actorId = userData.user.id; const c = creds();
     let result: any; let comprobanteToken: string | null = null;
+    const moneyAction = ["recarga", "pagar_factura"].includes(action);
+    const operationId = moneyAction ? digits(input.idtrans, "idtrans", 6, 20) : null;
+    async function executeMoney(body: Record<string, unknown>) {
+      const row = { user_id: actorId, tipo: action === "recarga" ? "recarga" : "factura", idtrans: operationId!, referencia: String(input.celular ?? input.referencia ?? ""), operador: action === "recarga" ? String(input.operador) : "fc", convenio: String(input.convenio ?? ""), valor: Number(body.valor), estado: "99", respuesta: "En proceso. Consultar estado antes de repetir.", sandbox: false, detalle: { action, request: { referencia: input.celular ?? input.referencia, valor: body.valor } } };
+      const { error } = await admin.from("practi_transacciones").insert(row);
+      if (error) throw new Error(error.code === "23505" ? "Este ID ya fue registrado. Consulta su estado; no repitas la operación." : "No se pudo registrar el intento. No se envió a Practi.");
+      operationPending = true;
+      try { return await practi("pracRec", body); }
+      catch (_) { throw new Error(`Respuesta pendiente. Consulta el ID ${operationId}; no repitas la operación.`); }
+    }
 
     switch (action) {
       case "saldo": result = await practi("cSaldo", c); break;
@@ -76,12 +87,14 @@ Deno.serve(async (req: Request) => {
         result = await practi("preConsulta", { ...c, tipoConsulta: "convenios_consulta", idTrx, data: { key, page } }); break;
       }
       case "recarga": {
-        const idtrans = digits(input.idtrans ?? Date.now(), "idtrans", 6, 30); const celular = digits(input.celular, "celular", 10, 10); const valor = digits(input.valor, "valor", 3, 8); const operador = String(input.operador ?? "cm").trim().toLowerCase();
-        if (!/^[a-z0-9]{1,20}$/.test(operador)) throw new Error("operador inválido");
-        result = await practi("pracRec", { ...c, idtrans, celular, operador, valor, jsonAdicional: input.jsonAdicional ?? {} }); break;
+        const idtrans = operationId!; const celular = digits(input.celular, "celular", 10, 10); const valor = digits(input.valor, "valor", 3, 8); const operador = String(input.operador ?? "cm").trim().toLowerCase();
+        if (operador !== "cm" || !/^3\d{9}$/.test(celular) || Number(valor) < 1000) throw new Error("Solo recargas Claro a celulares colombianos, mínimo $1.000");
+        result = await executeMoney({ idcomercio: c.idcomercio, claveventa: c.claveventa, idtrans, celular, operador, valor, jsonAdicional: {} }); break;
       }
       case "estado": {
         const idtrans = digits(input.idtrans, "idtrans", 6, 30); const fecha = String(input.fecha ?? colombiaDate()); if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) throw new Error("fecha inválida");
+        const { data: existing } = await admin.from("practi_transacciones").select("user_id,sandbox").eq("idtrans", idtrans).maybeSingle();
+        if (!existing || existing.user_id !== actorId || existing.sandbox) throw new Error("No existe una operación propia de producción con ese ID.");
         result = await practi("consRec", { ...c, fecha, idtrans }); break;
       }
       case "consultar_factura": {
@@ -89,9 +102,14 @@ Deno.serve(async (req: Request) => {
         result = await practi("preConsulta", { idcomercio: c.idcomercio, claveventa: c.claveventa, tipoConsulta: "consultaValorConvRef", idTrx, data: { idConv: convenio, extConvenio: referencia } }); break;
       }
       case "pagar_factura": {
-        if (!c.terminal) throw new Error("Falta el secret PRACTI_PRODUCTION_TERMINAL para facturas");
-        const idtrans = digits(input.idtrans, "idtrans", 6, 30); const referencia = digits(input.referencia, "referencia", 3, 40); const valor = digits(input.valor, "valor", 1, 10); const idPre = digits(input.idPre, "idPre", 1, 30);
-        result = await practi("pracRec", { ...c, idtrans, celular: referencia, operador: "fc", valor, jsonAdicional: { idPre, ref1: referencia, ref2: "", ref3: "", ref4: "", terminalPayment: c.terminal } }); break;
+        const idtrans = operationId!; const referencia = digits(input.referencia, "referencia", 3, 40);
+        const convenio = digits(input.convenio, "convenio", 1, 12);
+        const quote = await practi("preConsulta", { idcomercio: c.idcomercio, claveventa: c.claveventa, tipoConsulta: "consultaValorConvRef", idTrx: idtrans, data: { idConv: convenio, extConvenio: referencia } });
+        const q: any = (quote.data as any)?.data;
+        if (!quote.ok || String(q?.estado) !== "00" || !q?.idPre) throw new Error("La factura ya no está disponible. Consúltala nuevamente.");
+        const valor = digits(q.valorPago, "valor", 1, 10);
+        if (Number(valor) <= 0 || Number(valor) !== Number(input.valor)) throw new Error("El valor de la factura cambió. Consúltala nuevamente antes de pagar.");
+        result = await executeMoney({ idcomercio: c.idcomercio, claveventa: c.claveventa, idtrans, celular: referencia, operador: "fc", valor, jsonAdicional: { idPre: digits(q.idPre, "idPre", 1, 30) } }); break;
       }
       default: return new Response(JSON.stringify({ error: "Acción no válida" }), { status: 400, headers: cors });
     }
@@ -103,15 +121,16 @@ Deno.serve(async (req: Request) => {
       if (idtrans) {
         const tipo = action === "recarga" ? "recarga" : (String(inner?.codop ?? core?.codop ?? "") === "fc" || action === "pagar_factura" ? "factura" : "recarga");
         const row = { user_id: actorId, tipo, idtrans, referencia: String(input.celular ?? input.referencia ?? ""), operador: String(input.operador ?? (tipo === "factura" ? "fc" : "")), convenio: String(input.convenio ?? ""), valor: input.valor ? Number(input.valor) : null, estado, respuesta, codigoaut: String(inner?.codigoauth ?? core?.codigoauth ?? ""), sandbox: false, detalle: { action, http_status: result?.http_status, response: practiData }, actualizado_en: new Date().toISOString() };
-        const { data: saved, error: historyError } = await admin.from("practi_transacciones").upsert(row, { onConflict: "idtrans" }).select("comprobante_token").single();
-        if (historyError) throw new Error(`Practi respondió, pero no se pudo guardar el historial: ${historyError.message}`);
+        const changes = action === "estado" ? { estado, respuesta, codigoaut: row.codigoaut, detalle: row.detalle, actualizado_en: row.actualizado_en } : row;
+        const { data: saved, error: historyError } = await admin.from("practi_transacciones").update(changes).eq("idtrans", idtrans).eq("user_id", actorId).eq("sandbox", false).select("comprobante_token").single();
+        if (historyError) throw new Error(`Practi respondió, pero falta actualizar el historial del ID ${idtrans}. Consulta su estado; no repitas la operación.`);
         comprobanteToken = saved?.comprobante_token ?? null;
       }
     }
     return new Response(JSON.stringify({ sandbox: false, production: true, enabled: true, action, comprobante_token: comprobanteToken, ...result }), { status: 200, headers: cors });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Error interno";
-    return new Response(JSON.stringify({ sandbox: false, production: true, error: message }), { status: 500, headers: cors });
+    return new Response(JSON.stringify({ sandbox: false, production: true, operation_pending: operationPending, error: message }), { status: 500, headers: cors });
   }
 });
 
