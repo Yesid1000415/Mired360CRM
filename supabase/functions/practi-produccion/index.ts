@@ -85,7 +85,7 @@ Deno.serve(async (req: Request) => {
         result = await practi("consRec", { ...c, fecha, idtrans }); break;
       }
       case "consultar_factura": {
-        const idTrx = digits(input.idtrans ?? Date.now(), "idtrans", 6, 30); const convenio = digits(input.convenio ?? "72", "convenio", 1, 12); const referencia = digits(input.referencia, "referencia", 3, 40);
+        const idTrx = digits(input.idtrans ?? Date.now(), "idtrans", 6, 30); const convenio = digits(input.convenio, "convenio", 1, 12); const referencia = digits(input.referencia, "referencia", 3, 40);
         result = await practi("preConsulta", { idcomercio: c.idcomercio, claveventa: c.claveventa, tipoConsulta: "consultaValorConvRef", idTrx, data: { idConv: convenio, extConvenio: referencia } }); break;
       }
       case "pagar_factura": {
