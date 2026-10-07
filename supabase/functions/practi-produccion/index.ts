@@ -87,8 +87,8 @@ Deno.serve(async (req: Request) => {
         result = await practi("preConsulta", { ...c, tipoConsulta: "convenios_consulta", idTrx, data: { key, page } }); break;
       }
       case "recarga": {
-        const idtrans = operationId!; const celular = digits(input.celular, "celular", 10, 10); const valor = digits(input.valor, "valor", 3, 8); const operador = String(input.operador ?? "cm").trim().toLowerCase();
-        if (operador !== "cm" || !/^3\d{9}$/.test(celular) || Number(valor) < 1000) throw new Error("Solo recargas Claro a celulares colombianos, mínimo $1.000");
+        const idtrans = operationId!; const celular = digits(input.celular, "celular", 10, 10); const valor = digits(input.valor, "valor", 3, 8); const operador = String(input.operador ?? "cl").trim().toLowerCase();
+        if (operador !== "cl" || !/^3\d{9}$/.test(celular) || Number(valor) < 1000) throw new Error("Solo recargas Claro a celulares colombianos, mínimo $1.000");
         result = await executeMoney({ idcomercio: c.idcomercio, claveventa: c.claveventa, idtrans, celular, operador, valor, jsonAdicional: {} }); break;
       }
       case "estado": {
