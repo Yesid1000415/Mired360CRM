@@ -81,6 +81,14 @@ function setActive(key){
 }
 function openModule(key){const m=modules[key];if(!m)return;setActive(key);const home=document.getElementById('officeHome');if(key==='inicio'){frame.style.display='none';home.style.display='block';return}home.style.display='none';frame.style.display='block';if(key==='soporte'){frame.src='callcenter-soporte.html?v=20261001-1';return}frame.src=m.url}
 function openSupport(){openModule('soporte')}
+function openMicroSip(phone,name){
+  const raw=String(phone||'').replace(/\D/g,'');
+  const tel=raw.startsWith('57')&&raw.length===12?raw:(raw.length===10?'57'+raw:raw);
+  if(!tel){alert('Este cliente no tiene un número válido para llamar.');return}
+  // MicroSIP registra el protocolo SIP en Windows. Esto abre la app instalada
+  // y entrega el número al marcador sin sacar al asesor del flujo del CRM.
+  location.href='sip:'+encodeURIComponent(tel);
+}
 function openWhatsappFor(phone,name){
   setActive('whatsapp');
   frame.src='whatsapp-callcenter.html?v=1&telefono='+encodeURIComponent(phone||'')+'&nombre='+encodeURIComponent(name||'Cliente');
@@ -150,7 +158,11 @@ function cleanEmbeddedPage(){
           const phoneCell=row.children[1],nameCell=row.children[0];if(!phoneCell)return;
           const btn=d.createElement('button');btn.type='button';btn.className='btn ghost';btn.dataset.callcenterWa='1';btn.textContent='💬 WhatsApp';
           btn.onclick=()=>openWhatsappFor(phoneCell.textContent.trim(),nameCell?.querySelector('b')?.textContent||'Cliente');
-          const callBtn=actions.querySelector('button');if(callBtn)callBtn.insertAdjacentElement('afterend',btn);else actions.prepend(btn);
+          const pc=d.createElement('button');pc.type='button';pc.className='btn ghost';pc.dataset.callcenterMicrosip='1';pc.textContent='💻 MicroSIP';
+          pc.title='Llamar desde este computador con MicroSIP';
+          pc.onclick=()=>openMicroSip(phoneCell.textContent.trim(),nameCell?.querySelector('b')?.textContent||'Cliente');
+          const callBtn=actions.querySelector('button');
+          if(callBtn){callBtn.insertAdjacentElement('afterend',pc);pc.insertAdjacentElement('afterend',btn)}else{actions.prepend(btn);actions.prepend(pc)}
         });
       };
       if(!w.__miredCallCenterRenderWrapped&&typeof w.renderContacts==='function'){
