@@ -85,9 +85,8 @@ Deno.serve(async (req: Request) => {
         result = await practi("consRec", { ...c, fecha, idtrans }); break;
       }
       case "consultar_factura": {
-        if (!c.terminal) throw new Error("Falta el secret PRACTI_PRODUCTION_TERMINAL para facturas");
         const idTrx = digits(input.idtrans ?? Date.now(), "idtrans", 6, 30); const convenio = digits(input.convenio ?? "72", "convenio", 1, 12); const referencia = digits(input.referencia, "referencia", 3, 40);
-        result = await practi("preConsulta", { ...c, tipoConsulta: "consultaValorConvRef", idTrx, data: { idConv: convenio, extConvenio: referencia, ref1: referencia, ref2: "", ref3: "", ref4: "", terminal: c.terminal } }); break;
+        result = await practi("preConsulta", { idcomercio: c.idcomercio, claveventa: c.claveventa, tipoConsulta: "consultaValorConvRef", idTrx, data: { idConv: convenio, extConvenio: referencia } }); break;
       }
       case "pagar_factura": {
         if (!c.terminal) throw new Error("Falta el secret PRACTI_PRODUCTION_TERMINAL para facturas");
@@ -115,3 +114,4 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ sandbox: false, production: true, error: message }), { status: 500, headers: cors });
   }
 });
+
