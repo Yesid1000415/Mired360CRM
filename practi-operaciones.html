@@ -166,7 +166,7 @@ el('billQuoteBtn').addEventListener('click',async function(){
  facturaCotizada={convenio:c,referencia:r,valor:Number(result.valorPago)};
  el('facturaDetalle').textContent='Convenio '+c+' · Referencia '+r+' · Total $'+facturaCotizada.valor.toLocaleString('es-CO')+' COP. Este pago descuenta saldo real.';
  el('facturaConfirmacion').classList.remove('hide');
- }
+ }else{el('serviceResult').textContent='La consulta respondió, pero PRACTI no devolvió identificador y valor válidos para pagar. No se habilita el cobro.'}
  }catch(e){el('serviceResult').textContent='Error: '+errorMessage(e)}
  finally{btn.disabled=false}
 });
@@ -183,7 +183,10 @@ el('facturaPagar').addEventListener('click',async function(){
  el('pastdate').value=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Bogota',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  try{
  var result=await sendOperation('pagar_factura',{idtrans:id,convenio:q.convenio,referencia:q.referencia,valor:q.valor});
- out.textContent='ID '+id+' · '+JSON.stringify(result.data||result).slice(0,4000)
+ var payment=result.data||result;for(var depth=0;depth<3&&payment&&payment.data&&typeof payment.data==='object';depth++)payment=payment.data;
+var state=String(payment.estado||'');
+if(state==='00'){out.textContent='PAGO APROBADO · ID '+id+' · Autorización: '+String(payment.codigoaut||payment.autorizacion||'Consultar historial')+' · Valor: $'+q.valor.toLocaleString('es-CO')+' COP';}
+else{out.textContent='PAGO NO CONFIRMADO · ID '+id+' · Estado '+(state||'sin confirmar')+' · '+String(payment.respuesta||payment.descerr||'Consultar estado antes de repetir')+'. No vuelvas a pagar sin revisar el historial.';}
  }catch(e){out.textContent='ID '+id+' · '+errorMessage(e)+' · Consulta estado antes de intentar de nuevo.'}
 });
 el('pinsBtn').addEventListener('click',async function(){
