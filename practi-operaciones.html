@@ -161,6 +161,8 @@ el('facturaPagar').addEventListener('click',async function(){
  facturaCotizada=null;el('facturaConfirmacion').classList.add('hide');
  var out=el('facturaEstado');out.textContent='Procesando. No repitas este pago si hay demora.';
  var id=newId();
+ el('pastid').value=id;
+ el('pastdate').value=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Bogota',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  try{
  var result=await sendOperation('pagar_factura',{idtrans:id,convenio:q.convenio,referencia:q.referencia,valor:q.valor});
  out.textContent='ID '+id+' · '+JSON.stringify(result.data||result).slice(0,4000)
