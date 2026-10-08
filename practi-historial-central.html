@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIRED360 · Historial PRACTI (prueba)</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#eef4fa;font:16px Arial;color:#10253e}main{max-width:580px;margin:32px auto;padding:18px}.card{background:white;border-radius:18px;padding:22px;margin-bottom:15px;box-shadow:0 5px 24px #10253e12}h1{font-size:25px;margin:0 0 8px}h2{font-size:19px}p{line-height:1.5;color:#496078}input,button{width:100%;padding:14px;border-radius:10px;font:inherit;margin:7px 0}input{border:1px solid #c8d4e1}button{border:0;background:#0877e8;color:white;font-weight:bold;cursor:pointer}button:disabled{opacity:.5}button.secondary{background:#123453}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#edf4fa;border-radius:10px;padding:12px}small{color:#53657a}.hide{display:none}@media print{body{background:white}main>.card,#login,#panel>h2,#who,#config,#saldo,#productos,#recargar,#seguimiento,#logout,#result,#recargamsg,#panel>div:not(#comprobante){display:none!important}#panel,#comprobante{display:block!important;box-shadow:none!important;border:0!important}#comprobante button{display:none!important}} </style></head><body><main><div class="card"><h1>MIRED360 · PRACTI (laboratorio)</h1><p>Versión de desarrollo separada del panel operativo. No realizar recargas reales desde aquí.</p></div>
+<div id="login" class="card"><h2>Acceso MIRED360</h2><input id="email" type="email" autocomplete="username" placeholder="Correo del administrador"><input id="password" type="password" autocomplete="current-password" placeholder="Contraseña"><button id="enter">Ingresar</button><p id="loginmsg" role="status"></p></div>
+<div id="panel" class="card hide"><h2>Diagnóstico de conexión</h2><small id="who"></small><button id="config">1. Verificar configuración</button><button id="saldo">2. Consultar saldo PRACTI</button><button id="productos">3. Consultar productos</button><div style="border-top:1px solid #dce6f1;margin-top:20px;padding-top:15px"><h2>Recarga celular</h2><p>Solo realiza una recarga si autorizas el valor y número. Se descuenta saldo real de PRACTI.</p><label for="operador">Operador</label><select id="operador" style="width:100%;padding:14px;border:1px solid #c8d4e1;border-radius:10px;margin:8px 0"><option value="cl">Claro</option><option value="mo">Movistar</option><option value="ti">Tigo</option><option value="wm">WOM</option><option value="et">ETB</option></select><label for="celular">Celular</label><input id="celular" type="tel" inputmode="numeric" maxlength="10" placeholder="3XXXXXXXXX"><label for="valor">Valor en pesos</label><input id="valor" type="number" inputmode="numeric" min="1000" step="1000" placeholder="1000"><button id="recargar" disabled style="background:#777">Recargas deshabilitadas en laboratorio</button><p id="recargamsg" role="status"></p><div id="seguimiento" class="hide"><button id="estado" class="secondary">Consultar estado de la última operación</button><small id="idoperacion"></small></div></div><section id="comprobante" class="card hide" style="border:1px solid #dce6f1;box-shadow:none;margin-top:18px"><h2>MIRED360SERVICIOS</h2><strong>Comprobante de recarga</strong><p id="comprobante-texto" style="white-space:pre-line;color:#132238;line-height:1.9"></p><button id="imprimir" class="secondary">Imprimir o guardar comprobante PDF</button></section><section style="border-top:1px solid #dce6f1;margin-top:18px;padding-top:10px"><h2>Consulta de transacción por ID</h2><p>Solo consulta, no descuenta saldo. Utiliza un ID de recarga realizado desde tu cuenta.</p><input id="buscarid" inputmode="numeric" placeholder="ID de transacción (6 a 20 dígitos)" maxlength="20"><input id="buscarfecha" type="date" value="2026-10-08"><button id="consultarid" class="secondary">Consultar estado por ID</button><pre id="consultaresultado" role="status"></pre></section><section style="border-top:1px solid #dce6f1;margin-top:18px;padding-top:10px"><h2>Historial central</h2><p>Registros de producción guardados en Supabase. Solo lectura.</p><input id="histbuscar" inputmode="numeric" placeholder="Celular o ID (opcional)"><button id="histcargar" class="secondary">Consultar historial central</button><p id="histresumen" role="status"></p><div id="histfilas"></div></section><button id="logout" class="secondary">Cerrar sesión</button><pre id="result" role="status">Elige una consulta. No se moverá dinero.</pre></div></main>
+<script>
+(function(){
+'use strict';
+var base='https://lpiusomsuswdcraoozdn.supabase.co';
+var key='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
+var token=null, busy=false, lastOperation=null;
+function el(id){return document.getElementById(id)}
+function show(session){el('login').classList.toggle('hide',!!session);el('panel').classList.toggle('hide',!session);el('who').textContent=session&&session.email||''}
+function errorMessage(e){return e&&e.message?e.message:String(e)}
+el('enter').addEventListener('click',async function(){
+ var button=el('enter'),email=el('email').value.trim(),password=el('password').value;
+ el('loginmsg').textContent='Botón activo. Verificando datos…';
+ if(!email||!password){el('loginmsg').textContent='Escribe correo y contraseña.';return}
+ button.disabled=true;
+ try{
+  var controller=new AbortController();var timeout=setTimeout(function(){controller.abort()},18000);
+  var response;
+  try{response=await fetch(base+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':key},body:JSON.stringify({email:email,password:password}),signal:controller.signal})}finally{clearTimeout(timeout)}
+  var data=await response.json().catch(function(){return {}});
+  if(!response.ok)throw Error(data.msg||data.error_description||data.message||data.error||'Acceso rechazado (HTTP '+response.status+')');
+  if(!data.access_token)throw Error('No se recibió sesión de acceso.');
+  token=data.access_token;el('password').value='';el('loginmsg').textContent='';show({email:email});
+ }catch(e){el('loginmsg').textContent='Error de acceso: '+errorMessage(e)}
+ finally{button.disabled=false}
+});
+async function run(action){
+ if(busy)return;
+ if(!token){el('result').textContent='Debes ingresar primero.';return}
+ busy=true;['config','saldo','productos'].forEach(function(id){el(id).disabled=true});
+ el('result').textContent='Consultando '+action+'…';
+ try{
+  var controller=new AbortController(),timeout=setTimeout(function(){controller.abort()},25000),response;
+  try{response=await fetch(base+'/functions/v1/practi-produccion',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':key},body:JSON.stringify({action:action==='config'?'configuracion':action}),signal:controller.signal})}finally{clearTimeout(timeout)}
+  var data=await response.json().catch(function(){return {error:'Respuesta no JSON'}});
+  if(!response.ok)throw Error('HTTP '+response.status+': '+(data.error||'No se pudo consultar'));
+  el('result').textContent=JSON.stringify(data.data||data,function(k,v){return /clave|password|token|secret|authorization|idcomercio/i.test(k)?'[oculto]':v},2).slice(0,12000);
+ }catch(e){el('result').textContent='Error de consulta: '+errorMessage(e)}
+ finally{busy=false;['config','saldo','productos'].forEach(function(id){el(id).disabled=false})}
+}
+el('config').addEventListener('click',function(){run('config')});
+el('saldo').addEventListener('click',function(){run('saldo')});
+el('productos').addEventListener('click',function(){run('productos')});
+
+function newId(){var a=new Uint32Array(2);crypto.getRandomValues(a);return String(Date.now())+String(a[0]%1000000).padStart(6,'0')}
+async function sendOperation(action,payload){
+ var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},25000),response;
+ try{response=await fetch(base+'/functions/v1/practi-produccion',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':key},body:JSON.stringify(Object.assign({action:action},payload)),signal:controller.signal})}finally{clearTimeout(timer)}
+ var data=await response.json().catch(function(){return {error:'Respuesta no JSON'}});
+ if(!response.ok)throw Error((data.error||'HTTP '+response.status)+(data.operation_pending?' — operación posiblemente enviada, NO repetir.':''));
+ return data
+}
+function innerResponse(data){var x=data&&data.data||data||{};return x&&x.data&&typeof x.data==='object'&&!Array.isArray(x.data)?x.data:x}
+function receipt(data){
+ if(!lastOperation)return;
+ var x=innerResponse(data);
+ var ok=String(x.estado)==='00'&&/correcta|exitosa|aprobada/i.test(String(x.respuesta||''));
+ if(!ok){el('comprobante').classList.add('hide');return}
+ var lines=[
+ 'Estado: '+String(x.respuesta),
+ 'Empresa: '+lastOperation.operador,
+ 'Celular: '+lastOperation.celular,
+ 'Valor: $'+Number(lastOperation.valor).toLocaleString('es-CO'),
+ 'Fecha: '+new Date().toLocaleString('es-CO',{timeZone:'America/Bogota'}),
+ 'ID transacción: '+lastOperation.idtrans,
+ 'Autorización: '+String(x.codigoauth||x.codigoaut||'No informada'),
+ 'Conserve este comprobante.'
+ ];
+ el('comprobante-texto').textContent=lines.join(String.fromCharCode(10));
+ el('comprobante').classList.remove('hide');
+}
+function summary(data){var x=data&&data.data||data||{};return JSON.stringify(x,function(k,v){return /clave|password|token|secret|authorization|idcomercio/i.test(k)?'[oculto]':v},2).slice(0,8000)}
+el('recargar').addEventListener('click',async function(){
+ if(busy)return;
+ if(!token){el('recargamsg').textContent='Primero ingresa.';return}
+ var celular=el('celular').value.trim(),valor=Number(el('valor').value),operador=el('operador').value;
+ if(!/^3\d{9}$/.test(celular)||!Number.isInteger(valor)||valor<1000||valor>99999999){el('recargamsg').textContent='Verifica celular colombiano de 10 dígitos y valor mínimo de $1.000.';return}
+ var nombre=el('operador').selectedOptions[0].textContent;
+ if(!confirm('RECARGA REAL: '+nombre+' al '+celular+' por $'+valor.toLocaleString('es-CO')+'. ¿Autorizar esta transacción?'))return;
+ var idtrans=newId();lastOperation={idtrans:idtrans,fecha:new Date().toLocaleDateString('en-CA',{timeZone:'America/Bogota'}),celular:celular,valor:valor,operador:nombre};
+ el('comprobante').classList.add('hide');el('seguimiento').classList.remove('hide');el('idoperacion').textContent='ID '+idtrans+' — guarda este número hasta confirmar el resultado.';
+ busy=true;el('recargar').disabled=true;el('recargamsg').textContent='Enviando operación '+idtrans+'… No cierres ni repitas.';
+ try{var data=await sendOperation('recarga',{idtrans:idtrans,celular:celular,valor:String(valor),operador:operador});
+ el('recargamsg').textContent='Respuesta PRACTI para ID '+idtrans+': '+summary(data)+' — consulta estado para confirmar.';receipt(data);
+ }catch(e){el('recargamsg').textContent='ID '+idtrans+': '+errorMessage(e)+'. No repitas; consulta estado.'}
+ finally{busy=false;el('recargar').disabled=false}
+});
+el('estado').addEventListener('click',async function(){
+ if(!lastOperation||busy)return;
+ busy=true;el('estado').disabled=true;el('recargamsg').textContent='Consultando estado de '+lastOperation.idtrans+'…';
+ try{var data=await sendOperation('estado',{idtrans:lastOperation.idtrans,fecha:lastOperation.fecha});el('recargamsg').textContent='Estado ID '+lastOperation.idtrans+': '+summary(data);receipt(data)}
+ catch(e){el('recargamsg').textContent='Error al consultar estado: '+errorMessage(e)}
+ finally{busy=false;el('estado').disabled=false}
+});
+el('imprimir').addEventListener('click',function(){window.print()});
+el('consultarid').addEventListener('click',async function(){
+ var id=el('buscarid').value.replace(/[^0-9]/g,''),fecha=el('buscarfecha').value; if(fecha.indexOf('/')>=0){var p=fecha.split('/');if(p.length===3)fecha=p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0')}
+ if(!token){el('consultaresultado').textContent='Primero ingresa.';return}
+ if(!id||!fecha){el('consultaresultado').textContent='Falta ID o fecha. ID recibido: '+id+'; fecha recibida: '+fecha;return}
+ el('consultarid').disabled=true;el('consultaresultado').textContent='Consultando…';
+ try{var data=await sendOperation('estado',{idtrans:id,fecha:fecha});el('consultaresultado').textContent=summary(data)}
+ catch(e){el('consultaresultado').textContent='Error: '+errorMessage(e)}
+ finally{el('consultarid').disabled=false}
+});
+
+el('histcargar').addEventListener('click',async function(){
+ var btn=el('histcargar'),out=el('histresumen'),host=el('histfilas');
+ if(!token){out.textContent='Primero ingresa.';return}
+ btn.disabled=true;out.textContent='Consultando historial…';host.textContent='';
+ try{
+  var response=await fetch(base+'/functions/v1/practi-historial',{
+   method:'POST',
+   headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':key},
+   body:JSON.stringify({limit:100,search:el('histbuscar').value.trim()})
+  });
+  var data=await response.json();
+  if(!response.ok||!data.ok)throw Error(data.error||'No se pudo consultar');
+  var rows=data.records||[];
+  var approved=rows.filter(function(r){return String(r.estado)==='00'});
+  var total=approved.reduce(function(sum,r){return sum+Number(r.valor||0)},0);
+  out.textContent=rows.length+' operaciones · '+approved.length+' aprobadas · $'+total.toLocaleString('es-CO')+' en recargas aprobadas mostradas';
+  if(!rows.length){host.textContent='Sin registros para esta búsqueda.';return}
+  rows.forEach(function(r){
+   var div=document.createElement('div');div.style.cssText='padding:12px;border:1px solid #c8d4e1;border-radius:12px;margin:10px 0;overflow-wrap:anywhere';
+   var p=document.createElement('p');
+   p.textContent=[(r.creado_en||'').slice(0,10),r.operador||r.tipo||'',r.referencia||'', '$'+Number(r.valor||0).toLocaleString('es-CO'),r.respuesta||r.estado||'Pendiente'].join(' · ');
+   var btn2=document.createElement('button');btn2.className='secondary';btn2.textContent='Consultar ID '+r.idtrans;
+   btn2.addEventListener('click',function(){el('buscarid').value=r.idtrans;el('buscarfecha').value=(r.creado_en||'').slice(0,10);el('consultarid').click();el('consultaresultado').scrollIntoView({behavior:'smooth'})});
+   div.appendChild(p);div.appendChild(btn2);host.appendChild(div)
+  });
+ }catch(e){out.textContent='Error: '+errorMessage(e)}
+ finally{btn.disabled=false}
+});
+el('logout').addEventListener('click',function(){token=null;lastOperation=null;el('comprobante').classList.add('hide');el('seguimiento').classList.add('hide');show(null);el('result').textContent='Sin sesión.'});
+show(null);
+el('loginmsg').textContent='Acceso listo para verificar.';
+})();
+</script></body></html>
