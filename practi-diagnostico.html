@@ -62,11 +62,7 @@ el('recargar').addEventListener('click',async function(){
  var celular=el('celular').value.trim(),valor=Number(el('valor').value),operador=el('operador').value;
  if(!/^3\d{9}$/.test(celular)||!Number.isInteger(valor)||valor<1000||valor>99999999){el('recargamsg').textContent='Verifica celular colombiano de 10 dígitos y valor mínimo de $1.000.';return}
  var nombre=el('operador').selectedOptions[0].textContent;
- if(!confirm('RECARGA REAL: '+nombre+' al '+celular+' por 
-show(null);
-el('loginmsg').textContent='Acceso listo para verificar.';
-})();
-</script></body></html>+valor.toLocaleString('es-CO')+'. ¿Autorizar esta transacción?'))return;
+ if(!confirm('RECARGA REAL: '+nombre+' al '+celular+' por $'+valor.toLocaleString('es-CO')+'. ¿Autorizar esta transacción?'))return;
  var idtrans=newId();lastOperation={idtrans:idtrans,fecha:new Date().toLocaleDateString('en-CA',{timeZone:'America/Bogota'}),celular:celular,valor:valor,operador:nombre};
  el('seguimiento').classList.remove('hide');el('idoperacion').textContent='ID '+idtrans+' — guarda este número hasta confirmar el resultado.';
  busy=true;el('recargar').disabled=true;el('recargamsg').textContent='Enviando operación '+idtrans+'… No cierres ni repitas.';
