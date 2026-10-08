@@ -101,7 +101,7 @@ el('imprimir').addEventListener('click',function(){window.print()});
 el('consultarid').addEventListener('click',async function(){
  var id=el('buscarid').value.trim(),fecha=el('buscarfecha').value;
  if(!token){el('consultaresultado').textContent='Primero ingresa.';return}
- if(!/^\\d{6,20}$/.test(id)||!/^\\d{4}-\\d{2}-\\d{2}$/.test(fecha)){el('consultaresultado').textContent='Escribe ID numérico y fecha de la recarga.';return}
+ if(!new RegExp('^[0-9]{6,20}$').test(id)||!new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$').test(fecha)){el('consultaresultado').textContent='Verifica el ID y selecciona la fecha.';return}
  el('consultarid').disabled=true;el('consultaresultado').textContent='Consultando…';
  try{var data=await sendOperation('estado',{idtrans:id,fecha:fecha});el('consultaresultado').textContent=summary(data)}
  catch(e){el('consultaresultado').textContent='Error: '+errorMessage(e)}
