@@ -166,7 +166,7 @@ el('facturaPagar').addEventListener('click',async function(){
  out.textContent='ID '+id+' · '+JSON.stringify(result.data||result).slice(0,4000)
  }catch(e){out.textContent='ID '+id+' · '+errorMessage(e)+' · Consulta estado antes de intentar de nuevo.'}
 });
-el('pinsBtn').addEventListener('click',function(){queryService('productos_tipo',{tipo:'2'})});
+el('pinsBtn').addEventListener('click',function(){el('serviceResult').textContent='Consultando pines disponibles en PRACTI…';queryService('productos_tipo',{tipo:'2'})});
 
 el('pastlookup').addEventListener('click',async function(){
  var id=el('pastid').value.trim(),fecha=el('pastdate').value,out=el('pastresult'),b=el('pastlookup');
