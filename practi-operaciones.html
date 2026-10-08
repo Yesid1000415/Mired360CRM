@@ -143,7 +143,7 @@ el('billQuoteBtn').addEventListener('click',async function(){
  var response=await fetch(base+'/functions/v1/practi-produccion',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':key},body:JSON.stringify({action:'consultar_factura',convenio:c,referencia:r})});
  var data=await response.json();if(!response.ok)throw Error(data.error||'Consulta fallida');
  el('serviceResult').textContent=JSON.stringify(data.data||data,null,2).slice(0,12000);
- var result=data.data&&data.data.data?data.data.data:(data.data||{});
+ var result=data.data||{}; for(var depth=0;depth<3&&result&&result.data&&typeof result.data==='object';depth++){result=result.data;}
  if(String(result.estado)==='00'&&result.idPre&&Number(result.valorPago)>0){
  facturaCotizada={convenio:c,referencia:r,valor:Number(result.valorPago)};
  el('facturaDetalle').textContent='Convenio '+c+' · Referencia '+r+' · Total $'+facturaCotizada.valor.toLocaleString('es-CO')+' COP. Este pago descuenta saldo real.';
