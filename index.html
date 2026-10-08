@@ -101,6 +101,17 @@
 <div class="notice" style="margin-bottom:12px">
   <b>Atención:</b> puedes responder con texto libre dentro de la ventana de atención de 24 horas después del último mensaje del cliente. Fuera de esa ventana, inicia la conversación con una plantilla aprobada.
 </div>
+<div class="card" style="margin-bottom:12px">
+<div class="toolbar">
+<label>Contactos por tanda<input id="waBatchSize" type="number" min="1" max="10000" step="1" value="50"></label>
+<label>Intervalo entre mensajes<input value="60 segundos" readonly></label>
+<button class="btn primary" id="waBatchStart" onclick="runWhatsAppImport()" disabled>Enviar tanda / Continuar</button>
+<button class="btn ghost" id="waBatchPause" onclick="pauseWaBatch()" disabled>Pausar</button>
+<button class="btn ghost" id="waBatchDownload" onclick="downloadWaBatch()" disabled>Descargar Excel guardado</button>
+</div>
+<p id="waBatchStatus" role="status">Importa un Excel. Se guardará en este navegador junto con su avance.</p>
+<small>Mantén esta página abierta durante el envío. Al cerrarla, podrás continuar en este mismo navegador y cuenta. Los envíos por revisar no se repiten automáticamente.</small>
+</div>
 <div class="chat-layout">
   <div class="chat-list">
     <div class="chat-list-head">
@@ -238,6 +249,7 @@ async function loginCRM(){
 async function logoutCRM(){
   if(messageSubscription){await supabaseClient.removeChannel(messageSubscription);messageSubscription=null;}
   await supabaseClient.auth.signOut();
+  waImportStop=true;
   currentUser=null;leads=[];waMessages=[];activeChatPhone='';
   $('crmApp').classList.add('hidden');
   $('loginPage').classList.remove('hidden');
@@ -245,6 +257,7 @@ async function logoutCRM(){
 
 async function enterCRM(user){
   currentUser=user;
+  await restoreWaBatch();
   $('userLabel').textContent=user.email||'';
   $('loginPage').classList.add('hidden');
   $('crmApp').classList.remove('hidden');
@@ -644,100 +657,142 @@ async function startDirectWhatsApp(){
 }
 let waImportQueue=[];
 let waImportRunning=false;
-
-async function handleWhatsAppExcelInput(event){
-  const input=event?.target;
-  const file=input?.files?.[0];
-  if(!file){alert('No se seleccionó ningún archivo.');return;}
-  try{
-    await importWhatsAppExcel(file);
-  }catch(e){
-    console.error('Error importando Excel WhatsApp',e);
-    alert('No se pudo procesar el Excel: '+String(e?.message||e));
-  }finally{
-    if(input)input.value='';
-  }
+let waImportStop=false;
+let waBatch=null;
+let waBatchDB;
+function openWaBatchDB(){
+  if(!waBatchDB)waBatchDB=new Promise((resolve,reject)=>{
+    const req=indexedDB.open('mired360-whatsapp-excel',1);
+    req.onupgradeneeded=()=>req.result.createObjectStore('batches');
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return waBatchDB;
 }
-
+async function waBatchRecord(value,owner=currentUser?.id){
+  if(!owner)throw new Error('Inicia sesión para usar el Excel.');
+  const db=await openWaBatchDB(), key=owner;
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction('batches',value?'readwrite':'readonly');
+    const req=value?tx.objectStore('batches').put(value,key):tx.objectStore('batches').get(key);
+    tx.oncomplete=()=>resolve(req.result);
+    tx.onerror=()=>reject(tx.error);
+    tx.onabort=()=>reject(tx.error||new Error('No se pudo guardar el avance.'));
+  });
+}
+function renderWaBatch(note=''){
+  const b=waBatch, status=$('waBatchStatus');
+  if(!status)return;
+  const total=b?.phones.length||0, next=b?.next||0;
+  const sent=b?.results.filter(r=>r.status==='sent').length||0;
+  const review=b?.results.filter(r=>r.status!=='sent').length||0;
+  status.textContent=b ? b.name+' · '+sent+' enviados · '+review+' por revisar · '+(total-next)+' pendientes · '+(next<total?'Próximo contacto: '+(next+1)+' de '+total:'Archivo terminado')+(note?' · '+note:'') : 'Importa un Excel. Se guardará en este navegador junto con su avance.';
+  $('waBatchStart').disabled=waImportRunning||!b||next>=total;
+  $('waBatchPause').disabled=!waImportRunning;
+  $('waBatchSize').disabled=waImportRunning;
+  $('waBatchDownload').disabled=!b;
+}
+async function restoreWaBatch(recover=false){
+  try{
+    waBatch=await waBatchRecord()||null;
+    if(recover&&waBatch?.inFlight){
+      waBatch.results.push({index:waBatch.inFlight.index,phone:waBatch.inFlight.phone,status:'review',error:'Envío interrumpido: verificar en la bandeja antes de reenviar.'});
+      waBatch.next=Math.max(waBatch.next,waBatch.inFlight.index+1);
+      waBatch.inFlight=null;
+      await waBatchRecord(waBatch);
+    }
+    renderWaBatch('Listo para continuar');
+  }catch(e){renderWaBatch();if(recover)throw e;alert('No se pudo recuperar el Excel guardado: '+e.message);}
+}
+async function handleWhatsAppExcelInput(event){
+  const input=event?.target,file=input?.files?.[0];
+  if(!file)return;
+  try{
+    if(waImportRunning)throw new Error('Pausa la tanda antes de cambiar el Excel.');
+    if(!navigator.locks)throw new Error('Este navegador no permite proteger el envío entre pestañas. Usa Chrome o Edge actualizado.');
+    await navigator.locks.request('mired-wa-excel-'+currentUser.id,{ifAvailable:true},async lock=>{
+      if(!lock)throw new Error('El Excel está en uso en otra pestaña.');
+      await importWhatsAppExcel(file);
+    });
+  }catch(e){alert('No se pudo procesar el Excel: '+e.message);}
+  finally{input.value='';}
+}
 function extractPhonesFromWorkbook(workbook){
   const phones=[];
   for(const sheetName of workbook.SheetNames){
-    const sheet=workbook.Sheets[sheetName];
-    const rows=XLSX.utils.sheet_to_json(sheet,{header:1,raw:false,defval:''});
-    for(const row of rows){
-      for(const cell of row){
-        const raw=String(cell||'').trim();
-        if(!raw)continue;
-        const normalized=normalizeWhatsNumber(raw);
-        if(/^57\d{10}$/.test(normalized))phones.push(normalized);
-      }
+    const rows=XLSX.utils.sheet_to_json(workbook.Sheets[sheetName],{header:1,raw:false,defval:''});
+    for(const row of rows)for(const cell of row){
+      const normalized=normalizeWhatsNumber(String(cell||'').trim());
+      if(/^573\d{9}$/.test(normalized))phones.push(normalized);
     }
   }
   return phones;
 }
-
 async function importWhatsAppExcel(file){
-  if(!file){alert('No se recibió el archivo de Excel.');return;}
-  if(typeof XLSX==='undefined'){alert('No se pudo cargar el lector de Excel. Actualiza la página e inténtalo nuevamente.');return;}
-  try{
-    const buffer=await file.arrayBuffer();
-    const workbook=XLSX.read(buffer,{type:'array'});
-    const extracted=extractPhonesFromWorkbook(workbook);
-    const unique=[...new Set(extracted)];
-    const duplicates=extracted.length-unique.length;
-    const existingChats=new Set(groupedChats().map(g=>g.phone));
-    const eligible=unique.filter(p=>!existingChats.has(p));
-    const already=unique.length-eligible.length;
-
-    if(!unique.length){
-      alert('No encontré números celulares colombianos válidos en el archivo. Puedes usar un Excel con una sola columna llamada Teléfono.');
-      return;
-    }
-
-    const msg='Archivo revisado.\n\n'+
-      'Números válidos únicos: '+unique.length+'\n'+
-      'Duplicados eliminados: '+duplicates+'\n'+
-      'Con conversación existente: '+already+'\n'+
-      'Listos para plantilla: '+eligible.length+'\n\n'+
-      'Solo se enviará la plantilla aprobada mired360_validar_cobertura. No se crearán prospectos.\n\n'+
-      'Continúa únicamente si estos contactos autorizaron recibir comunicaciones por WhatsApp.\n\n¿Preparar el envío?';
-    if(!confirm(msg))return;
-    if(!eligible.length)return alert('No hay números nuevos para enviar.');
-
-    waImportQueue=eligible;
-    await runWhatsAppImport();
-  }catch(e){
-    alert('No se pudo leer el archivo. '+String(e.message||e));
-  }
+  if(typeof XLSX==='undefined')throw new Error('No se pudo cargar el lector de Excel.');
+  const saved=await waBatchRecord();
+  if(saved&&saved.next<saved.phones.length&&!confirm('Hay un Excel con contactos pendientes. ¿Reemplazarlo por este archivo?'))return;
+  const buffer=await file.arrayBuffer(),workbook=XLSX.read(buffer,{type:'array'});
+  const unique=[...new Set(extractPhonesFromWorkbook(workbook))];
+  const existing=new Set(groupedChats().map(g=>g.phone));
+  const phones=unique.filter(p=>!existing.has(p));
+  if(!phones.length)throw new Error('No hay celulares nuevos válidos para enviar.');
+  if(!confirm('Archivo: '+file.name+'\nContactos nuevos: '+phones.length+'\nDuplicados y conversaciones existentes excluidos.\n\nSe guardará el Excel sin iniciar envíos. Usa únicamente contactos que autorizaron comunicaciones por WhatsApp. ¿Guardar?'))return;
+  const batch={name:file.name,file: new Blob([buffer],{type:file.type}),phones,next:0,results:[],inFlight:null,lastAttemptAt:0};
+  await waBatchRecord(batch);
+  waBatch=batch;
+  renderWaBatch('Excel guardado. Elige la cantidad y pulsa Enviar tanda.');
 }
-
+function pauseWaBatch(){waImportStop=true;renderWaBatch('Pausando después del mensaje en curso');}
 async function runWhatsAppImport(){
-  if(waImportRunning||!waImportQueue.length)return;
-  waImportRunning=true;
-  let ok=0,fail=0;
-  const failed=[];
+  if(waImportRunning)return;
+  const size=Number($('waBatchSize').value);
+  if(!Number.isInteger(size)||size<1||size>10000)return alert('Elige una cantidad entera entre 1 y 10000.');
+  if(!navigator.locks)return alert('Usa Chrome o Edge actualizado para proteger el envío entre pestañas.');
+  waImportRunning=true;waImportStop=false;renderWaBatch();
   try{
-    for(let i=0;i<waImportQueue.length;i++){
-      const phone=waImportQueue[i];
-      const proceed= i===0 ? confirm('Se enviarán '+waImportQueue.length+' plantillas aprobadas.\n\nEl proceso será secuencial y mostrará el resultado al terminar. ¿Iniciar ahora?') : true;
-      if(!proceed)break;
-      try{
-        await sendApprovedTemplate(phone);
-        ok++;
-      }catch(e){
-        fail++;
-        failed.push(phone);
+    await navigator.locks.request('mired-wa-excel-'+currentUser.id,{ifAvailable:true},async lock=>{
+      if(!lock)throw new Error('Ya hay una tanda en ejecución en otra pestaña.');
+      await restoreWaBatch(true);
+      const b=waBatch;
+      if(!b||b.next>=b.phones.length)return;
+      const end=Math.min(b.next+size,b.phones.length);
+      if(!confirm('Enviar '+(end-b.next)+' contactos, desde el '+(b.next+1)+', con al menos 60 segundos entre mensajes. ¿Iniciar?'))return;
+      const owner=currentUser.id;
+      while(b.next<end&&!waImportStop&&currentUser?.id===owner){
+        while(Date.now()-(b.lastAttemptAt||0)<60000&&!waImportStop&&currentUser?.id===owner){
+          renderWaBatch('Próximo envío en '+Math.ceil((60000-(Date.now()-b.lastAttemptAt))/1000)+' s');
+          await new Promise(r=>setTimeout(r,500));
+        }
+        if(waImportStop||currentUser?.id!==owner)break;
+        const index=b.next,phone=b.phones[index];
+        b.inFlight={index,phone};b.lastAttemptAt=Date.now();
+        await waBatchRecord(b,owner);
+        renderWaBatch('Enviando contacto '+(index+1));
+        try{
+          await sendApprovedTemplate(phone);
+          b.results.push({index,phone,status:'sent',at:Date.now()});
+        }catch(e){
+          b.results.push({index,phone,status:'review',error:String(e.message||e)});
+          waImportStop=true;
+        }
+        b.next=index+1;b.inFlight=null;
+        b.lastAttemptAt=Date.now();
+        await waBatchRecord(b,owner);
+        renderWaBatch();
       }
-      // Pausa técnica para evitar solicitudes simultáneas; no pretende eludir límites de WhatsApp.
-      if(i<waImportQueue.length-1)await new Promise(r=>setTimeout(r,750));
-    }
-    alert('Envío terminado.\n\nEnviados: '+ok+'\nFallidos: '+fail+(failed.length?'\n\nFallidos: '+failed.slice(0,20).join(', '):''));
+    });
+    renderWaBatch(waImportStop?'Tanda pausada. Revisa cualquier envío con error en la bandeja.':'Tanda terminada');
     await loadMessages(false);
-  }finally{
-    waImportQueue=[];
-    waImportRunning=false;
-  }
+  }catch(e){alert('Tanda detenida: '+e.message);}
+  finally{waImportRunning=false;renderWaBatch();}
 }
+function downloadWaBatch(){
+  if(!waBatch)return;
+  const url=URL.createObjectURL(waBatch.file),a=document.createElement('a');
+  a.href=url;a.download=waBatch.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+window.addEventListener('beforeunload',e=>{if(waImportRunning){e.preventDefault();e.returnValue='';}});
 
 function renderActiveChat(){
   const panel=$('chatMessages'),head=$('chatHead'),input=$('replyText'),btn=$('replyBtn');
