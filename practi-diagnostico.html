@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIRED360 · Diagnóstico PRACTI</title>
-<style>*{box-sizing:border-box}body{margin:0;background:#eef4fa;font:16px Arial;color:#10253e}main{max-width:580px;margin:32px auto;padding:18px}.card{background:white;border-radius:18px;padding:22px;margin-bottom:15px;box-shadow:0 5px 24px #10253e12}h1{font-size:25px;margin:0 0 8px}h2{font-size:19px}p{line-height:1.5;color:#496078}input,button{width:100%;padding:14px;border-radius:10px;font:inherit;margin:7px 0}input{border:1px solid #c8d4e1}button{border:0;background:#0877e8;color:white;font-weight:bold;cursor:pointer}button:disabled{opacity:.5}button.secondary{background:#123453}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#edf4fa;border-radius:10px;padding:12px}small{color:#53657a}.hide{display:none}</style></head><body><main><div class="card"><h1>MIRED360 · PRACTI</h1><p>Panel privado de verificación. Solo consultas: <b>no ejecuta recargas ni pagos</b>.</p></div>
+<style>*{box-sizing:border-box}body{margin:0;background:#eef4fa;font:16px Arial;color:#10253e}main{max-width:580px;margin:32px auto;padding:18px}.card{background:white;border-radius:18px;padding:22px;margin-bottom:15px;box-shadow:0 5px 24px #10253e12}h1{font-size:25px;margin:0 0 8px}h2{font-size:19px}p{line-height:1.5;color:#496078}input,button{width:100%;padding:14px;border-radius:10px;font:inherit;margin:7px 0}input{border:1px solid #c8d4e1}button{border:0;background:#0877e8;color:white;font-weight:bold;cursor:pointer}button:disabled{opacity:.5}button.secondary{background:#123453}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#edf4fa;border-radius:10px;padding:12px}small{color:#53657a}.hide{display:none}</style></head><body><main><div class="card"><h1>MIRED360 · PRACTI</h1><p>Panel privado de verificación. Consulta saldo, productos y realiza recargas <b>solo con confirmación expresa</b>.</p></div>
 <div id="login" class="card"><h2>Acceso MIRED360</h2><input id="email" type="email" autocomplete="username" placeholder="Correo del administrador"><input id="password" type="password" autocomplete="current-password" placeholder="Contraseña"><button id="enter">Ingresar</button><p id="loginmsg" role="status"></p></div>
-<div id="panel" class="card hide"><h2>Diagnóstico de conexión</h2><small id="who"></small><button id="config">1. Verificar configuración</button><button id="saldo">2. Consultar saldo PRACTI</button><button id="productos">3. Consultar productos</button><button id="logout" class="secondary">Cerrar sesión</button><pre id="result" role="status">Elige una consulta. No se moverá dinero.</pre></div></main>
+<div id="panel" class="card hide"><h2>Diagnóstico de conexión</h2><small id="who"></small><button id="config">1. Verificar configuración</button><button id="saldo">2. Consultar saldo PRACTI</button><button id="productos">3. Consultar productos</button><div style="border-top:1px solid #dce6f1;margin-top:20px;padding-top:15px"><h2>Recarga celular</h2><p>Solo realiza una recarga si autorizas el valor y número. Se descuenta saldo real de PRACTI.</p><label for="operador">Operador</label><select id="operador" style="width:100%;padding:14px;border:1px solid #c8d4e1;border-radius:10px;margin:8px 0"><option value="cl">Claro</option><option value="mo">Movistar</option><option value="ti">Tigo</option><option value="wm">WOM</option><option value="et">ETB</option></select><label for="celular">Celular</label><input id="celular" type="tel" inputmode="numeric" maxlength="10" placeholder="3XXXXXXXXX"><label for="valor">Valor en pesos</label><input id="valor" type="number" inputmode="numeric" min="1000" step="1000" placeholder="1000"><button id="recargar" style="background:#14704d">Confirmar y enviar recarga</button><p id="recargamsg" role="status"></p><div id="seguimiento" class="hide"><button id="estado" class="secondary">Consultar estado de la última operación</button><small id="idoperacion"></small></div></div><button id="logout" class="secondary">Cerrar sesión</button><pre id="result" role="status">Elige una consulta. No se moverá dinero.</pre></div></main>
 <script>
 (function(){
 'use strict';
 var base='https://lpiusomsuswdcraoozdn.supabase.co';
 var key='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
-var token=null, busy=false;
+var token=null, busy=false, lastOperation=null;
 function el(id){return document.getElementById(id)}
 function show(session){el('login').classList.toggle('hide',!!session);el('panel').classList.toggle('hide',!session);el('who').textContent=session&&session.email||''}
 function errorMessage(e){return e&&e.message?e.message:String(e)}
@@ -46,6 +46,42 @@ async function run(action){
 el('config').addEventListener('click',function(){run('config')});
 el('saldo').addEventListener('click',function(){run('saldo')});
 el('productos').addEventListener('click',function(){run('productos')});
+
+function newId(){var a=new Uint32Array(2);crypto.getRandomValues(a);return String(Date.now())+String(a[0]%1000000).padStart(6,'0')}
+async function sendOperation(action,payload){
+ var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},25000),response;
+ try{response=await fetch(base+'/functions/v1/practi-produccion',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':key},body:JSON.stringify(Object.assign({action:action},payload)),signal:controller.signal})}finally{clearTimeout(timer)}
+ var data=await response.json().catch(function(){return {error:'Respuesta no JSON'}});
+ if(!response.ok)throw Error((data.error||'HTTP '+response.status)+(data.operation_pending?' — operación posiblemente enviada, NO repetir.':''));
+ return data
+}
+function summary(data){var x=data&&data.data||data||{};return JSON.stringify(x,function(k,v){return /clave|password|token|secret|authorization|idcomercio/i.test(k)?'[oculto]':v},2).slice(0,8000)}
+el('recargar').addEventListener('click',async function(){
+ if(busy)return;
+ if(!token){el('recargamsg').textContent='Primero ingresa.';return}
+ var celular=el('celular').value.trim(),valor=Number(el('valor').value),operador=el('operador').value;
+ if(!/^3\d{9}$/.test(celular)||!Number.isInteger(valor)||valor<1000||valor>99999999){el('recargamsg').textContent='Verifica celular colombiano de 10 dígitos y valor mínimo de $1.000.';return}
+ var nombre=el('operador').selectedOptions[0].textContent;
+ if(!confirm('RECARGA REAL: '+nombre+' al '+celular+' por 
+show(null);
+el('loginmsg').textContent='Acceso listo para verificar.';
+})();
+</script></body></html>+valor.toLocaleString('es-CO')+'. ¿Autorizar esta transacción?'))return;
+ var idtrans=newId();lastOperation={idtrans:idtrans,fecha:new Date().toLocaleDateString('en-CA',{timeZone:'America/Bogota'}),celular:celular,valor:valor,operador:nombre};
+ el('seguimiento').classList.remove('hide');el('idoperacion').textContent='ID '+idtrans+' — guarda este número hasta confirmar el resultado.';
+ busy=true;el('recargar').disabled=true;el('recargamsg').textContent='Enviando operación '+idtrans+'… No cierres ni repitas.';
+ try{var data=await sendOperation('recarga',{idtrans:idtrans,celular:celular,valor:String(valor),operador:operador});
+ el('recargamsg').textContent='Respuesta PRACTI para ID '+idtrans+': '+summary(data)+' — verifica el estado antes de considerar exitosa la recarga.';
+ }catch(e){el('recargamsg').textContent='ID '+idtrans+': '+errorMessage(e)+'. No repitas; consulta estado.'}
+ finally{busy=false;el('recargar').disabled=false}
+});
+el('estado').addEventListener('click',async function(){
+ if(!lastOperation||busy)return;
+ busy=true;el('estado').disabled=true;el('recargamsg').textContent='Consultando estado de '+lastOperation.idtrans+'…';
+ try{var data=await sendOperation('estado',{idtrans:lastOperation.idtrans,fecha:lastOperation.fecha});el('recargamsg').textContent='Estado ID '+lastOperation.idtrans+': '+summary(data)}
+ catch(e){el('recargamsg').textContent='Error al consultar estado: '+errorMessage(e)}
+ finally{busy=false;el('estado').disabled=false}
+});
 el('logout').addEventListener('click',function(){token=null;show(null);el('result').textContent='Sin sesión.'});
 show(null);
 el('loginmsg').textContent='Acceso listo para verificar.';
