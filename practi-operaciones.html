@@ -166,7 +166,30 @@ el('facturaPagar').addEventListener('click',async function(){
  out.textContent='ID '+id+' · '+JSON.stringify(result.data||result).slice(0,4000)
  }catch(e){out.textContent='ID '+id+' · '+errorMessage(e)+' · Consulta estado antes de intentar de nuevo.'}
 });
-el('pinsBtn').addEventListener('click',function(){el('serviceResult').textContent='Consultando pines disponibles en PRACTI…';queryService('productos_tipo',{tipo:'2'})});
+el('pinsBtn').addEventListener('click',async function(){
+ var out=el('serviceResult'),button=el('pinsBtn');
+ if(!token){out.textContent='Inicia sesión';return}
+ button.disabled=true;out.textContent='Consultando catálogo de pines…';
+ try{
+ var r=await fetch(base+'/functions/v1/practi-produccion',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':key},body:JSON.stringify({action:'productos_tipo',tipo:'2'})});
+ var data=await r.json();if(!r.ok||data.error)throw Error(data.error||'No se pudo consultar');
+ var found=[],seen=new Set();
+ function walk(v,depth){
+ if(depth>7||v==null)return;
+ if(Array.isArray(v)){v.forEach(function(item){walk(item,depth+1)});return}
+ if(typeof v!=='object')return;
+ var desc=v.productDesc||v.descripcion||v.nombre||v.name;
+ var code=v.practiCode||v.internalCod||v.codigo||v.code||v.idProducto;
+ if(desc&&code){var k=String(code);if(!seen.has(k)){seen.add(k);found.push({codigo:k,descripcion:String(desc),precio:v.sell||v.precioVenta||v.precio||null})}return}
+ Object.keys(v).forEach(function(k){walk(v[k],depth+1)})
+ }
+ walk(data.data||data,0);
+ if(found.length){
+ out.textContent=found.length+' pines encontrados (solo consulta):'+String.fromCharCode(10)+String.fromCharCode(10)+found.slice(0,100).map(function(p){return p.codigo+' · '+p.descripcion+(p.precio?' · $'+Number(p.precio).toLocaleString('es-CO'):'')}).join(String.fromCharCode(10))
+ }else{out.textContent='Respuesta PRACTI sin pines identificables:'+String.fromCharCode(10)+JSON.stringify(data.data||data,null,2).slice(0,12000)}
+ }catch(e){out.textContent='Error: '+errorMessage(e)}
+ finally{button.disabled=false}
+});
 
 el('pastlookup').addEventListener('click',async function(){
  var id=el('pastid').value.trim(),fecha=el('pastdate').value,out=el('pastresult'),b=el('pastlookup');
