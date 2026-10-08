@@ -123,24 +123,7 @@ el('histcargar').addEventListener('click',async function(){
   var rows=data.records||[];
   var approved=rows.filter(function(r){return String(r.estado)==='00'});
   var total=approved.reduce(function(sum,r){return sum+Number(r.valor||0)},0);
-  out.textContent=rows.length+' operaciones mostradas (máximo 100) · '+approved.length+' aprobadas · 
-  if(!rows.length){host.textContent='Sin registros para esta búsqueda.';return}
-  rows.forEach(function(r){
-   var div=document.createElement('div');div.style.cssText='padding:12px;border:1px solid #c8d4e1;border-radius:12px;margin:10px 0;overflow-wrap:anywhere';
-   var p=document.createElement('p');
-   p.textContent=[(r.creado_en||'').slice(0,10),r.operador||r.tipo||'',r.referencia||'', '$'+Number(r.valor||0).toLocaleString('es-CO'),r.respuesta||r.estado||'Pendiente'].join(' · ');
-   var btn2=document.createElement('button');btn2.className='secondary';btn2.textContent='Consultar ID '+r.idtrans;
-   btn2.addEventListener('click',function(){el('buscarid').value=r.idtrans;el('buscarfecha').value=new Date(r.creado_en).toLocaleDateString('en-CA',{timeZone:'America/Bogota'});el('consultarid').click();el('consultaresultado').scrollIntoView({behavior:'smooth'})});
-   div.appendChild(p);div.appendChild(btn2);host.appendChild(div)
-  });
- }catch(e){out.textContent='Error: '+errorMessage(e)}
- finally{btn.disabled=false}
-});
-el('logout').addEventListener('click',function(){token=null;lastOperation=null;el('comprobante').classList.add('hide');el('seguimiento').classList.add('hide');show(null);el('result').textContent='Sin sesión.'});
-show(null);
-el('loginmsg').textContent='Acceso listo para verificar.';
-})();
-</script></body></html>+total.toLocaleString('es-CO')+' en operaciones aprobadas mostradas';
+  out.textContent=rows.length+' operaciones · '+approved.length+' aprobadas · $'+total.toLocaleString('es-CO')+' en recargas aprobadas mostradas';
   if(!rows.length){host.textContent='Sin registros para esta búsqueda.';return}
   rows.forEach(function(r){
    var div=document.createElement('div');div.style.cssText='padding:12px;border:1px solid #c8d4e1;border-radius:12px;margin:10px 0;overflow-wrap:anywhere';
