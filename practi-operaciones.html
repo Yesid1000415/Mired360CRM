@@ -131,6 +131,9 @@ async function queryService(action,params){
  out.textContent=JSON.stringify(data.data||data,null,2).slice(0,14000);
  }catch(e){out.textContent='Error: '+errorMessage(e)}
 }
+var facturaPrueba=new URLSearchParams(location.search);
+if(facturaPrueba.get('empresa'))el('billSearch').value=facturaPrueba.get('empresa').slice(0,40);
+if(facturaPrueba.get('referencia'))el('billRef').value=facturaPrueba.get('referencia').replace(/[^0-9]/g,'').slice(0,40);
 el('billSearchBtn').addEventListener('click',function(){queryService('convenios',{key:el('billSearch').value.trim()||'CLARO'})});
 var facturaCotizada=null;
 el('billQuoteBtn').addEventListener('click',async function(){
