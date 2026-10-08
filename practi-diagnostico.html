@@ -17,7 +17,19 @@ function load(key,fallback){try{return JSON.parse(localStorage.getItem(key))||fa
 function save(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(e){}}
 function bogotaDate(){var p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Bogota',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());var d={};p.forEach(function(x){d[x.type]=x.value});return d.year+'-'+d.month+'-'+d.day}
 function showPending(){if(!lastOperation)return;el('seguimiento').classList.remove('hide');el('idoperacion').textContent='ID '+lastOperation.idtrans+' — consultar estado antes de repetir.'}
-function renderHistory(){var items=load(storeKey,[]),host=el('historial-lista');host.textContent='';if(!items.length){host.textContent='Aún no hay comprobantes guardados en este navegador.';return}items.slice(0,30).forEach(function(item){var b=document.createElement('button');b.className='secondary';b.textContent=item.operador+' · '+item.celular+' · {return e&&e.message?e.message:String(e)}
+function errorMessage(e){return e&&e.message?e.message:String(e)}
+function renderHistory(){
+ var items=load(storeKey,[]),host=el('historial-lista');host.textContent='';
+ if(!items.length){host.textContent='Aún no hay comprobantes guardados en este navegador.';return}
+ items.slice(0,30).forEach(function(item){
+  var btn=document.createElement('button');btn.className='secondary';
+  btn.textContent=item.operador+' · '+item.celular+' · $'+Number(item.valor).toLocaleString('es-CO')+' · '+item.idtrans;
+  btn.addEventListener('click',function(){
+   lastOperation=item;el('comprobante-texto').textContent=item.receipt;
+   el('comprobante').classList.remove('hide');showPending();el('comprobante').scrollIntoView({behavior:'smooth'});
+  });host.appendChild(btn);
+ });
+}
 el('enter').addEventListener('click',async function(){
  var button=el('enter'),email=el('email').value.trim(),password=el('password').value;
  el('loginmsg').textContent='Botón activo. Verificando datos…';
