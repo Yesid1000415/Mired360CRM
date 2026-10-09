@@ -178,12 +178,23 @@ function renderContacts(){
     <td>${esc(fmtDate(c.proximo_contacto)||'-')}</td>
     <td>${esc(c.resultado_detalle||c.observacion||'-')}</td>
     <td><div class="row-actions">
-      <button class="btn primary" onclick="callContact('${c.id}')">📞 Llamar</button>
+      <button class="btn primary" onclick="callContact('${c.id}')" title="La central llama primero a la extensión asignada">📞 Central / extensión</button>
+      <button class="btn ghost" onclick="callWithSipApp('${c.id}')" title="Abre la aplicación SIP configurada en este dispositivo">💻 App SIP</button>
       <button class="btn ghost" onclick="addNote('${c.id}')">📝 Nota</button>
       <button class="btn ghost" onclick="scheduleCall('${c.id}')">📅 Recontactar</button>
       <button class="btn ghost" ${c.convertido_prospecto_id?'disabled':''} onclick="convertProspect('${c.id}')">${c.convertido_prospecto_id?'✓ En CRM':'➡ Prospecto'}</button>
     </div></td>
   </tr>`).join('')||'<tr><td colspan="9" class="empty">No hay registros con este filtro.</td></tr>';
+}
+
+function callWithSipApp(id){
+  const contact=contacts.find(x=>x.id===id);
+  if(!contact)return;
+  const tel=validCallPhone(contact.telefono);
+  if(!tel)return alert('El contacto no tiene un número colombiano válido.');
+  // La app SIP instalada debe estar registrada como manejador del protocolo sip:.
+  // Este enlace NO establece una llamada WebRTC dentro del navegador.
+  window.location.href='sip:'+encodeURIComponent(tel);
 }
 
 async function callContact(id){
