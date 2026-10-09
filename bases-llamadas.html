@@ -180,6 +180,7 @@ function renderContacts(){
     <td><div class="row-actions">
       <button class="btn primary" onclick="callContact('${c.id}')" title="La central llama primero a la extensión asignada">📞 Central / extensión</button>
       <button class="btn ghost" onclick="callWithSipApp('${c.id}')" title="Abre la aplicación SIP configurada en este dispositivo">💻 App SIP</button>
+      <button class="btn ghost" onclick="finishAndNext('${c.id}')">✅ Resultado → siguiente</button>
       <button class="btn ghost" onclick="addNote('${c.id}')">📝 Nota</button>
       <button class="btn ghost" onclick="scheduleCall('${c.id}')">📅 Recontactar</button>
       <button class="btn ghost" ${c.convertido_prospecto_id?'disabled':''} onclick="convertProspect('${c.id}')">${c.convertido_prospecto_id?'✓ En CRM':'➡ Prospecto'}</button>
@@ -207,6 +208,31 @@ async function callContact(id){
     await sb.from('contactos_base_llamadas').update({intentos:c.intentos,ultima_llamada:c.ultima_llamada,actualizado_en:new Date().toISOString()}).eq('id',c.id);
     renderContacts();alert(`Llamada enviada a la extensión ${extensionShort(activeBase.extension)}. Contesta la extensión para conectar con ${c.nombre||c.telefono}.`);
   }catch(e){alert('No se pudo iniciar la llamada. '+String(e.message||e));}
+}
+
+async function finishAndNext(id){
+  const contact=contacts.find(x=>x.id===id);
+  if(!contact)return;
+  const options=['No contestó','Ocupado','Volver a llamar','Interesado','No interesado','Número incorrecto','Venta'];
+  const choice=prompt('Resultado de la llamada:\\n'+options.map((s,i)=>(i+1)+'. '+s).join('\\n')+'\\n\\nEscribe el número (1-7):');
+  if(choice===null)return;
+  const index=Number(choice)-1;
+  if(!Number.isInteger(index)||index<0||index>=options.length)return alert('Selecciona un número entre 1 y 7.');
+  const estado=options[index];
+  let proximo=contact.proximo_contacto||null;
+  if(estado==='Volver a llamar'){
+    const date=prompt('Fecha de próxima llamada (AAAA-MM-DD):',new Date(Date.now()+86400000).toISOString().slice(0,10));
+    if(date===null)return;
+    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||Number.isNaN(Date.parse(date)))return alert('Fecha inválida.');
+    proximo=date;
+  }
+  const note=prompt('Observación (opcional):',contact.resultado_detalle||'');
+  if(note===null)return;
+  const {error}=await sb.from('contactos_base_llamadas').update({estado,proximo_contacto:proximo,resultado_detalle:note||null,actualizado_en:new Date().toISOString()}).eq('id',id);
+  if(error)return alert('No se guardó el resultado: '+error.message);
+  contact.estado=estado;contact.proximo_contacto=proximo;contact.resultado_detalle=note||null;
+  // Avanza visualmente; nunca inicia otra llamada sin la acción del asesor.
+  nextPending();
 }
 
 async function quickStatus(id,estado){
