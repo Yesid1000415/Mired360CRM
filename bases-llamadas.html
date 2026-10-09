@@ -45,6 +45,11 @@ main{padding:20px;max-width:1500px;width:100%;margin:auto}.top{display:flex;just
       <label>Asesor responsable<input id="advisorName" placeholder="Nombre del asesor" onchange="saveAdvisorName()"></label>
       <label>Estado a mostrar<select id="statusFilter" onchange="renderContacts()"><option value="">Todos</option><option>Pendiente</option><option>No contestó</option><option>Ocupado</option><option>Volver a llamar</option><option>Interesado</option><option>No interesado</option><option>Número incorrecto</option><option>Venta</option></select></label>
     </div>
+    <div class="toolbar" id="reassignTools" style="margin-top:12px;display:none">
+      <label style="min-width:240px">Reasignar base a asesor / extensión<select id="reassignTarget"><option value="">Seleccionar destino</option></select></label>
+      <button class="btn primary" onclick="reassignBase()">🔁 Transferir base completa</button>
+      <span class="small">Transfiere el acceso y conserva todos los contactos y resultados.</span>
+    </div>
     <div class="status" id="baseStatus"></div>
   </div>
 
@@ -112,9 +117,40 @@ function extensionShort(v){return String(v||'1502000101').slice(-3)}
 async function init(){
   const {data:{session}}=await sb.auth.getSession();
   if(!session?.user){location.href='index.html';return}
-  user=session.user;await loadBases();
+  user=session.user;await loadBases();await setupReassignment();
 }
 
+let canCoordinate=false;
+async function setupReassignment(){
+  const {data,error}=await sb.from('perfiles').select('rol').eq('user_id',user.id).maybeSingle();
+  canCoordinate=!error&&['coordinador','administrador'].includes(data?.rol);
+  $('reassignTools').style.display=canCoordinate?'flex':'none';
+  if(!canCoordinate)return;
+  const {data:assignments, error:assignmentError}=await sb.from('bases_llamadas').select('extension,asesor_user_id,asesor_nombre').not('asesor_user_id','is',null);
+  if(assignmentError)return;
+  const unique=new Map();
+  for(const b of assignments||[]){
+    if(!b.extension||!b.asesor_user_id)continue;
+    unique.set(b.extension+'|'+b.asesor_user_id,{extension:b.extension,userId:b.asesor_user_id,name:b.asesor_nombre||'Asesor'});
+  }
+  $('reassignTarget').innerHTML='<option value="">Seleccionar destino</option>'+[...unique.values()].sort((a,b)=>a.extension.localeCompare(b.extension)).map(a=>'<option value="'+esc(a.extension+'|'+a.userId)+'">'+esc(extensionShort(a.extension)+' · '+a.name)+'</option>').join('');
+}
+async function reassignBase(){
+  if(!canCoordinate||!activeBase)return alert('Operación exclusiva de coordinación.');
+  const raw=$('reassignTarget').value;
+  if(!raw)return alert('Selecciona el asesor y extensión de destino.');
+  const [extension,asesor_user_id]=raw.split('|');
+  const opt=$('reassignTarget').selectedOptions[0];
+  const asesor_nombre=opt.textContent.replace(/^\\d+ · /,'').trim();
+  if(activeBase.asesor_user_id===asesor_user_id&&activeBase.extension===extension)return alert('La base ya está asignada a ese asesor y extensión.');
+  if(!confirm('¿Transferir "'+activeBase.nombre+'" a '+opt.textContent+'? El asesor anterior dejará de verla. Los contactos e historial se conservarán.'))return;
+  const id=activeBase.id;
+  const {data,error}=await sb.from('bases_llamadas').update({extension,asesor_user_id,asesor_nombre,actualizado_en:new Date().toISOString()}).eq('id',id).select('id,extension,asesor_user_id,asesor_nombre').maybeSingle();
+  if(error||!data)return alert('No se confirmó la transferencia. '+(error?.message||'Comprueba los permisos.'));
+  await loadBases();
+  await selectBase(id);
+  alert('Base transferida a '+opt.textContent+'. Se conservaron los registros.');
+}
 async function loadBases(){
   const {data,error}=await sb.from('bases_llamadas').select('*').order('creado_en',{ascending:false});
   if(error){$('baseStatus').textContent='No se pudieron cargar las bases: '+error.message;return}
