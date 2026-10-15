@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIRED360 · Bases de llamadas</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="whatsapp-personal.js?v=20261015-1"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}
@@ -103,7 +104,7 @@ const CLICK_TO_CALL_URL=SUPABASE_URL+'/functions/v1/click-to-call';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
 const STATES=['Pendiente','No contestó','Ocupado','Volver a llamar','Interesado','No interesado','Número incorrecto','Venta'];
-let user=null,bases=[],activeBase=null,contacts=[];
+let user=null,bases=[],activeBase=null,contacts=[],currentAdvisorName='';
 
 function normKey(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'')}
 function normPhone(v){let d=String(v??'').replace(/\D/g,'');if(d.startsWith('0057'))d=d.slice(2);if(d.startsWith('57')&&d.length===12)return d;if(d.length===10)return '57'+d;if(d.length>=7&&d.length<=13)return d;return ''}
@@ -122,7 +123,8 @@ async function init(){
 
 let canCoordinate=false;
 async function setupReassignment(){
-  const {data,error}=await sb.from('perfiles').select('rol').eq('user_id',user.id).maybeSingle();
+  const {data,error}=await sb.from('perfiles').select('rol,nombre').eq('user_id',user.id).maybeSingle();
+  currentAdvisorName=data?.nombre||user?.user_metadata?.full_name||'';
   canCoordinate=!error&&['coordinador','administrador'].includes(data?.rol);
   $('reassignTools').style.display=canCoordinate?'flex':'none';
   if(!canCoordinate)return;
@@ -215,6 +217,7 @@ function renderContacts(){
     <td>${esc(c.resultado_detalle||c.observacion||'-')}</td>
     <td><div class="row-actions">
       <button class="btn primary" onclick="callContact('${c.id}')" title="La central llama primero a la extensión asignada">📞 Central / extensión</button>
+      <button class="btn ghost" data-callcenter-wa="1" onclick="continuePersonalWhatsApp('${c.id}')" title="Abre tu WhatsApp con el mensaje preparado; envíalo desde allí">💬 Continuar por WhatsApp</button>
       <button class="btn ghost" onclick="callWithSipApp('${c.id}')" title="Abre la aplicación SIP configurada en este dispositivo">💻 App SIP</button>
       <button class="btn ghost" onclick="finishAndNext('${c.id}')">✅ Resultado → siguiente</button>
       <button class="btn ghost" onclick="addNote('${c.id}')">📝 Nota</button>
@@ -222,6 +225,11 @@ function renderContacts(){
       <button class="btn ghost" ${c.convertido_prospecto_id?'disabled':''} onclick="convertProspect('${c.id}')">${c.convertido_prospecto_id?'✓ En CRM':'➡ Prospecto'}</button>
     </div></td>
   </tr>`).join('')||'<tr><td colspan="9" class="empty">No hay registros con este filtro.</td></tr>';
+}
+
+function continuePersonalWhatsApp(id){
+  const c=contacts.find(x=>x.id===id);if(!c)return;
+  MiredWhatsApp.open(c.telefono,c.nombre,currentAdvisorName||activeBase?.asesor_nombre||'');
 }
 
 function callWithSipApp(id){
