@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="excel-pro.js"></script>
+<script src="whatsapp-personal.js?v=20261015-1"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}.hidden{display:none!important}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}aside{background:linear-gradient(180deg,var(--n),#061426);color:white;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand span{display:block;font-size:11px;letter-spacing:2px;color:#7fdfff}nav button{width:100%;border:0;background:transparent;color:#cbd9e8;text-align:left;padding:12px;border-radius:12px;margin:3px 0;cursor:pointer}nav button.active,nav button:hover{background:rgba(0,184,255,.15);color:#fff}main{padding:22px;max-width:1450px;width:100%;margin:auto}header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1{margin:0;font-size:27px}header p{margin:5px 0 0;color:var(--m)}.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l)}.danger-btn{background:#fff1f2;color:#b4232d;border:1px solid #fecdd3}.grid{display:grid;gap:15px}.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:16px}.card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:17px;box-shadow:0 10px 30px rgba(4,35,66,.06)}.kpi small{color:var(--m)}.kpi strong{display:block;font-size:29px;margin-top:8px}.two{grid-template-columns:1.3fr .7fr}.section{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section h2{margin:0;font-size:18px}.pipeline{display:flex;gap:8px;overflow:auto}.stage{min-width:160px;background:#f7fbff;border:1px solid var(--l);border-radius:13px;padding:12px}.stage strong{display:block;font-size:24px;margin:7px 0}.table-wrap{overflow:auto;border:1px solid var(--l);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:11px;border-bottom:1px solid var(--l);font-size:13px;text-align:left}th{background:#f2f7fc}.badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:#eef6ff;font-size:12px;font-weight:700}.ok{background:#eaf8f1;color:#08774b}.warn{background:#fff5df;color:#996000}.danger{background:#feecec;color:#b4232d}.whats{display:inline-block;text-decoration:none;background:#e9fbf2;color:#087a49;border:1px solid #bdebd5;padding:7px 10px;border-radius:10px;font-weight:700}.callbtn{display:inline-block;text-decoration:none;background:#eef6ff;color:#0756a6;border:1px solid #bdd8f7;padding:7px 10px;border-radius:10px;font-weight:700;cursor:pointer}.view{display:none}.view.active{display:block}.empty{padding:25px;text-align:center;color:var(--m)}.modal{position:fixed;inset:0;background:rgba(1,15,29,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}.modal.open{display:flex}.modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:20px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-size:12px;color:#52647a;font-weight:700}input,select,textarea{padding:11px;border:1px solid #cfdceb;border-radius:11px;width:100%}textarea{min-height:75px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.toolbar input{max-width:320px}.toolbar select{max-width:220px}.bulkbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:12px;border:1px solid #c6eaff;background:#f3fbff;border-radius:13px}.bulkbar .btn:disabled{opacity:.5;cursor:not-allowed}.bulk-status{font-size:12px;color:#52647a;font-weight:700}.checkcell{width:42px;text-align:center}.checkcell input{width:18px;height:18px;cursor:pointer}.notice{padding:12px;background:#eef8ff;border:1px solid #c6eaff;border-radius:12px;color:#27577a;font-size:13px}.statusbar{font-size:12px;color:#d2e9ff;margin-top:16px;line-height:1.5}.login-page{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top right,#0f7cff33,transparent 35%),linear-gradient(135deg,#061426,#0b2d52)}.login-card{width:min(440px,100%);background:white;border-radius:22px;padding:28px;box-shadow:0 25px 70px #0005}.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}.login-card h1{font-size:24px}.login-card p{color:var(--m)}.login-card label{margin:12px 0}.login-error{min-height:20px;color:#b4232d;font-size:13px;margin-top:10px}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a36a;margin-right:6px}.sync-dot.off{background:#e5484d}.loader{opacity:.65;pointer-events:none}@media(max-width:950px){.app{grid-template-columns:1fr}aside{height:auto;position:static}nav{display:flex;overflow:auto}nav button{width:auto;white-space:nowrap}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}main{padding:14px}}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.kpis{grid-template-columns:1fr 1fr}}
@@ -89,17 +90,18 @@
 <header>
   <div>
     <h1>WhatsApp</h1>
-    <p>Bandeja API oficial del 3229432085.</p>
+    <p>Continúa con el cliente desde tu WhatsApp Business.</p>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn primary" onclick="startDirectWhatsApp()">+ Nuevo WhatsApp</button>
+    <a class="btn primary" href="whatsapp-asesor.html?v=20261015-1">💬 Continuar por WhatsApp</a>
+    <button class="btn ghost" onclick="startDirectWhatsApp()">Nueva conversación API</button>
     <button class="btn ghost" onclick="document.getElementById('waExcelFile').click()">📄 Importar Excel</button>
     <input id="waExcelFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleWhatsAppExcelInput(event)">
     <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
   </div>
 </header>
 <div class="notice" style="margin-bottom:12px">
-  <b>Atención:</b> puedes responder con texto libre dentro de la ventana de atención de 24 horas después del último mensaje del cliente. Fuera de esa ventana, inicia la conversación con una plantilla aprobada.
+  <b>WhatsApp del asesor:</b> usa “Continuar por WhatsApp” o el botón de cada prospecto. El mensaje se abre en la cuenta de WhatsApp activa en tu dispositivo y tú lo envías. Registra el seguimiento en el CRM; estos chats no se sincronizan aquí. La bandeja y los envíos que aparecen debajo pertenecen a la API anterior.
 </div>
 <div class="card" style="margin-bottom:12px">
 <div class="toolbar">
@@ -183,7 +185,7 @@ const today=()=>new Date().toISOString().slice(0,10);
 const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number(n||0));
 let leads=[];
 let ads=JSON.parse(localStorage.getItem('mired360_ads_v1')||'[]');
-let currentUser=null;
+let currentUser=null,currentAdvisorName='';
 let waMessages=[];
 let activeChatPhone='';
 let messageSubscription=null;
@@ -257,6 +259,8 @@ async function logoutCRM(){
 
 async function enterCRM(user){
   currentUser=user;
+  currentAdvisorName=user.user_metadata?.full_name||'';
+  try{const {data}=await supabaseClient.from('perfiles').select('nombre').eq('user_id',user.id).maybeSingle();currentAdvisorName=data?.nombre||currentAdvisorName;}catch{}
   const isReferralsAdmin=String(user.email||'').trim().toLowerCase()==='ventas@mired360servicios.com';
   $('navReferidosAdmin').classList.toggle('hidden',!isReferralsAdmin);
   await restoreWaBatch();
@@ -279,7 +283,7 @@ async function loadLeads(){
 }
 
 function setSync(text,ok){$('syncText').textContent=text;$('syncDot').classList.toggle('off',!ok);}
-function wa(p,n){p=(p||'').replace(/\D/g,'');if(p.length===10)p='57'+p;return'https://wa.me/'+p+'?text='+encodeURIComponent('Hola '+(n||'')+', te escribimos de MIRED360SERVICIOS para continuar con tu solicitud.');}
+function wa(p,n){return MiredWhatsApp.url(p,n,currentAdvisorName)||'#';}
 function badge(s){let c=s==='Instalado'?'ok':s==='No interesado'?'danger':(s==='Seguimiento'||s==='Pendiente instalación'?'warn':'');return`<span class="badge ${c}">${s}</span>`;}
 function showView(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
@@ -614,7 +618,7 @@ function openTemporaryWhatsApp(){
   if(!activeChatPhone)return alert('Selecciona primero una conversación.');
   const phone=normalizeWhatsNumber(activeChatPhone);
   if(!/^57\d{10}$/.test(phone))return alert('El contacto no tiene un número válido.');
-  window.open('https://wa.me/'+phone,'_blank','noopener,noreferrer');
+  MiredWhatsApp.open(phone,leadForPhone(phone)?.name||'',currentAdvisorName);
 }
 function openChat(phone){
   activeChatPhone=normalizeWhatsNumber(phone);
