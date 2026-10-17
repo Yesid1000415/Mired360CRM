@@ -407,6 +407,7 @@ function closeLead(){$('leadModal').classList.remove('open');}
 async function saveLead(){
   if(!currentUser){alert('La sesión no está activa. Vuelve a ingresar.');return;}
   const id=$('leadId').value;
+  const previousLead=id?leads.find(x=>String(x.id)===String(id)):null;
   const o={
     name:$('name').value.trim(),phone:$('phone').value.trim(),city:$('city').value.trim(),barrio:$('barrio').value.trim(),address:$('address').value.trim(),
     origin:$('origin').value,campaign:$('campaign').value.trim(),product:$('product').value,operator:$('operator').value.trim(),plan:$('plan').value.trim(),
@@ -421,6 +422,37 @@ async function saveLead(){
   btn.disabled=false;btn.textContent='Guardar prospecto';
   if(result.error){setSync('Error de Supabase',false);alert('No se pudo guardar. '+result.error.message);return;}
   closeLead();await loadLeads();
+  // Enviar el catálogo solo al pasar manualmente a cobertura positiva.
+  if(id&&previousLead&&previousLead.status!=='Cobertura positiva'&&o.status==='Cobertura positiva'){
+    await sendCatalogAfterCoverage(o.phone);
+  }
+}
+
+async function sendCatalogAfterCoverage(phone){
+  const normalized=normalizeWhatsNumber(phone);
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session?.access_token)throw new Error('La sesión del CRM expiró.');
+    // Consultar el último mensaje real del cliente, no depender del chat abierto.
+    const {data:inbound,error:inboundError}=await supabaseClient.from('whatsapp_mensajes')
+      .select('creado_en').eq('telefono',normalized).eq('direccion','entrante')
+      .order('creado_en',{ascending:false}).limit(1);
+    if(inboundError)throw inboundError;
+    const last=inbound?.[0]?.creado_en;
+    if(!last||Date.now()-new Date(last).getTime()>=24*60*60*1000){
+      alert('Cobertura positiva guardada. No se envió el catálogo porque el cliente no tiene una conversación abierta en las últimas 24 horas. Primero debe responder una plantilla aprobada.');
+      return;
+    }
+    const text='¡Excelente noticia! 🎉\\nConfirmamos cobertura Claro Hogar en tu dirección.\\n\\nConsulta y compara nuestros planes aquí:\\nhttps://mired360servicios.com/catalogo-interactivo.html\\n\\nElige el plan que prefieras y continuamos por este mismo chat.\\nMIRED360SERVICIOS';
+    const response=await fetch(WHATSAPP_SEND_URL,{method:'POST',headers:{
+      'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY
+    },body:JSON.stringify({to:normalized,text})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data?.messages?.length)throw new Error(data?.error?.message||data?.error||'Meta no confirmó el envío');
+    alert('Cobertura positiva guardada. Catálogo enviado por WhatsApp al cliente.');
+  }catch(e){
+    alert('Cobertura positiva guardada, pero NO se pudo enviar el catálogo: '+String(e.message||e));
+  }
 }
 
 async function delLead(id){
