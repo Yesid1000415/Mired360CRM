@@ -435,7 +435,7 @@ async function sendCatalogAfterCoverage(phone){
     if(!session?.access_token)throw new Error('La sesión del CRM expiró.');
     // Consultar el último mensaje real del cliente, no depender del chat abierto.
     const {data:inbound,error:inboundError}=await supabaseClient.from('whatsapp_mensajes')
-      .select('creado_en').eq('telefono',normalized).eq('direccion','entrante')
+      .select('creado_en').in('telefono',[normalized,normalized.replace(/^57/,'')]).eq('direccion','entrante')
       .order('creado_en',{ascending:false}).limit(1);
     if(inboundError)throw inboundError;
     const last=inbound?.[0]?.creado_en;
