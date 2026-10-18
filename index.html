@@ -1038,7 +1038,7 @@ async function sendApprovedTemplate(phone){
 function shareCatalogInChat(){
  if(!activeChatPhone){alert('Selecciona primero un cliente.');return;}
  const url='https://mired360servicios.com/catalogo-interactivo.html';
- const text='📚 Catálogo digital MIRED360SERVICIOS\\n\\nConsulta nuestros planes de Internet Claro Hogar aquí:\\n'+url+'\\n\\nDime cuál plan te interesa y te ayudo a verificar cobertura y condiciones.';
+ const text='📚 ¡Conoce nuestras ofertas Claro Hogar!\\n\\nConsulta nuestro catálogo interactivo y descubre los planes disponibles para ti:\\n'+url+'\\n\\nMIRED360SERVICIOS 📲';
  $('replyText').value=text.replaceAll('\\n','\n');
  $('replyText').focus();
  alert('Catálogo preparado en el chat. Revisa el mensaje y pulsa Enviar.');
