@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prueba segura · MIRED360 IA</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>body{font-family:Arial,sans-serif;background:#f3f7fc;color:#10253d;margin:0;padding:24px}.card{max-width:640px;margin:25px auto;background:white;border:1px solid #dce6f1;border-radius:18px;padding:24px;box-shadow:0 12px 30px #071a3312}h1{font-size:24px}textarea{width:100%;box-sizing:border-box;min-height:100px;padding:12px;border:1px solid #cddaea;border-radius:10px;font:inherit}button{background:#0f7cff;color:white;border:0;border-radius:10px;padding:12px 18px;font-weight:bold;cursor:pointer;margin-top:12px}button:disabled{opacity:.5}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f7fc;border-radius:10px;padding:14px}a{color:#0756a6}</style></head>
+<body><div class="card"><h1>MIRED360 IA · Prueba segura</h1>
+<p>Usa tu sesión iniciada en MIRED360 CRM. Esta prueba <strong>no envía mensajes por WhatsApp</strong>.</p>
+<p id="status">Comprobando sesión...</p>
+<label for="msg"><strong>Mensaje de prueba</strong></label>
+<textarea id="msg">Hola, quiero contratar Internet Claro para mi casa.</textarea>
+<button id="run" disabled>Probar respuesta de IA</button>
+<pre id="result" aria-live="polite">Todavía no se ha ejecutado ninguna prueba.</pre>
+<p><a href="./index.html">Volver al CRM</a></p></div>
+<script>
+const url='https://lpiusomsuswdcraoozdn.supabase.co';
+const key='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
+const client=supabase.createClient(url,key);
+const status=document.getElementById('status'),result=document.getElementById('result'),run=document.getElementById('run');
+async function check(){
+ const {data:{session},error}=await client.auth.getSession();
+ if(error||!session){status.textContent='No hay sesión iniciada. Abre el CRM e ingresa como administrador, luego vuelve a esta página.';return;}
+ const {data:profile,error:pe}=await client.from('perfiles').select('rol,activo').eq('user_id',session.user.id).maybeSingle();
+ if(pe||!profile||profile.activo===false||!['administrador','coordinador'].includes(profile.rol)){status.textContent='Esta cuenta no tiene permiso para probar la IA.';return;}
+ status.textContent='Sesión autorizada. Puedes realizar la prueba.';run.disabled=false;
+}
+run.addEventListener('click',async()=>{
+ run.disabled=true;result.textContent='Consultando IA...';
+ try{
+  const {data:{session}}=await client.auth.getSession();
+  if(!session)throw new Error('La sesión expiró. Ingresa nuevamente al CRM.');
+  const response=await fetch(url+'/functions/v1/mired360-ia-borrador',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':key},body:JSON.stringify({message:document.getElementById('msg').value})});
+  const data=await response.json().catch(()=>({}));
+  result.textContent=response.ok?(data.reply||'No se recibió respuesta de IA.'):'Error '+response.status+': '+(data.error||'Error desconocido')+(data.detail?' — '+data.detail:'');
+ }catch(e){result.textContent='No se pudo completar la prueba: '+String(e.message||e)}
+ finally{run.disabled=false;}
+});
+check();
+</script></body></html>
