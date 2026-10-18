@@ -146,6 +146,7 @@
       <input id="chatAudio" type="file" accept=".mp3,.m4a,.aac,.amr,.ogg,audio/mpeg,audio/mp4,audio/aac,audio/amr,audio/ogg" class="hidden" onchange="sendChatAudio(this.files[0]);this.value=''">
       <button class="btn ghost" id="audioFileBtn" onclick="$('chatAudio').click()" disabled title="Adjuntar audio compatible">🎵 Audio</button>
       <button class="btn ghost" id="recordBtn" onclick="toggleChatRecording()" disabled title="Grabar nota de voz">🎙 Grabar</button>
+      <button class="btn ghost" id="catalogBtn" onclick="shareCatalogInChat()" disabled title="Compartir catálogo digital en esta conversación">📚 Catálogo</button>
       <textarea id="replyText" placeholder="Escribe tu respuesta..." disabled></textarea>
       <button class="btn primary" id="replyBtn" onclick="sendChatReply()" disabled>Enviar</button>
     </div>
@@ -839,7 +840,7 @@ function renderActiveChat(){
   if(!group){
     head.innerHTML='<b>Selecciona una conversación</b><small>Los mensajes entrantes aparecerán aquí.</small>';
     panel.innerHTML='<div class="chat-empty">Sin mensajes.</div>';
-    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;$('imageBtn').disabled=true;$('audioFileBtn').disabled=true;$('recordBtn').disabled=true;
+    input.disabled=true;btn.disabled=true;$('attachBtn').disabled=true;$('catalogBtn').disabled=true;$('imageBtn').disabled=true;$('audioFileBtn').disabled=true;$('recordBtn').disabled=true;
     return;
   }
   head.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${escapeHtml(group.name)}</b><small>${escapeHtml(group.phone)}</small></div><button class="callbtn" onclick="startPhoneCall('${group.phone}')">📞 Llamar</button></div>`;
@@ -851,7 +852,7 @@ function renderActiveChat(){
     const action=doc?(doc.kind==='audio'?`<button class="btn ghost" style="margin-top:8px" onclick="playChatAudio('${m.id}',this)">▶ Escuchar</button>`:doc.kind==='image'?`<button class="btn ghost" style="margin-top:8px" onclick="viewChatImage('${m.id}',this)">🖼 Ver imagen</button>`:`<button class="btn ghost" style="margin-top:8px" onclick="downloadChatDocument('${m.id}',this)">⬇ Descargar archivo</button>`):'';
     return `<div class="bubble ${dir}">${escapeHtml(text)}${action}<small>${formatMsgTime(m.creado_en)}${escapeHtml(st)}</small></div>`;
   }).join('');
-  input.disabled=false;btn.disabled=false;$('attachBtn').disabled=false;$('imageBtn').disabled=false;$('audioFileBtn').disabled=false;$('recordBtn').disabled=false;
+  input.disabled=false;btn.disabled=false;$('catalogBtn').disabled=false;$('attachBtn').disabled=false;$('imageBtn').disabled=false;$('audioFileBtn').disabled=false;$('recordBtn').disabled=false;
   setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
 }
 function chatWindowOpen(phone){
@@ -1034,6 +1035,14 @@ async function sendApprovedTemplate(phone){
   return data;
 }
 
+function shareCatalogInChat(){
+ if(!activeChatPhone){alert('Selecciona primero un cliente.');return;}
+ const url='https://mired360servicios.com/catalogo-interactivo.html';
+ const text='📚 Catálogo digital MIRED360SERVICIOS\\n\\nConsulta nuestros planes de Internet Claro Hogar aquí:\\n'+url+'\\n\\nDime cuál plan te interesa y te ayudo a verificar cobertura y condiciones.';
+ $('replyText').value=text.replaceAll('\\n','\n');
+ $('replyText').focus();
+ alert('Catálogo preparado en el chat. Revisa el mensaje y pulsa Enviar.');
+}
 async function sendChatReply(){
   const text=$('replyText').value.trim();
   if(!activeChatPhone||!text)return;
