@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CRM MIRED360SERVICIOS · WhatsApp API</title>
+<title>CRM MIRED360SERVICIOS</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="excel-pro.js"></script>
-<script src="whatsapp-personal.js?v=20261015-1"></script>
+<script src="whatsapp-personal.js?v=20261026-322"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}.hidden{display:none!important}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}aside{background:linear-gradient(180deg,var(--n),#061426);color:white;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand span{display:block;font-size:11px;letter-spacing:2px;color:#7fdfff}nav button{width:100%;border:0;background:transparent;color:#cbd9e8;text-align:left;padding:12px;border-radius:12px;margin:3px 0;cursor:pointer}nav button.active,nav button:hover{background:rgba(0,184,255,.15);color:#fff}main{padding:22px;max-width:1450px;width:100%;margin:auto}header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1{margin:0;font-size:27px}header p{margin:5px 0 0;color:var(--m)}.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l)}.danger-btn{background:#fff1f2;color:#b4232d;border:1px solid #fecdd3}.grid{display:grid;gap:15px}.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:16px}.card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:17px;box-shadow:0 10px 30px rgba(4,35,66,.06)}.kpi small{color:var(--m)}.kpi strong{display:block;font-size:29px;margin-top:8px}.two{grid-template-columns:1.3fr .7fr}.section{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section h2{margin:0;font-size:18px}.pipeline{display:flex;gap:8px;overflow:auto}.stage{min-width:160px;background:#f7fbff;border:1px solid var(--l);border-radius:13px;padding:12px}.stage strong{display:block;font-size:24px;margin:7px 0}.table-wrap{overflow:auto;border:1px solid var(--l);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:11px;border-bottom:1px solid var(--l);font-size:13px;text-align:left}th{background:#f2f7fc}.badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:#eef6ff;font-size:12px;font-weight:700}.ok{background:#eaf8f1;color:#08774b}.warn{background:#fff5df;color:#996000}.danger{background:#feecec;color:#b4232d}.whats{display:inline-block;text-decoration:none;background:#e9fbf2;color:#087a49;border:1px solid #bdebd5;padding:7px 10px;border-radius:10px;font-weight:700}.callbtn{display:inline-block;text-decoration:none;background:#eef6ff;color:#0756a6;border:1px solid #bdd8f7;padding:7px 10px;border-radius:10px;font-weight:700;cursor:pointer}.view{display:none}.view.active{display:block}.empty{padding:25px;text-align:center;color:var(--m)}.modal{position:fixed;inset:0;background:rgba(1,15,29,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}.modal.open{display:flex}.modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:20px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-size:12px;color:#52647a;font-weight:700}input,select,textarea{padding:11px;border:1px solid #cfdceb;border-radius:11px;width:100%}textarea{min-height:75px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.toolbar input{max-width:320px}.toolbar select{max-width:220px}.bulkbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:12px;border:1px solid #c6eaff;background:#f3fbff;border-radius:13px}.bulkbar .btn:disabled{opacity:.5;cursor:not-allowed}.bulk-status{font-size:12px;color:#52647a;font-weight:700}.checkcell{width:42px;text-align:center}.checkcell input{width:18px;height:18px;cursor:pointer}.notice{padding:12px;background:#eef8ff;border:1px solid #c6eaff;border-radius:12px;color:#27577a;font-size:13px}.statusbar{font-size:12px;color:#d2e9ff;margin-top:16px;line-height:1.5}.login-page{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top right,#0f7cff33,transparent 35%),linear-gradient(135deg,#061426,#0b2d52)}.login-card{width:min(440px,100%);background:white;border-radius:22px;padding:28px;box-shadow:0 25px 70px #0005}.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}.login-card h1{font-size:24px}.login-card p{color:var(--m)}.login-card label{margin:12px 0}.login-error{min-height:20px;color:#b4232d;font-size:13px;margin-top:10px}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a36a;margin-right:6px}.sync-dot.off{background:#e5484d}.loader{opacity:.65;pointer-events:none}@media(max-width:950px){.app{grid-template-columns:1fr}aside{height:auto;position:static}nav{display:flex;overflow:auto}nav button{width:auto;white-space:nowrap}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}main{padding:14px}}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.kpis{grid-template-columns:1fr 1fr}}
@@ -84,26 +84,26 @@
 </div>
 <div class="card" style="margin-bottom:15px"><div class="section"><div><h2 style="margin-bottom:4px">⚡ Qué atender ahora</h2><small style="color:var(--m)">Prioridad automática según la fecha de seguimiento. No envía mensajes por sí sola.</small></div><button class="btn ghost" onclick="showView('seguimientos')">Ver seguimientos</button></div><div class="pipeline" id="attentionSummary"></div><div id="attentionBox" style="margin-top:12px"></div></div>
 <div class="card" style="margin-bottom:15px"><div class="section"><h2>Embudo comercial</h2></div><div class="pipeline" id="pipeline"></div></div><div class="grid two"><div class="card"><div class="section"><h2>Prospectos recientes</h2><button class="btn ghost" onclick="showView('prospectos')">Ver todos</button></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Ciudad</th><th>Origen</th><th>Estado</th><th>WhatsApp</th></tr></thead><tbody id="recentRows"></tbody></table></div></div><div class="card"><div class="section"><h2>Seguimientos próximos</h2></div><div id="followBox"></div></div></div></section>
-<section class="view" id="prospectos"><header><div><h1>Prospectos</h1><p>Base central de clientes potenciales.</p></div><button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button></header><div class="card"><div class="toolbar"><input id="searchLead" placeholder="Buscar nombre, teléfono, ciudad..."><select id="filterStatus"><option value="">Todos los estados</option></select></div><div class="bulkbar"><button class="btn primary" id="bulkWhatsBtn" onclick="sendSelectedWhatsApp()" disabled>📣 Enviar WhatsApp (0)</button><button class="btn ghost" id="clearSelectionBtn" onclick="clearLeadSelection()" disabled>Limpiar selección</button><span class="bulk-status" id="bulkStatus">Seleccione los prospectos autorizados para recibir la plantilla aprobada.</span></div><div class="table-wrap"><table><thead><tr><th class="checkcell"><input type="checkbox" id="selectVisibleLeads" title="Seleccionar visibles"></th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Ciudad/Barrio</th><th>Origen</th><th>Producto</th><th>Estado</th><th>Seguimiento</th><th>WhatsApp</th><th>Llamada</th><th></th></tr></thead><tbody id="leadRows"></tbody></table></div></div></section>
+<section class="view" id="prospectos"><header><div><h1>Prospectos</h1><p>Base central de clientes potenciales.</p></div><button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button></header><div class="card"><div class="toolbar"><input id="searchLead" placeholder="Buscar nombre, teléfono, ciudad..."><select id="filterStatus"><option value="">Todos los estados</option></select></div><div class="bulkbar hidden"><button class="btn primary" id="bulkWhatsBtn" onclick="sendSelectedWhatsApp()" disabled>📣 Enviar WhatsApp (0)</button><button class="btn ghost" id="clearSelectionBtn" onclick="clearLeadSelection()" disabled>Limpiar selección</button><span class="bulk-status" id="bulkStatus">Seleccione los prospectos autorizados para recibir la plantilla aprobada.</span></div><div class="table-wrap"><table><thead><tr><th class="checkcell"><input type="checkbox" id="selectVisibleLeads" title="Seleccionar visibles"></th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Ciudad/Barrio</th><th>Origen</th><th>Producto</th><th>Estado</th><th>Seguimiento</th><th>WhatsApp</th><th>Llamada</th><th></th></tr></thead><tbody id="leadRows"></tbody></table></div></div></section>
 
 <section class="view" id="conversaciones">
 <header>
   <div>
-    <h1>WhatsApp</h1>
-    <p>Continúa con el cliente desde tu WhatsApp Business.</p>
+    <h1>WhatsApp comercial · 3229432085</h1>
+    <p>Remite los datos del cliente al equipo comercial para continuar la asesoría.</p>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <a class="btn primary" href="whatsapp-asesor.html?v=20261015-1">💬 Continuar por WhatsApp</a>
-    <button class="btn ghost" onclick="startDirectWhatsApp()">Nueva conversación API</button>
-    <button class="btn ghost" onclick="document.getElementById('waExcelFile').click()">📄 Importar Excel</button>
+    <a class="btn primary" href="whatsapp-asesor.html?v=20261026-322">💬 Continuar por WhatsApp</a>
+    
+    
     <input id="waExcelFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleWhatsAppExcelInput(event)">
     <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
   </div>
 </header>
 <div class="notice" style="margin-bottom:12px">
-  <b>WhatsApp del asesor:</b> usa “Continuar por WhatsApp” o el botón de cada prospecto. El mensaje se abre en la cuenta de WhatsApp activa en tu dispositivo y tú lo envías. Registra el seguimiento en el CRM; estos chats no se sincronizan aquí. La bandeja y los envíos que aparecen debajo pertenecen a la API anterior.
+  <b>Canal comercial: 3229432085.</b> Usa “Continuar por WhatsApp” o el botón de cada prospecto. Se abrirá el chat con el equipo comercial y los datos del cliente preparados. Revisa el mensaje y pulsa Enviar en WhatsApp. Registra el seguimiento en el CRM; estos chats no se sincronizan aquí. El historial anterior se conserva solo para consulta.
 </div>
-<div class="card" style="margin-bottom:12px">
+<div class="card hidden" style="margin-bottom:12px">
 <div class="toolbar">
 <label>Contactos por tanda<input id="waBatchSize" type="number" min="1" max="10000" step="1" value="50"></label>
 <label>Intervalo entre mensajes<input value="60 segundos" readonly></label>
@@ -130,15 +130,15 @@
 
   <div class="chat-panel">
     <div class="chat-head" id="chatHead">
-      <b>Selecciona una conversación</b>
-      <small>Los mensajes entrantes aparecerán aquí.</small>
+      <b>Historial anterior · solo consulta</b>
+      <small>Selecciona un contacto para consultar sus mensajes anteriores.</small>
     </div>
 
     <div class="chat-messages" id="chatMessages">
       <div class="chat-empty">Selecciona un contacto para ver el historial.</div>
     </div>
 
-    <div class="chat-compose">
+    <div class="chat-compose hidden">
       <input id="chatFile" type="file" accept=".pdf,.xls,.xlsx,.csv,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" class="hidden" onchange="sendChatFile(this.files[0]);this.value=''">
       <button class="btn ghost attach-btn" id="attachBtn" onclick="$('chatFile').click()" disabled title="Enviar PDF o Excel">📎 Archivo</button>
       <input id="chatImage" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="hidden" onchange="sendChatImage(this.files[0]);this.value=''">
@@ -150,7 +150,7 @@
       <textarea id="replyText" placeholder="Escribe tu respuesta..." disabled></textarea>
       <button class="btn primary" id="replyBtn" onclick="sendChatReply()" disabled>Enviar</button>
     </div>
-    <div class="chat-file-status" id="chatFileStatus" role="status">PDF o Excel · máximo 15 MB</div>
+    <div class="chat-file-status hidden" id="chatFileStatus" role="status">PDF o Excel · máximo 15 MB</div>
   </div>
 </div>
 </section>
@@ -171,10 +171,7 @@
 const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const WHATSAPP_SEND_URL=SUPABASE_URL+'/functions/v1/whatsapp-send';
-const WHATSAPP_DOCUMENT_URL=SUPABASE_URL+'/functions/v1/whatsapp-document';
 const WHATSAPP_MEDIA_URL=SUPABASE_URL+'/functions/v1/whatsapp-media';
-const WHATSAPP_AUDIO_URL=SUPABASE_URL+'/functions/v1/whatsapp-audio';
 const CREATE_ADVISOR_URL=SUPABASE_URL+'/functions/v1/crear-asesor-v3';
 const ADMIN_CRM_URL=SUPABASE_URL+'/functions/v1/administrar-crm-v1';
 const CLICK_TO_CALL_URL=SUPABASE_URL+'/functions/v1/click-to-call';
@@ -271,7 +268,7 @@ async function enterCRM(user){
   await loadLeads();
   await loadMessages(false);
   await loadCommissionClaims();
-  startMessageRealtime();
+  // Historial anterior disponible para consulta; sin suscripción a mensajes API.
 }
 
 async function loadLeads(){
@@ -284,7 +281,7 @@ async function loadLeads(){
 }
 
 function setSync(text,ok){$('syncText').textContent=text;$('syncDot').classList.toggle('off',!ok);}
-function wa(p,n){return MiredWhatsApp.url(p,n,currentAdvisorName)||'#';}
+function wa(p,n){return MiredWhatsApp.url('573229432085',null,null,MiredWhatsApp.referralMessage(p,n,currentAdvisorName))||'#';}
 function badge(s){let c=s==='Instalado'?'ok':s==='No interesado'?'danger':(s==='Seguimiento'||s==='Pendiente instalación'?'warn':'');return`<span class="badge ${c}">${s}</span>`;}
 function showView(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
@@ -430,30 +427,7 @@ async function saveLead(){
 }
 
 async function sendCatalogAfterCoverage(phone){
-  const normalized=normalizeWhatsNumber(phone);
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session?.access_token)throw new Error('La sesión del CRM expiró.');
-    // Consultar el último mensaje real del cliente, no depender del chat abierto.
-    const {data:inbound,error:inboundError}=await supabaseClient.from('whatsapp_mensajes')
-      .select('creado_en').in('telefono',[normalized,normalized.replace(/^57/,'')]).eq('direccion','entrante')
-      .order('creado_en',{ascending:false}).limit(1);
-    if(inboundError)throw inboundError;
-    const last=inbound?.[0]?.creado_en;
-    if(!last||Date.now()-new Date(last).getTime()>=24*60*60*1000){
-      alert('Cobertura positiva guardada. No se envió el catálogo porque el cliente no tiene una conversación abierta en las últimas 24 horas. Primero debe responder una plantilla aprobada.');
-      return;
-    }
-    const text='¡Excelente noticia! 🎉\\nConfirmamos cobertura Claro Hogar en tu dirección.\\n\\nConsulta y compara nuestros planes aquí:\\nhttps://mired360servicios.com/catalogo-interactivo.html\\n\\nElige el plan que prefieras y continuamos por este mismo chat.\\nMIRED360SERVICIOS';
-    const response=await fetch(WHATSAPP_SEND_URL,{method:'POST',headers:{
-      'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY
-    },body:JSON.stringify({to:normalized,text})});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data?.messages?.length)throw new Error(data?.error?.message||data?.error||'Meta no confirmó el envío');
-    alert('Cobertura positiva guardada. Catálogo enviado por WhatsApp al cliente.');
-  }catch(e){
-    alert('Cobertura positiva guardada, pero NO se pudo enviar el catálogo: '+String(e.message||e));
-  }
+  alert('Cobertura positiva guardada. Continúa la asesoría en el WhatsApp comercial 3229432085. El catálogo está disponible en https://mired360servicios.com/catalogo-interactivo.html');
 }
 
 async function delLead(id){
@@ -651,7 +625,7 @@ function openTemporaryWhatsApp(){
   if(!activeChatPhone)return alert('Selecciona primero una conversación.');
   const phone=normalizeWhatsNumber(activeChatPhone);
   if(!/^57\d{10}$/.test(phone))return alert('El contacto no tiene un número válido.');
-  MiredWhatsApp.open(phone,leadForPhone(phone)?.name||'',currentAdvisorName);
+  MiredWhatsApp.refer(phone,leadForPhone(phone)?.name||'',currentAdvisorName);
 }
 function openChat(phone){
   activeChatPhone=normalizeWhatsNumber(phone);
@@ -661,38 +635,7 @@ function openChat(phone){
 }
 
 async function startDirectWhatsApp(){
-  const raw=prompt('Escribe el número de WhatsApp del contacto.\n\nEjemplo: 3001234567');
-  if(raw===null)return;
-  const phone=normalizeWhatsNumber(raw);
-  if(!/^57\d{10}$/.test(phone)){
-    alert('Número no válido. Para Colombia escribe los 10 dígitos del celular, por ejemplo: 3001234567.');
-    return;
-  }
-
-  const existing=groupedChats().find(g=>g.phone===phone);
-  if(existing){
-    openChat(phone);
-    if(chatWindowOpen(phone)){
-      alert('Este número ya tiene una conversación y está dentro de la ventana de 24 horas. Puedes escribirle directamente.');
-    }else{
-      alert('Este número ya tiene conversación, pero está fuera de la ventana de 24 horas. Para volver a contactarlo se debe usar la plantilla aprobada.');
-    }
-    return;
-  }
-
-  const ok=confirm('Este número no tiene una conversación activa en el CRM.\n\nPara iniciar el contacto, WhatsApp exige una plantilla aprobada. Se enviará mired360_validar_cobertura.\n\nNo es necesario crear un prospecto ni llenar otros datos.\n\n¿Enviar ahora?');
-  if(!ok)return;
-
-  try{
-    await sendApprovedTemplate(phone);
-    activeChatPhone=phone;
-    alert('Plantilla enviada correctamente. No se creó ningún prospecto. Cuando la persona responda, la conversación aparecerá aquí y podrás escribir normalmente.');
-    await new Promise(r=>setTimeout(r,800));
-    await loadMessages(false);
-    if(groupedChats().some(g=>g.phone===phone))openChat(phone);
-  }catch(e){
-    alert('No se pudo iniciar el WhatsApp. '+String(e.message||e));
-  }
+  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
 }
 let waImportQueue=[];
 let waImportRunning=false;
@@ -784,47 +727,7 @@ async function importWhatsAppExcel(file){
 }
 function pauseWaBatch(){waImportStop=true;renderWaBatch('Pausando después del mensaje en curso');}
 async function runWhatsAppImport(){
-  if(waImportRunning)return;
-  const size=Number($('waBatchSize').value);
-  if(!Number.isInteger(size)||size<1||size>10000)return alert('Elige una cantidad entera entre 1 y 10000.');
-  if(!navigator.locks)return alert('Usa Chrome o Edge actualizado para proteger el envío entre pestañas.');
-  waImportRunning=true;waImportStop=false;renderWaBatch();
-  try{
-    await navigator.locks.request('mired-wa-excel-'+currentUser.id,{ifAvailable:true},async lock=>{
-      if(!lock)throw new Error('Ya hay una tanda en ejecución en otra pestaña.');
-      await restoreWaBatch(true);
-      const b=waBatch;
-      if(!b||b.next>=b.phones.length)return;
-      const end=Math.min(b.next+size,b.phones.length);
-      if(!confirm('Enviar '+(end-b.next)+' contactos, desde el '+(b.next+1)+', con al menos 60 segundos entre mensajes. ¿Iniciar?'))return;
-      const owner=currentUser.id;
-      while(b.next<end&&!waImportStop&&currentUser?.id===owner){
-        while(Date.now()-(b.lastAttemptAt||0)<60000&&!waImportStop&&currentUser?.id===owner){
-          renderWaBatch('Próximo envío en '+Math.ceil((60000-(Date.now()-b.lastAttemptAt))/1000)+' s');
-          await new Promise(r=>setTimeout(r,500));
-        }
-        if(waImportStop||currentUser?.id!==owner)break;
-        const index=b.next,phone=b.phones[index];
-        b.inFlight={index,phone};b.lastAttemptAt=Date.now();
-        await waBatchRecord(b,owner);
-        renderWaBatch('Enviando contacto '+(index+1));
-        try{
-          await sendApprovedTemplate(phone);
-          b.results.push({index,phone,status:'sent',at:Date.now()});
-        }catch(e){
-          b.results.push({index,phone,status:'review',error:String(e.message||e)});
-          waImportStop=true;
-        }
-        b.next=index+1;b.inFlight=null;
-        b.lastAttemptAt=Date.now();
-        await waBatchRecord(b,owner);
-        renderWaBatch();
-      }
-    });
-    renderWaBatch(waImportStop?'Tanda pausada. Revisa cualquier envío con error en la bandeja.':'Tanda terminada');
-    await loadMessages(false);
-  }catch(e){alert('Tanda detenida: '+e.message);}
-  finally{waImportRunning=false;renderWaBatch();}
+  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
 }
 function downloadWaBatch(){
   if(!waBatch)return;
@@ -916,123 +819,25 @@ async function playChatAudio(messageId,button){
   }catch(e){alert('No se pudo escuchar el audio. '+String(e.message||e));button.disabled=false;button.textContent='▶ Escuchar';}
 }
 
-async function sendChatAudio(file){
-  if(!file||!activeChatPhone)return;
-  const name=file.name||'audio';
-  if(!/\.(mp3|m4a|aac|amr|ogg)$/i.test(name)||!file.size||file.size>15*1024*1024){
-    alert('Selecciona MP3, M4A, AAC, AMR u OGG Opus de hasta 15 MB.');return;
-  }
-  if(!chatWindowOpen(activeChatPhone)){
-    alert('El cliente debe responder durante las últimas 24 horas para enviar audio.');return;
-  }
-  const phone=activeChatPhone,status=$('chatFileStatus'),btn=$('audioFileBtn');
-  btn.disabled=true;status.textContent='Enviando audio...';
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
-    const form=new FormData();form.append('to',phone);form.append('file',file,name);
-    const response=await fetch(WHATSAPP_AUDIO_URL,{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},body:form});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data?.messages?.length)throw new Error(data.error||'No se pudo enviar el audio.');
-    status.textContent='Audio enviado'+(data.warning?' · '+data.warning:'');await loadMessages(false);
-  }catch(e){status.textContent='No se envió el audio.';alert('No se pudo enviar el audio. '+String(e.message||e));}
-  finally{btn.disabled=false;}
+async function sendChatAudio(){
+  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
 }
 
 let chatRecorder=null,chatRecordStream=null,chatRecordChunks=[],chatRecordPhone='';
 async function toggleChatRecording(){
-  const btn=$('recordBtn'),status=$('chatFileStatus');
-  if(chatRecorder?.state==='recording'){chatRecorder.stop();btn.disabled=true;status.textContent='Preparando audio...';return;}
-  if(!activeChatPhone||!chatWindowOpen(activeChatPhone)){alert('Para enviar audio, el cliente debe haber respondido en las últimas 24 horas.');return;}
-  const mime=['audio/mp4','audio/ogg;codecs=opus'].find(type=>window.MediaRecorder?.isTypeSupported(type));
-  if(!mime){alert('Este navegador no puede grabar en un formato compatible con WhatsApp. Usa 🎵 Audio para adjuntar un MP3, M4A u OGG Opus.');return;}
-  if(!navigator.mediaDevices?.getUserMedia){alert('Este navegador no permite usar el micrófono.');return;}
-  try{
-    chatRecordStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    chatRecordPhone=activeChatPhone;chatRecordChunks=[];
-    chatRecorder=new MediaRecorder(chatRecordStream,{mimeType:mime});
-    chatRecorder.ondataavailable=e=>{if(e.data.size)chatRecordChunks.push(e.data);};
-    chatRecorder.onstop=async()=>{
-      chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;
-      const extension=mime==='audio/mp4'?'m4a':'ogg';
-      const file=new File(chatRecordChunks,['nota-de-voz-'+Date.now(),extension].join('.'),{type:mime});
-      btn.textContent='🎙 Grabar';btn.disabled=false;chatRecorder=null;
-      if(activeChatPhone!==chatRecordPhone){status.textContent='No se envió: cambiaste de conversación.';return;}
-      await sendChatAudio(file);
-    };
-    chatRecorder.start();btn.textContent='⏹ Enviar audio';status.textContent='Grabando… pulsa ⏹ para enviar.';
-  }catch(e){chatRecordStream?.getTracks().forEach(track=>track.stop());chatRecordStream=null;btn.textContent='🎙 Grabar';alert('No se pudo acceder al micrófono. '+String(e.message||e));}
+  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
 }
 
-async function sendChatImage(file){
-  if(!file||!activeChatPhone)return;
-  const name=file.name||'';
-  if(!/\.(jpe?g|png)$/i.test(name)||!file.size||file.size>5*1024*1024){
-    alert('Selecciona una imagen JPG o PNG de hasta 5 MB.');return;
-  }
-  if(!chatWindowOpen(activeChatPhone)){
-    alert('Para enviar una imagen, el cliente debe haber respondido durante las últimas 24 horas.');return;
-  }
-  const phone=activeChatPhone,btn=$('imageBtn'),status=$('chatFileStatus');
-  btn.disabled=true;status.textContent='Enviando imagen...';
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
-    const form=new FormData();form.append('to',phone);form.append('file',file,name);
-    const response=await fetch(WHATSAPP_DOCUMENT_URL,{method:'POST',headers:{
-      Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY
-    },body:form});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data?.messages?.length)throw new Error(data.error||'No se pudo enviar la imagen.');
-    status.textContent='Imagen enviada'+(data.warning?' · '+data.warning:'');
-    await loadMessages(false);
-  }catch(e){status.textContent='No se envió la imagen.';alert('No se pudo enviar la imagen. '+String(e.message||e));}
-  finally{btn.disabled=false;}
+async function sendChatImage(){
+  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
 }
 
-async function sendChatFile(file){
-  if(!file||!activeChatPhone)return;
-  const name=file.name||'';
-  if(!/\.(pdf|xls|xlsx|csv)$/i.test(name)||file.size>15*1024*1024||!file.size){
-    alert('Selecciona un PDF o Excel (.pdf, .xls, .xlsx o .csv) de hasta 15 MB.');return;
-  }
-  if(!chatWindowOpen(activeChatPhone)){
-    alert('Para enviar un archivo, el cliente debe haber respondido durante las últimas 24 horas. Primero envía la plantilla aprobada y espera su respuesta.');return;
-  }
-  const phone=activeChatPhone,btn=$('attachBtn'),status=$('chatFileStatus');
-  btn.disabled=true;status.textContent='Enviando '+name+'...';
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session?.access_token)throw new Error('Tu sesión expiró. Ingresa de nuevo.');
-    const form=new FormData();form.append('to',phone);form.append('file',file,name);
-    const response=await fetch(WHATSAPP_DOCUMENT_URL,{
-      method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},body:form
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data?.messages?.length)throw new Error(data?.error||'No se pudo enviar el archivo.');
-    status.textContent='Archivo enviado: '+name+(data.warning?' · '+data.warning:'');
-    await loadMessages(false);
-  }catch(e){status.textContent='No se envió el archivo.';alert('No se pudo enviar el archivo. '+String(e.message||e));}
-  finally{btn.disabled=false;}
+async function sendChatFile(){
+  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
 }
 
 async function sendApprovedTemplate(phone){
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  const authToken=session?.access_token||SUPABASE_KEY;
-  const response=await fetch(WHATSAPP_SEND_URL,{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':'Bearer '+authToken,
-      'apikey':SUPABASE_KEY
-    },
-    body:JSON.stringify({to:normalizeWhatsNumber(phone)})
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok||!data?.messages?.length){
-    throw new Error(data?.error?.message||data?.error||'No se pudo enviar la plantilla aprobada');
-  }
-  return data;
+  throw new Error('La API de WhatsApp está desactivada en el CRM.');
 }
 
 function shareCatalogInChat(){
@@ -1044,46 +849,7 @@ function shareCatalogInChat(){
  alert('Catálogo preparado en el chat. Revisa el mensaje y pulsa Enviar.');
 }
 async function sendChatReply(){
-  const text=$('replyText').value.trim();
-  if(!activeChatPhone||!text)return;
-  const btn=$('replyBtn');
-  btn.disabled=true;
-
-  try{
-    if(!chatWindowOpen(activeChatPhone)){
-      btn.textContent='Enviando plantilla...';
-      const ok=confirm('Han pasado más de 24 horas desde el último mensaje del cliente. WhatsApp no permite enviar texto libre.\n\nSe enviará la plantilla aprobada mired360_validar_cobertura para reabrir el contacto. Cuando el cliente responda, podrás escribir normalmente.\n\n¿Enviar plantilla ahora?');
-      if(!ok)return;
-      await sendApprovedTemplate(activeChatPhone);
-      alert('Plantilla enviada correctamente. El texto que escribiste NO se envió. Cuando el cliente responda, se abrirá nuevamente la ventana de 24 horas.');
-      await loadMessages(false);
-      return;
-    }
-
-    btn.textContent='Enviando...';
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    const authToken=session?.access_token||SUPABASE_KEY;
-    const response=await fetch(WHATSAPP_SEND_URL,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+authToken,
-        'apikey':SUPABASE_KEY
-      },
-      body:JSON.stringify({to:activeChatPhone,text})
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data?.messages?.length){
-      throw new Error(data?.error?.message||data?.error||'No se pudo enviar');
-    }
-    $('replyText').value='';
-    await loadMessages(false);
-  }catch(e){
-    alert('No se pudo enviar. '+String(e.message||e));
-  }finally{
-    btn.disabled=false;
-    btn.textContent='Enviar';
-  }
+  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
 }
 function startMessageRealtime(){
   if(messageSubscription||!currentUser)return;
@@ -1119,42 +885,7 @@ function normalizeWhatsNumber(phone){
 }
 
 async function sendSelectedWhatsApp(){
-  const selected=leads.filter(l=>selectedLeadIds.has(String(l.id))&&l.phone);
-  if(!selected.length)return alert('Seleccione al menos un prospecto.');
-  if(!confirm(`Se enviará la plantilla aprobada mired360_validar_cobertura a ${selected.length} contacto(s). Continúe solo si estos contactos autorizaron comunicaciones por WhatsApp. ¿Enviar ahora?`))return;
-
-  const btn=$('bulkWhatsBtn');
-  btn.disabled=true;
-  let ok=0,fail=0;
-  const failures=[];
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  const authToken=session?.access_token||SUPABASE_KEY;
-
-  for(let i=0;i<selected.length;i++){
-    const lead=selected[i];
-    $('bulkStatus').textContent=`Enviando ${i+1} de ${selected.length}: ${lead.name}...`;
-    try{
-      const response=await fetch(WHATSAPP_SEND_URL,{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':'Bearer '+authToken,
-          'apikey':SUPABASE_KEY
-        },
-        body:JSON.stringify({to:normalizeWhatsNumber(lead.phone)})
-      });
-      const data=await response.json().catch(()=>({}));
-      if(response.ok&&data?.messages?.length){ok++;}
-      else{fail++;failures.push(`${lead.name}: ${data?.error?.message||data?.error||'No enviado'}`);}
-    }catch(e){fail++;failures.push(`${lead.name}: ${String(e)}`);}
-    if(i<selected.length-1)await new Promise(r=>setTimeout(r,350));
-  }
-
-  $('bulkStatus').textContent=`Campaña terminada · Enviados: ${ok} · Fallidos: ${fail}`;
-  if(failures.length)console.warn('WhatsApp no enviados',failures);
-  alert(`Envío terminado.\n\nEnviados: ${ok}\nFallidos: ${fail}${failures.length?'\n\nRevise la consola para el detalle de fallidos.':''}`);
-  selectedLeadIds.clear();
-  renderLeadTable();
+  alert('Los envíos masivos por API están desactivados. Usa el botón WhatsApp de cada prospecto para remitir la asesoría al 3229432085.');
 }
 
 function renderLeadTable(){
