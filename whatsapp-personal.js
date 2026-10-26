@@ -22,5 +22,11 @@
     root.open(target,'_blank','noopener,noreferrer');
     return true;
   }
-  root.MiredWhatsApp={phone,message,url,open};
+  function referralMessage(value,client,advisor){
+    return 'Hola, solicito continuar la asesoría de un cliente del Call Center.\nAsesor: '+String(advisor||'Sin indicar').trim()+'\nCliente: '+String(client||'Sin indicar').trim()+'\nTeléfono del cliente: '+String(value||'Sin indicar').trim();
+  }
+  function refer(value,client,advisor,text){
+    return open('573229432085',null,null,text===undefined?referralMessage(value,client,advisor):text);
+  }
+  root.MiredWhatsApp={phone,message,url,open,referralMessage,refer};
 })(typeof window==='undefined'?globalThis:window);
