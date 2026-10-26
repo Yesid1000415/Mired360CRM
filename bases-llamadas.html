@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MIRED360 · Bases de llamadas</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="whatsapp-personal.js?v=20261015-1"></script>
+<script src="whatsapp-personal.js?v=20261026-322"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}
@@ -217,7 +217,7 @@ function renderContacts(){
     <td>${esc(c.resultado_detalle||c.observacion||'-')}</td>
     <td><div class="row-actions">
       <button class="btn primary" onclick="callContact('${c.id}')" title="La central llama primero a la extensión asignada">📞 Central / extensión</button>
-      <button class="btn ghost" data-callcenter-wa="1" onclick="continuePersonalWhatsApp('${c.id}')" title="Abre tu WhatsApp con el mensaje preparado; envíalo desde allí">💬 Continuar por WhatsApp</button>
+      <button class="btn ghost" data-callcenter-wa="1" onclick="continuePersonalWhatsApp('${c.id}')" title="Remite los datos del cliente al WhatsApp comercial 3229432085">💬 Continuar por WhatsApp</button>
       <button class="btn ghost" onclick="callWithSipApp('${c.id}')" title="Abre la aplicación SIP configurada en este dispositivo">💻 App SIP</button>
       <button class="btn ghost" onclick="finishAndNext('${c.id}')">✅ Resultado → siguiente</button>
       <button class="btn ghost" onclick="addNote('${c.id}')">📝 Nota</button>
@@ -229,7 +229,7 @@ function renderContacts(){
 
 function continuePersonalWhatsApp(id){
   const c=contacts.find(x=>x.id===id);if(!c)return;
-  MiredWhatsApp.open(c.telefono,c.nombre,currentAdvisorName||activeBase?.asesor_nombre||'');
+  MiredWhatsApp.refer(c.telefono,c.nombre,currentAdvisorName||activeBase?.asesor_nombre||'');
 }
 
 function callWithSipApp(id){
