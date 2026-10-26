@@ -40,7 +40,7 @@
       <section style="background:linear-gradient(135deg,#071a33,#0b4f83);color:white;border-radius:20px;padding:25px;margin-bottom:16px"><h2 style="margin:0 0 7px">Tu oficina MIRED Call Center</h2><p style="margin:0;color:#cbeaff">Aquí encuentras todo lo necesario para gestionar tu jornada sin salir del panel.</p></section>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px">
         <button class="office-card" onclick="openModule('bases')">📞<b>Bases y llamadas</b><span>Gestiona tus contactos asignados.</span></button>
-        <button class="office-card" onclick="openModule('whatsapp')">💬<b>WhatsApp</b><span>Atiende tus conversaciones.</span></button>
+        <button class="office-card" onclick="openModule('whatsapp')">💬<b>WhatsApp</b><span>Continúa la atención en el 3229432085.</span></button>
         <button class="office-card" onclick="openModule('soporte')">📍<b>Soporte y validación</b><span>Accede al canal de validaciones.</span></button>
         <button class="office-card" onclick="openModule('venta')">🧾<b>Ingreso de venta</b><span>Registra la venta para auditoría por llamada.</span></button>
         <button class="office-card" onclick="openModule('comisiones')">💰<b>Comisiones</b><span>Consulta y solicita tus pagos.</span></button>
@@ -68,7 +68,7 @@
 <div class="password-actions"><button type="submit" id="passwordSave">Guardar contraseña</button><button type="button" onclick="closePasswordDialog()">Cerrar</button></div>
 </form>
 </dialog>
-<script src="whatsapp-personal.js?v=20261015-1"></script>
+<script src="whatsapp-personal.js?v=20261026-322"></script>
 <script>
 const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
 const SUPABASE_KEY='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r';
@@ -78,8 +78,8 @@ const modules={
   inicio:{url:null,title:'🏠 Mi oficina Call Center',sub:'Todo tu trabajo diario en un solo lugar.'},
   soporte:{url:null,title:'📍 Validar dirección / Soporte',sub:'Canal oficial para validaciones y soporte de la operación.'},
   red:{url:'red-comercial.html',title:'🌎 Red comercial',sub:'Perfil, clientes propios, soporte y avisos para Colombia y Venezuela.'},
-  bases:{url:'bases-llamadas.html?v=20261015-wa1',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
-  whatsapp:{url:'whatsapp-asesor.html?v=20261015-1',title:'💬 WhatsApp del asesor',sub:'Abre el chat del cliente en tu WhatsApp Business y continúa la asesoría.'},
+  bases:{url:'bases-llamadas.html?v=20261026-322',title:'📞 Bases de llamadas',sub:'Gestiona únicamente la base que te fue asignada.'},
+  whatsapp:{url:'whatsapp-asesor.html?v=20261026-322',title:'💬 Continuar asesoría · 3229432085',sub:'Remite el cliente al WhatsApp comercial 3229432085 para continuar la atención.'},
   venta:{url:'autorizacion.html?v=20261001-venta-agil1',title:'🧾 Ingreso de venta',sub:'Registra los datos validados del cliente. La auditoría se realiza posteriormente por llamada.'},
   comisiones:{url:'cobro-comisiones.html?v=20261001-syntaxfix6',title:'💰 Cobro de comisiones',sub:'Colombia: $100.000 COP. Venezuela: equivalente en USD de $100.000 COP por acceso instalado y auditado.'},
   rendimiento:{url:'rendimiento.html?v=20260928-1',title:'🚦 Mi rendimiento',sub:'Consulta tus ventas, meta mensual y avance.'},
@@ -107,7 +107,7 @@ function openMicroSip(phone,name){
   location.href='sip:'+encodeURIComponent(tel);
 }
 function openWhatsappFor(phone,name){
-  return MiredWhatsApp.open(phone,name,viewerName.includes('@')?'':viewerName);
+  return MiredWhatsApp.refer(phone,name,viewerName.includes('@')?'':viewerName);
 }
 async function saveLossReason(id,estado,reason,detail){
   const {data,error:readError}=await sb.from('contactos_base_llamadas').select('estado').eq('id',id).maybeSingle();
