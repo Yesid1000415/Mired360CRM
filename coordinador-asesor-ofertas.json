@@ -1,0 +1,78 @@
+{
+  "fuente": "Catálogo Claro Hogar MIREDMOVIL SAS, octubre 2026",
+  "nota": "Validar cobertura y vigencia antes de cotizar",
+  "ofertas": [
+    {
+      "tipo": "Solo internet",
+      "megas": 300,
+      "precio": 65900,
+      "pagina": 3
+    },
+    {
+      "tipo": "Solo internet",
+      "megas": 900,
+      "precio": 89900,
+      "pagina": 4
+    },
+    {
+      "tipo": "Solo internet",
+      "megas": 900,
+      "precio": 79900,
+      "pagina": 5
+    },
+    {
+      "tipo": "Internet TV",
+      "megas": 900,
+      "precio": 104900,
+      "pagina": 6
+    },
+    {
+      "tipo": "Internet TV",
+      "megas": 900,
+      "precio": 119900,
+      "pagina": 7
+    },
+    {
+      "tipo": "Internet TV",
+      "megas": 900,
+      "precio": 121900,
+      "pagina": 8
+    },
+    {
+      "tipo": "Internet TV",
+      "megas": 900,
+      "precio": 99900,
+      "pagina": 9
+    },
+    {
+      "tipo": "Internet TV",
+      "megas": "500-900",
+      "precio": 109900,
+      "pagina": 10
+    },
+    {
+      "tipo": "Internet TV avanzada",
+      "megas": 900,
+      "precio": 129900,
+      "pagina": 11
+    },
+    {
+      "tipo": "Internet TV voz",
+      "megas": 900,
+      "precio": 111900,
+      "pagina": 12
+    },
+    {
+      "tipo": "Internet TV voz",
+      "megas": "500-900",
+      "precio": 106900,
+      "pagina": 13
+    },
+    {
+      "tipo": "Internet TV voz premium",
+      "megas": 900,
+      "precio": 131900,
+      "pagina": 14
+    }
+  ]
+}
