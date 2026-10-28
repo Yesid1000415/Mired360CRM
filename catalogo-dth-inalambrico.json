@@ -1,0 +1,39 @@
+{
+  "titulo": "Catálogo DTH e Internet Inalámbrico",
+  "fuente": "Piezas comerciales compartidas por el usuario, 27 octubre 2026",
+  "reglas": [
+    "Internet inalámbrico únicamente como alternativa urbana para barrios sin cobertura FTTH o HFC; no anunciar como producto rural.",
+    "DTH es televisión satelital, no internet.",
+    "Verificar cobertura, vigencia, descuentos, equipos y condiciones antes de confirmar venta."
+  ],
+  "ofertas": [
+    {
+      "id": "inalambrico",
+      "categoria": "Internet inalámbrico urbano",
+      "mensualidad": 89900,
+      "instalacion": 52000,
+      "respaldo_energia_horas_max": 4,
+      "sin_permanencia": true,
+      "segmento": "Barrios de ciudades sin cobertura FTTH o HFC",
+      "observacion": "Aplicable a reportados; disponibilidad por validar."
+    },
+    {
+      "id": "dth-1",
+      "categoria": "Televisión satelital DTH",
+      "mensualidad": 63900,
+      "instalacion": 52000,
+      "descripcion": "Oferta desde $63.900; pieza publicitaria anuncia 139 canales; otra pieza indica 70 video, 13 HD y 22 audio. Confirmar parrilla exacta.",
+      "descuento": "50% primera factura anunciado en una pieza, sujeto a validación"
+    },
+    {
+      "id": "dth-2",
+      "categoria": "Televisión satelital DTH",
+      "mensualidad": 73900,
+      "instalacion": 52000,
+      "decodificadores": 2,
+      "adicional_win": 11000,
+      "total_con_win": 84900,
+      "descuento": "50% primera factura anunciado, sujeto a validación"
+    }
+  ]
+}
