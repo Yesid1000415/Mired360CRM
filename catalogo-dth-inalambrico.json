@@ -12,18 +12,17 @@
       "categoria": "Internet inalámbrico urbano",
       "mensualidad": 89900,
       "instalacion": 52000,
-      "respaldo_energia_horas_max": 4,
       "sin_permanencia": true,
       "segmento": "Barrios de ciudades sin cobertura FTTH o HFC",
-      "observacion": "Aplicable a reportados; disponibilidad por validar."
+      "observacion": "Cobertura sujeta a validación"
     },
     {
       "id": "dth-1",
       "categoria": "Televisión satelital DTH",
       "mensualidad": 63900,
       "instalacion": 52000,
-      "descripcion": "Oferta desde $63.900; pieza publicitaria anuncia 139 canales; otra pieza indica 70 video, 13 HD y 22 audio. Confirmar parrilla exacta.",
-      "descuento": "50% primera factura anunciado en una pieza, sujeto a validación"
+      "descripcion": "Televisión satelital. Consulta los canales incluidos.",
+      "descuento": "50% de descuento en la primera factura. Aplican condiciones."
     },
     {
       "id": "dth-2",
@@ -33,7 +32,7 @@
       "decodificadores": 2,
       "adicional_win": 11000,
       "total_con_win": 84900,
-      "descuento": "50% primera factura anunciado, sujeto a validación"
+      "descuento": "50% de descuento en la primera factura. Aplican condiciones."
     }
   ]
 }
