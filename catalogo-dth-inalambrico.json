@@ -21,7 +21,7 @@
       "categoria": "Televisión satelital DTH",
       "mensualidad": 63900,
       "instalacion": 52000,
-      "descripcion": "Televisión satelital. Consulta los canales incluidos.",
+      "descripcion": "Televisión satelital con 139 canales.",
       "descuento": "50% de descuento en la primera factura. Aplican condiciones."
     },
     {
@@ -32,7 +32,8 @@
       "decodificadores": 2,
       "adicional_win": 11000,
       "total_con_win": 84900,
-      "descuento": "50% de descuento en la primera factura. Aplican condiciones."
+      "descuento": "50% de descuento en la primera factura. Aplican condiciones.",
+      "descripcion": "Televisión satelital con 2 decodificadores."
     }
   ]
 }
