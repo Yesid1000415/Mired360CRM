@@ -6,8 +6,7 @@ document.getElementById('guardar').addEventListener('click',async()=>{
  const client=window.supabase.createClient('https://lpiusomsuswdcraoozdn.supabase.co','sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r');
  const {data:{user},error:authError}=await client.auth.getUser();
  if(authError||!user){status.textContent='Para guardar, inicia sesión primero en MIRED360CRM desde este navegador.';return}
- const tipo=document.getElementById('tipo');const payload={nombre,telefono,ciudad:document.getElementById('ciudad').value.trim(),barrio:document.getElementById('barrio').value.trim(),origen:'Recomendador web',campana:new URLSearchParams(location.search).get('utm_campaign')||'Recomendador',producto:tipo.selectedOptions[0].text,cobertura:document.getElementById('cobertura').selectedOptions[0].text,estado:'Nuevo contacto',notas:'Presupuesto máximo: '+(document.getElementById('presupuesto').value||'Sin definir')+' COP'};
- const {error}=await client.from('prospectos').insert(payload);
- status.textContent=error?'No se guardó: '+error.message:'Prospecto guardado correctamente en MIRED360CRM.';
+ const tipo=document.getElementById('tipo');const payload={user_id:user.id,nombre,telefono,ciudad:document.getElementById('ciudad').value.trim(),barrio:document.getElementById('barrio').value.trim(),origen:'Recomendador web',campana:new URLSearchParams(location.search).get('utm_campaign')||'Recomendador',producto:tipo.selectedOptions[0].text,cobertura:document.getElementById('cobertura').selectedOptions[0].text,estado:'Nuevo contacto',notas:'Presupuesto máximo: '+(document.getElementById('presupuesto').value||'Sin definir')+' COP'};
+ status.textContent='Guardando prospecto…';const boton=document.getElementById('guardar');boton.disabled=true;try{const {error}=await client.from('prospectos').insert(payload);status.textContent=error?'No se guardó: '+error.message:'Prospecto guardado correctamente en MIRED360CRM. Puedes consultarlo en Prospectos.';}catch(err){status.textContent='No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.';}finally{boton.disabled=false;}
 });
 </script></body></html>
