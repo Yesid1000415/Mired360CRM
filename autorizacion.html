@@ -23,7 +23,7 @@
 <label class="req">Valor neto a pagar<input id="netValue" inputmode="numeric" placeholder="$"></label>
 <label class="full">Observaciones adicionales<textarea id="notes" placeholder="Información importante para digitación, instalación o auditoría"></textarea></label>
 </div></section>
-<section class="card"><h2>🔎 Asistente de revisión comercial</h2><p style="font-size:13px;color:#52647a">Comprueba datos y detecta inconsistencias antes de registrar la venta. No modifica información ni reemplaza la auditoría.</p><button type="button" class="btn ghost" onclick="reviewSale()">Revisar datos antes de guardar</button><div id="reviewResult" class="notice" style="margin-top:12px" aria-live="polite">Completa la plantilla y pulsa Revisar datos.</div></section>
+<section class="card"><h2>🔎 Asistente de revisión comercial</h2><p style="font-size:13px;color:#52647a">Comprueba datos y detecta inconsistencias antes de registrar la venta. No modifica información ni reemplaza la auditoría.</p><button type="button" class="btn ghost" onclick="reviewSale()">Revisar datos antes de guardar</button><button type="button" id="aiReviewBtn" class="btn primary" style="margin-left:8px" onclick="reviewWithAI()">✨ Revisar con IA</button><div id="aiReviewResult" class="notice" style="margin-top:12px" aria-live="polite">La IA analiza únicamente los datos comerciales; no se envían nombres, cédulas, teléfonos, correos ni direcciones.</div><div id="reviewResult" class="notice" style="margin-top:12px" aria-live="polite">Completa la plantilla y pulsa Revisar datos.</div></section>
 <div class="actions"><button id="saveBtn" class="btn primary" onclick="saveSale()">Guardar venta y enviar a auditoría</button><button class="btn ghost" onclick="clearSale()">Limpiar plantilla</button><span id="status" class="status"></span></div>
 </main><script>
 const U='https://lpiusomsuswdcraoozdn.supabase.co',K='sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r',sb=supabase.createClient(U,K),$=id=>document.getElementById(id);
@@ -48,6 +48,19 @@ if(!raw('addressExtra'))tips.push('Confirma si la dirección necesita apartament
 if(!raw('notes'))tips.push('Agrega observaciones si hay condiciones especiales de instalación o auditoría.');
 const el=$('reviewResult');el.textContent=(issues.length?'⚠ Revisar: '+issues.join(' · '):'✓ No se detectaron errores en las validaciones automáticas.')+(tips.length?' Recomendaciones: '+tips.join(' · '):'')+' La cobertura, la identidad, los precios y la autorización deben verificarse por los canales oficiales.';
 el.style.borderColor=issues.length?'#e5b0b0':'#a7dbc5';return issues.length===0;
+}
+async function reviewWithAI(){
+ const el=$('aiReviewResult'),btn=$('aiReviewBtn');
+ if(!user){el.textContent='Debes iniciar sesión.';return}
+ if(!reviewSale()){el.textContent='Completa primero los datos obligatorios y corrige las alertas de revisión.';return}
+ const {data:{session}}=await sb.auth.getSession();
+ if(!session?.access_token){el.textContent='Tu sesión ha expirado. Ingresa nuevamente.';return}
+ btn.disabled=true;btn.textContent='Consultando IA...';el.textContent='Analizando datos comerciales sin enviar datos de identificación...';
+ try{
+ const response=await fetch(U+'/functions/v1/revisar-autorizacion-ia',{method:'POST',headers:{'Content-Type':'application/json','apikey':K,'Authorization':'Bearer '+session.access_token},body:JSON.stringify({tecnologia:raw('tech'),velocidad:raw('speed'),plan:raw('plan'),valor_descuento:num('discountValue'),valor_neto:num('netValue')})});
+ const result=await response.json();el.textContent=response.ok&&result.ok?'✨ Revisión IA: '+result.revision:'No se completó la revisión: '+(result.error||'Error de conexión');
+ }catch(e){el.textContent='No fue posible conectar con el servicio de IA.'}
+ finally{btn.disabled=false;btn.textContent='✨ Revisar con IA'}
 }
 async function saveSale(){const bad=validate();if(bad){$('status').textContent=bad[1];$('status').className='status err';$(bad[0]).focus();return}if(!user){$('status').textContent='Sesión no válida.';return}const btn=$('saveBtn');btn.disabled=true;btn.textContent='Guardando...';$('status').textContent='';
 const row={user_id:user.id,numero_constancia:makeId(),fecha:new Date().toISOString().slice(0,10),asesor:raw('advisor'),codigo_asesor:raw('advisorCode'),nombre_cliente:raw('name'),cedula:raw('doc'),correo:raw('email'),telefono:raw('callPhone'),telefono_llamada:raw('callPhone'),telefono_whatsapp:raw('waPhone'),ciudad:raw('city'),direccion:raw('address'),complemento_direccion:raw('addressExtra'),barrio_conjunto:raw('neighborhood'),estrato:raw('stratum'),tipo_servicio:'Claro Hogar',tecnologia:raw('tech'),velocidad:raw('speed'),descripcion_plan:raw('plan'),pantalla_seleccionada:raw('screen'),decos:raw('decos'),adicionales:raw('extras'),valor_promocional:num('discountValue'),valor_con_descuento:num('discountValue'),valor_comercial:num('netValue'),valor_neto_pagar:num('netValue'),observaciones:raw('notes'),autorizacion:'AUDITORIA_POR_LLAMADA',firma:null,estado_auditoria:'Pendiente',origen_registro:'Call Center',actualizado_en:new Date().toISOString()};
