@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="saas/empresas.css?v=20261029-9">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="saas/empresas.js?v=20261029-13"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-12"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-13"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -101,8 +101,15 @@
    <div class="card"><h2>Campañas registradas</h2><div class="table-wrap"><table><thead><tr><th>Campaña</th><th>Sucursal</th><th>Canal</th><th>Presupuesto</th><th>Clientes</th><th>Ventas</th><th>Estado / Acción</th></tr></thead><tbody id="campaignRows"></tbody></table></div></div>
   </section>
   <section id="view-callcenter" class="view">
-   <div class="page-head"><div><h1>Call Center empresarial</h1><p>Bases, extensiones, asesores y resultados de llamadas, separados por empresa y sucursal.</p></div><button type="button" id="ccRefresh" class="btn secondary">Actualizar</button></div>
+   <div class="page-head"><div><h1>Call Center empresarial</h1><p>Bases, extensiones, asesores y resultados de llamadas, separados por empresa y sucursal.</p></div><div class="actions"><button type="button" id="ccAssignShortcut" class="btn primary">Asignar o cambiar base</button><button type="button" id="ccRefresh" class="btn secondary">Actualizar</button></div></div>
    <div class="cc-explanation"><strong>Telefonía:</strong> la opción «Llamar» abre el marcador del dispositivo. Las extensiones son identificadores internos; para marcar mediante una central IP será necesaria su conexión y autorización.</div>
+   <div id="ccRoleNotice" class="cc-role-notice" role="status"></div>
+   <div class="card cc-admin-only" id="ccAssignCard">
+    <h2>Asignar base al equipo</h2><form id="ccAssignForm" class="inline-form">
+    <label>Base<select id="ccAssignBase" required></select></label>
+    <label>Asesor<select id="ccAssignAdvisor"><option value="">Sin asignar</option></select></label>
+    <label>Extensión<select id="ccAssignExt"><option value="">Sin extensión</option></select></label>
+    <button class="btn primary" id="ccAssignSave" type="submit">Guardar asignación</button></form></div>
    <div class="metrics" id="ccMetrics"></div>
    <div class="split cc-admin-only" id="ccSetupArea">
     <div class="card"><h2>Nueva base de llamadas</h2>
@@ -125,12 +132,6 @@
    </div>
    <div class="card"><div class="section-heading"><h2>Bases de contactos</h2><small>Solo verás las bases que tienes autorizadas</small></div>
     <div class="table-wrap"><table><thead><tr><th>Base</th><th>Sucursal</th><th>Asesor</th><th>Extensión</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="ccBaseRows"></tbody></table></div></div>
-   <div class="card cc-admin-only" id="ccAssignCard">
-    <h2>Asignar base al equipo</h2><form id="ccAssignForm" class="inline-form">
-    <label>Base<select id="ccAssignBase" required></select></label>
-    <label>Asesor<select id="ccAssignAdvisor"><option value="">Sin asignar</option></select></label>
-    <label>Extensión<select id="ccAssignExt"><option value="">Sin extensión</option></select></label>
-    <button class="btn primary" id="ccAssignSave" type="submit">Guardar asignación</button></form></div>
    <div class="card cc-admin-only" id="ccImportCard">
     <h2>Importar contactos a una base</h2><p class="muted">Archivo CSV, TSV o TXT con columnas como nombre, teléfono, ciudad y observaciones. Hasta 2.000 contactos por importación. No se enviarán mensajes automáticamente.</p>
     <form id="ccImportForm" class="form-grid">
