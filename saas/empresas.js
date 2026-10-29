@@ -9,7 +9,7 @@ const dateFmt=v=>v?new Intl.DateTimeFormat('es-CO',{year:'numeric',month:'short'
 const escapeHTML=value=>String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const statuses=['Nuevo','Contactado','Seguimiento','Venta','Instalado','Perdido'];
 let user=null,organizations=[],org=null,memberships=[],members=[],leads=[],authMode='login',loading=false;
-let modalEditing=null,activePage='dashboard';
+let modalEditing=null,activePage='dashboard',recoveryPending=false;
 function show(id){['authScreen','consentScreen','onboardingScreen','saasApp'].forEach(k=>$(k).classList.toggle('hidden',k!==id))}
 function setAuthMessage(s,success=false){$('authMessage').textContent=s;$('authMessage').classList.toggle('success',success)}
 function flash(s,bad=false){
@@ -53,7 +53,7 @@ async function onAuthSubmit(e){
    const {error}=await db.auth.updateUser({password});
    if(error)throw error;
    setAuthMessage('Contraseña actualizada. Ingresa nuevamente.',true);
-   await db.auth.signOut();authUI('login');
+   await db.auth.signOut();recoveryPending=false;authUI('login');
   }else if(authMode==='register'){
    if(!$('authLegal').checked)throw Error('Debes aceptar los términos y el aviso de privacidad.');
    if(password.length<8)throw Error('La contraseña debe tener mínimo ocho caracteres.');
@@ -344,10 +344,11 @@ async function init(){
  events();
  if(!db){show('authScreen');setAuthMessage('No se pudo cargar la conexión. Revisa internet y vuelve a cargar.');return}
  db.auth.onAuthStateChange((event)=>{
-  if(event==='PASSWORD_RECOVERY'){show('authScreen');authUI('update')}
+  if(event==='PASSWORD_RECOVERY'){recoveryPending=true;show('authScreen');authUI('update')}
   if(event==='SIGNED_OUT'){user=null;org=null;show('authScreen')}
  });
  const {data:{session}}=await db.auth.getSession();
+ if(recoveryPending){show('authScreen');authUI('update');return}
  if(session?.user){try{await bootstrap()}catch(e){show('authScreen');setAuthMessage('Error al iniciar: '+fail(e))}}
  else{show('authScreen');authUI('login')}
 }
