@@ -51,3 +51,10 @@
 #view-callcenter .check-line{display:flex;align-items:flex-start;gap:10px}
 #view-callcenter .check-line input{width:17px;min-width:17px;margin:2px 0}
 @media(max-width:800px){#view-callcenter .split{display:block}#view-callcenter .cc-pagination{justify-content:center}}
+
+/* Call Center: prominently show base assignment on desktop and mobile. */
+.cc-role-notice{background:#eef5ff;border:1px solid #cbdbef;border-radius:12px;padding:12px 15px;margin:12px 0 16px;color:#37516f;line-height:1.5;font-size:12px}
+#ccAssignCard{scroll-margin-top:20px;border:1px solid #b6d3fb;box-shadow:0 8px 28px #315b9a14}
+#ccAssignCard h2{color:#214b86}
+#view-callcenter .page-head .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media(max-width:720px){#ccAssignShortcut{width:100%}}
