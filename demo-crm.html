@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1d3b">
+<title>MIRED360 CRM · Demostración Empresarial</title>
+<meta name="description" content="Conoce MIRED360 CRM, una plataforma para prospectos, ventas, seguimiento y equipos comerciales. Demostración con datos ficticios.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--navy:#0b1e3e;--navy2:#123763;--accent:#426df5;--cyan:#18b9d8;--bg:#f4f7fb;--card:#fff;--text:#1e3452;--muted:#7c8ca2;--line:#e5ecf5;--green:#0da87c;--amber:#e49a38;--red:#e05266}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font:14px 'DM Sans',Arial,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}.shell{min-height:100dvh;display:grid;grid-template-columns:265px minmax(0,1fr)}
+aside{position:sticky;top:0;height:100dvh;overflow-y:auto;background:linear-gradient(159deg,#112746,#09172e);color:white;padding:23px 15px;scrollbar-width:thin}
+.brand{display:flex;gap:12px;align-items:center;margin:0 3px 20px;padding:2px 4px 22px;border-bottom:1px solid #ffffff19}.mark{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#426cf5,#14beda);display:grid;place-items:center;font:800 25px Manrope,sans-serif;box-shadow:0 9px 25px #1e9cd633}.brand b{display:block;font:800 19px Manrope,sans-serif}.brand b em{color:#2dd4ee;font-style:normal}.brand small{display:block;color:#8eaccf;letter-spacing:1.9px;font-size:9px;font-weight:800;margin-top:5px}
+.nav-label{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#7393b6;padding:14px 12px 6px;text-transform:uppercase}.nav button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;color:#c0d0e3;padding:12px;border:1px solid transparent;background:transparent;border-radius:11px;font-weight:700;font-size:13px;margin:2px 0}.nav button:hover{background:#1c3757;color:#fff}.nav button.active{background:#21477975;border-color:#4a77b647;color:#fff;box-shadow:inset 3px 0 0 #37c7ea}.nav svg{height:19px;width:19px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 19px}.sidenote{border:1px solid #345074;background:#102e51;margin-top:21px;padding:14px;border-radius:13px;font-size:11px;line-height:1.6;color:#b5c9df}.sidenote strong{display:block;color:#79e4f2;font-size:11px;letter-spacing:1px;margin-bottom:5px}
+main{min-width:0;padding:25px clamp(16px,2.8vw,46px) 50px;max-width:1950px;width:100%}.top{display:flex;gap:12px;align-items:center;border-bottom:1px solid #e1e8f2;padding:0 0 20px;margin-bottom:24px}.top-meta strong{display:block;font:800 14px Manrope,sans-serif}.top-meta small{display:block;color:var(--muted);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.search{margin-left:auto;position:relative;max-width:390px;flex:1}.search input{border:1px solid #dfebf5;border-radius:12px;background:white;width:100%;padding:13px 16px 13px 41px;outline:none;color:var(--text);font-size:12px}.search input:focus{border-color:#98c3f8;box-shadow:0 0 0 3px #a6c7f92a}.search svg{position:absolute;left:14px;top:12px;width:18px;stroke:#8094ad;fill:none;stroke-width:2}.avatar{height:43px;width:43px;border-radius:12px;background:linear-gradient(145deg,#dce8ff,#cdf6f6);display:grid;place-items:center;color:#2d55ad;font-weight:800;border:1px solid #c8dbf2}.icon-btn{height:41px;min-width:41px;display:grid;place-items:center;border:1px solid #e0e8f2;background:#fff;border-radius:11px;color:#36587e}.icon-btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2}.mobile-menu{display:none}
+.banner{display:flex;gap:14px;align-items:center;justify-content:space-between;background:#eaf5ff;border:1px solid #cfe6fa;border-radius:14px;color:#336589;padding:12px 16px;margin-bottom:15px;font-size:12px}.banner strong{color:#14568d}.demo-label{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;background:#d8f6ee;color:#087253;font-size:10px;font-weight:900;letter-spacing:.6px;border-radius:99px;padding:7px 11px}.demo-label:before{content:'';height:7px;width:7px;background:#21b789;border-radius:50%}
+.hero{isolation:isolate;position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(115deg,#10315e,#17538b);overflow:hidden;border-radius:23px;padding:30px;color:#fff;box-shadow:0 14px 35px #153e7821;margin-bottom:20px}.hero:after{content:'';position:absolute;z-index:-1;right:-100px;top:-165px;width:410px;height:410px;border-radius:50%;border:1px solid #ffffff33;box-shadow:0 0 0 55px #ffffff07,0 0 0 125px #ffffff07}.eyebrow{text-transform:uppercase;letter-spacing:2px;color:#77e4f6;font-size:10px;font-weight:800}.hero h1{font:800 clamp(23px,2.7vw,35px) Manrope,sans-serif;letter-spacing:-1px;margin:9px 0}.hero p{color:#c5e0f3;max-width:610px;line-height:1.65;margin:0;font-size:13px}.hero .hero-right{display:flex;flex-direction:column;gap:7px;align-items:flex-end;min-width:170px}.hero-number{font:800 26px Manrope,sans-serif;letter-spacing:-1px}.hero-right small{color:#e2f6ff;font-size:11px}
+.btn{border:1px solid transparent;padding:11px 15px;border-radius:10px;font-weight:800;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;white-space:nowrap}.primary{background:linear-gradient(110deg,#426df5,#218fcc);color:white;box-shadow:0 5px 15px #3666f52a}.secondary{background:#fff;border-color:#dce6f2;color:#345476}.btn:hover{filter:brightness(.97)}.section-title{font:800 15px Manrope,sans-serif;letter-spacing:-.2px;margin:20px 0 13px}.quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:20px}.quick button{text-align:left;background:#fff;border:1px solid var(--line);border-radius:15px;padding:17px;display:flex;flex-direction:column;gap:9px;transition:transform .15s,box-shadow .15s;min-width:0}.quick button:hover{transform:translateY(-2px);box-shadow:0 12px 23px #214f8530;border-color:#abd1fa}.quick b{color:#273b59;font-size:13px}.quick small{color:#8a9aae;line-height:1.4;font-size:11px}.quick .qi{width:37px;height:37px;border-radius:11px;background:#edf4ff;color:#416ce0;display:grid;place-items:center;font-size:19px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:19px}.card{background:white;border:1px solid var(--line);border-radius:17px;padding:19px;box-shadow:0 3px 17px #20385808;min-width:0}.kpi{position:relative;overflow:hidden}.kpi:before{content:'';position:absolute;right:-22px;top:-22px;width:74px;height:74px;background:#eff5ff;border-radius:50%}.kpi small{color:#798da4;font-weight:700;font-size:11px}.kpi strong{font:800 31px Manrope,sans-serif;display:block;letter-spacing:-1.3px;margin:11px 0 5px;color:#16345f}.delta{color:#0a9c71;font-size:10px;font-weight:800}.cols{display:grid;grid-template-columns:1.4fr .8fr;gap:15px;margin-top:17px}.card-head{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;margin-bottom:17px}.card-head h2{font:800 15px Manrope,sans-serif;margin:0}.small-muted{font-size:11px;color:#8998ac}.bars{display:grid;gap:13px}.bar-row{display:grid;grid-template-columns:100px 1fr 38px;align-items:center;gap:10px;font-size:11px;font-weight:700;color:#6b7e98}.track{height:8px;border-radius:9px;background:#edf2f9;overflow:hidden}.track>span{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#3774f3,#20bdd8)}.bar-row b{text-align:right;color:#284767}.activity{display:grid;gap:10px}.activity-row{display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid #edf1f7;padding-bottom:11px}.activity-row:last-child{border:0}.activity-icon{height:35px;width:35px;border-radius:10px;background:#e9f5ff;color:#3371da;display:grid;place-items:center;font-weight:800;flex:0 0 35px}.activity-row b{display:block;font-size:12px}.activity-row small{display:block;color:#90a0b3;margin-top:4px;font-size:11px}.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:13px;flex-wrap:wrap;margin-bottom:20px}.page-head h1{font:800 26px Manrope,sans-serif;letter-spacing:-.7px;margin:0 0 5px}.page-head p{color:var(--muted);margin:0;font-size:12px}.page-actions{display:flex;flex-wrap:wrap;gap:8px}.table-scroll{width:100%;overflow-x:auto;border:1px solid #e6edf5;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:680px;font-size:12px}th,td{text-align:left;padding:14px 13px;border-bottom:1px solid #ebf0f6}th{background:#f6f9fc;color:#8091a8;font-size:10px;letter-spacing:.6px;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}tbody tr:hover td{background:#faffff}.tag{border-radius:99px;display:inline-block;font-size:10px;font-weight:800;padding:6px 9px;background:#eef5ff;color:#2e65ba}.tag.green{background:#def7ec;color:#098660}.tag.amber{background:#fff2da;color:#986100}.tag.red{background:#ffebee;color:#b74258}.muted{color:#8091a6}.filters{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 15px}.filters input,.filters select{border:1px solid #dce6f1;border-radius:10px;padding:11px 12px;background:white;font-size:12px;min-width:0;max-width:320px;flex:1}
+.view{display:none}.view.active{display:block}.empty{padding:23px;color:#8a9ab1;text-align:center}.intro-notice{background:#fff7e8;border:1px solid #f4db9f;border-radius:12px;padding:14px;line-height:1.6;color:#735723;font-size:12px}.list-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.list-item{padding:17px;border-radius:14px;border:1px solid #e6edf6;background:#fff}.list-item strong{display:block;font-size:14px}.list-item small{color:#8799ad;font-size:11px;display:block;margin:7px 0}.list-item span{color:#4264a0;font-weight:800;font-size:11px}.foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:25px;border-top:1px solid #e2ebf3;padding-top:18px;font-size:11px;color:#93a3b8}.overlay{display:none;position:fixed;inset:0;z-index:100;background:#08172f9c;align-items:center;justify-content:center;padding:15px}.overlay.open{display:flex}.dialog{background:#fff;border-radius:19px;padding:23px;width:min(460px,100%);box-shadow:0 20px 80px #0005}.dialog h2{margin:0 0 8px;font:800 21px Manrope,sans-serif}.dialog p{color:#8291a4;font-size:12px;margin:0 0 15px}.dialog label{display:block;margin:10px 0;font-weight:800;font-size:11px;color:#687a92}.dialog input,.dialog select{width:100%;display:block;border:1px solid #d9e4f0;border-radius:10px;padding:12px;margin-top:5px}.dialog .page-actions{justify-content:flex-end;margin-top:19px}.mnav{display:none}.scrim{display:none}
+@media(max-width:1280px){.quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:950px){.shell{grid-template-columns:minmax(0,1fr)}aside{position:fixed;z-index:70;top:0;bottom:0;left:0;width:min(300px,85vw);height:100dvh;transform:translateX(-105%);transition:transform .2s}.drawer-open aside{transform:translateX(0)}.scrim{display:block;position:fixed;z-index:65;inset:0;background:#07172f95;opacity:0;pointer-events:none;transition:opacity .2s}.drawer-open .scrim{opacity:1;pointer-events:auto}main{padding:18px 17px 90px}.mobile-menu{display:grid}.mnav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;gap:2px;padding:7px 9px calc(8px + env(safe-area-inset-bottom,0px));height:calc(67px + env(safe-area-inset-bottom,0px));background:white;border-top:1px solid #e4eaf3}.mnav button{flex:1;border:0;background:transparent;color:#8093a8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:800;font-size:10px;border-radius:9px}.mnav button.active{color:#3569dd;background:#eff5ff}.mnav button span:first-child{font-size:18px}}@media(max-width:650px){main{padding:13px 11px 90px}.top{gap:6px;padding-bottom:13px;margin-bottom:14px}.top-meta strong{font-size:12px}.top-meta small{display:none}.search{min-width:0}.search input{height:40px;padding:10px 9px 10px 34px;font-size:11px}.search svg{left:9px;top:11px}.avatar{display:none}.hero{padding:24px 18px}.hero h1{font-size:23px}.hero-right{display:none!important}.banner{align-items:flex-start;flex-direction:column}.kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.kpi strong{font-size:24px}.kpi{padding:15px}.cols{grid-template-columns:minmax(0,1fr)}.quick{gap:9px}.quick button{padding:13px}.list-grid{grid-template-columns:minmax(0,1fr)}.page-head h1{font-size:22px}.card{padding:15px}.bar-row{grid-template-columns:80px 1fr 30px}}
+</style>
+</head>
+<body>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside id="side">
+ <div class="brand"><span class="mark">M</span><div><b>MIRED<em>360</em></b><small>CRM EMPRESARIAL</small></div></div>
+ <nav class="nav" id="navigation">
+  <div class="nav-label">CENTRO DE OPERACIONES</div>
+  <button data-page="dashboard" class="active"><span>▦</span> Panel principal</button>
+  <button data-page="prospectos"><span>♧</span> Prospectos</button>
+  <button data-page="ventas"><span>▤</span> Ventas</button>
+  <button data-page="seguimientos"><span>◷</span> Seguimientos</button>
+  <div class="nav-label">OPERACIÓN Y CRECIMIENTO</div>
+  <button data-page="callcenter"><span>♧</span> Call Center</button>
+  <button data-page="campanas"><span>◎</span> Campañas</button>
+  <button data-page="asesores"><span>♙</span> Equipo comercial</button>
+  <button data-page="reportes"><span>▥</span> Reportes</button>
+  <div class="nav-label">ADMINISTRACIÓN</div>
+  <button data-page="configuracion"><span>⚙</span> Configuración</button>
+ </nav>
+ <div class="sidenote"><strong>ENTORNO DE DEMOSTRACIÓN</strong>Esta pantalla no está conectada a una base de datos ni muestra registros reales. Los cambios se pierden al recargar.</div>
+</aside>
+<main>
+ <div class="top">
+  <button class="icon-btn mobile-menu" id="openMenu" title="Abrir menú" aria-label="Abrir menú">☰</button>
+  <div class="top-meta"><small>Plataforma de gestión</small><strong>MIRED360 CRM</strong></div>
+  <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><input id="globalSearch" placeholder="Buscar en demostración..." aria-label="Buscar prospectos"></div>
+  <button class="icon-btn" id="fullScreen" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+  <span class="avatar" aria-label="Usuario demostración">DE</span>
+ </div>
+ <div class="banner"><div><strong>Vista demostrativa.</strong> Todos los registros, cifras y actividades que aparecen aquí son ejemplos ficticios. No hay datos privados ni funciones de envío reales.</div><span class="demo-label">DEMO PÚBLICA</span></div>
+ <section id="view-dashboard" class="view active">
+  <div class="hero"><div><div class="eyebrow">CENTRO DE OPERACIONES</div><h1>Tu empresa, bajo control.</h1><p>Prospectos, ventas, seguimientos, equipos y resultados desde una plataforma comercial elegante y centralizada.</p></div><div class="hero-right"><span class="hero-number">360°</span><small>Visión integral de tu negocio</small></div></div>
+  <div class="section-title">Accesos rápidos</div>
+  <div class="quick">
+   <button data-go="prospectos"><span class="qi">♧</span><b>Gestionar prospectos</b><small>Centraliza y organiza tus oportunidades.</small></button>
+   <button data-go="callcenter"><span class="qi">♧</span><b>Call Center</b><small>Consulta la gestión de llamadas.</small></button>
+   <button data-go="ventas"><span class="qi">▤</span><b>Control de ventas</b><small>Supervisa los negocios cerrados.</small></button>
+   <button data-go="reportes"><span class="qi">▥</span><b>Ver resultados</b><small>Analiza el desempeño comercial.</small></button>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="cols">
+    <div class="card"><div class="card-head"><h2>Embudo comercial</h2><span class="small-muted">Resumen ilustrativo</span></div><div class="bars" id="pipeline"></div></div>
+    <div class="card"><div class="card-head"><h2>Actividad reciente</h2><span class="small-muted">Ejemplos de operaciones</span></div><div class="activity">
+     <div class="activity-row"><span class="activity-icon">✓</span><div><b>Venta registrada</b><small>Plan empresarial · Registro de ejemplo</small></div></div>
+     <div class="activity-row"><span class="activity-icon">◷</span><div><b>Seguimiento programado</b><small>Contacto Demo 04 · Agenda simulada</small></div></div>
+     <div class="activity-row"><span class="activity-icon">+</span><div><b>Nuevo prospecto captado</b><small>Formulario web · Registro de ejemplo</small></div></div>
+    </div></div>
+  </div>
+ </section>
+ <section id="view-prospectos" class="view"><div class="page-head"><div><h1>Prospectos</h1><p>Registra, consulta y actualiza oportunidades comerciales de ejemplo.</p></div><div class="page-actions"><button class="btn secondary" id="exportDemo">Exportar CSV demo</button><button class="btn primary" id="addLead">+ Nuevo prospecto</button></div></div>
+  <div class="card"><div class="filters"><input id="leadSearch" placeholder="Buscar por nombre o ciudad..." aria-label="Buscar prospectos"><select id="leadFilter" aria-label="Filtrar estado"><option value="">Todos los estados</option><option>Nuevo</option><option>Contactado</option><option>Seguimiento</option><option>Venta</option><option>Instalado</option></select></div><div class="table-scroll"><table><thead><tr><th>Prospecto</th><th>Ciudad</th><th>Origen</th><th>Producto</th><th>Estado</th><th>Valor mensual</th><th>Acciones</th></tr></thead><tbody id="leadRows"></tbody></table></div></div>
+ </section>
+ <section id="view-ventas" class="view"><div class="page-head"><div><h1>Control de ventas</h1><p>Visualiza cierres e instalaciones de manera organizada.</p></div></div><div class="kpis" id="saleKpis"></div><div class="card"><div class="card-head"><h2>Ventas registradas</h2><span class="small-muted">Datos de demostración</span></div><div class="table-scroll"><table><thead><tr><th>Cliente</th><th>Ciudad</th><th>Producto</th><th>Ingreso mensual</th><th>Estado</th></tr></thead><tbody id="saleRows"></tbody></table></div></div></section>
+ <section id="view-seguimientos" class="view"><div class="page-head"><div><h1>Agenda de seguimientos</h1><p>Control de oportunidades pendientes por atender.</p></div></div><div class="card"><div class="card-head"><h2>Próximas gestiones</h2><span class="small-muted">Agenda ilustrativa</span></div><div class="table-scroll"><table><thead><tr><th>Cliente</th><th>Motivo</th><th>Prioridad</th><th>Responsable</th><th>Acción</th></tr></thead><tbody id="followRows"></tbody></table></div></div></section>
+ <section id="view-callcenter" class="view"><div class="page-head"><div><h1>Call Center</h1><p>Vista de operación telefónica y rendimiento de ejemplo.</p></div></div><div class="kpis" id="callKpis"></div><div class="card"><div class="card-head"><h2>Actividad telefónica</h2><span class="small-muted">Sin conexión a llamadas reales</span></div><div class="table-scroll"><table><thead><tr><th>Gestión</th><th>Asesor</th><th>Resultado</th><th>Duración</th></tr></thead><tbody><tr><td>Llamada DEMO-001</td><td>Asesor A</td><td><span class="tag green">Interesado</span></td><td>03:40</td></tr><tr><td>Llamada DEMO-002</td><td>Asesor B</td><td><span class="tag amber">Volver a llamar</span></td><td>01:22</td></tr><tr><td>Llamada DEMO-003</td><td>Asesor C</td><td><span class="tag">Gestionada</span></td><td>02:15</td></tr></tbody></table></div></div></section>
+ <section id="view-campanas" class="view"><div class="page-head"><div><h1>Campañas comerciales</h1><p>Evalúa de dónde llegan tus oportunidades.</p></div></div><div class="card"><div class="card-head"><h2>Canales de adquisición</h2><span class="small-muted">Indicadores ficticios</span></div><div class="bars" id="campaignBars"></div></div><div class="intro-notice" style="margin-top:16px">En tu CRM real, las campañas deben conectarse a las fuentes que utilice cada empresa. Aquí los porcentajes son exclusivamente ilustrativos.</div></section>
+ <section id="view-asesores" class="view"><div class="page-head"><div><h1>Equipo comercial</h1><p>Organiza asesores y visualiza su actividad.</p></div></div><div class="list-grid"><div class="list-item"><strong>Asesor Demo A</strong><small>Gestión de prospectos</small><span>● Disponible</span></div><div class="list-item"><strong>Asesor Demo B</strong><small>Seguimiento comercial</small><span>● En gestión</span></div><div class="list-item"><strong>Asesor Demo C</strong><small>Ventas empresariales</small><span>● Disponible</span></div></div></section>
+ <section id="view-reportes" class="view"><div class="page-head"><div><h1>Reportes y resultados</h1><p>Resume las principales métricas de ejemplo.</p></div><button class="btn secondary" id="exportReport">Exportar prospectos demo</button></div><div class="kpis" id="reportKpis"></div><div class="card"><div class="card-head"><h2>Comparación por ciudades</h2><span class="small-muted">Prospectos ficticios</span></div><div class="bars" id="cityBars"></div></div></section>
+ <section id="view-configuracion" class="view"><div class="page-head"><div><h1>Configuración</h1><p>Ejemplo de opciones de administración.</p></div></div><div class="card"><div class="intro-notice"><strong>Demostración sin conexión.</strong> Los ajustes de usuarios, permisos, bases de datos, facturación, comunicaciones y seguridad están deshabilitados en esta pantalla pública. Se activarán únicamente en la edición empresarial con acceso autorizado.</div><div class="list-grid" style="margin-top:17px"><div class="list-item"><strong>Usuarios y permisos</strong><small>Roles y accesos por empresa</small><span>Requiere implementación SaaS</span></div><div class="list-item"><strong>Integraciones</strong><small>Canales y servicios autorizados</small><span>Configuración empresarial</span></div><div class="list-item"><strong>Suscripciones</strong><small>Planes y ciclos de pago</small><span>Próxima etapa</span></div></div></div></section>
+ <div class="foot"><span>MIRED360 CRM · Presentación comercial con datos ficticios</span><a class="btn primary" href="https://wa.me/573229432085?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20MIRED360%20CRM" target="_blank" rel="noopener noreferrer">Solicitar información</a></div>
+</main>
+</div>
+<div class="mnav" id="mobileNav"><button data-mobile="dashboard" class="active"><span>⌂</span>Inicio</button><button data-mobile="prospectos"><span>♧</span>Clientes</button><button data-mobile="ventas"><span>▤</span>Ventas</button><button data-mobile="reportes"><span>▥</span>Reportes</button><button data-mobile="menu"><span>☰</span>Menú</button></div>
+<div class="overlay" id="dialogOverlay" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><div class="dialog"><h2 id="dialogTitle">Nuevo prospecto de prueba</h2><p>Este dato se mantiene solo durante la demostración.</p><form id="leadForm"><label>Nombre del prospecto<input id="newName" maxlength="70" placeholder="Ej. Cliente Demo 09" required></label><label>Ciudad<input id="newCity" maxlength="40" placeholder="Ej. Madrid" required></label><label>Producto<input id="newProduct" maxlength="70" placeholder="Ej. Internet empresarial" required></label><label>Valor mensual (COP)<input id="newValue" min="0" type="number" placeholder="79900" required></label><div class="page-actions"><button class="btn secondary" id="cancelLead" type="button">Cancelar</button><button class="btn primary" type="submit">Guardar ejemplo</button></div></form></div></div>
+<script>
+(function(){
+'use strict';
+var initial=[
+{id:1,name:'Cliente Demo 01',city:'Madrid',origin:'Redes sociales',product:'Internet hogar',state:'Instalado',value:79900},
+{id:2,name:'Cliente Demo 02',city:'Funza',origin:'Referidos',product:'Internet empresarial',state:'Venta',value:109900},
+{id:3,name:'Cliente Demo 03',city:'Mosquera',origin:'Facebook',product:'Internet + televisión',state:'Seguimiento',value:104900},
+{id:4,name:'Cliente Demo 04',city:'Facatativá',origin:'Web',product:'Internet hogar',state:'Contactado',value:89900},
+{id:5,name:'Cliente Demo 05',city:'Madrid',origin:'WhatsApp',product:'Internet empresarial',state:'Nuevo',value:119900},
+{id:6,name:'Cliente Demo 06',city:'Bogotá',origin:'Referidos',product:'Internet hogar',state:'Instalado',value:79900},
+{id:7,name:'Cliente Demo 07',city:'Soacha',origin:'Facebook',product:'Internet hogar',state:'Venta',value:99900},
+{id:8,name:'Cliente Demo 08',city:'Funza',origin:'Web',product:'Internet + televisión',state:'Seguimiento',value:109900},
+{id:9,name:'Cliente Demo 09',city:'Mosquera',origin:'Redes sociales',product:'Internet hogar',state:'Nuevo',value:79900},
+{id:10,name:'Cliente Demo 10',city:'Madrid',origin:'WhatsApp',product:'Internet hogar',state:'Contactado',value:79900}
+];
+var leads=initial.map(function(x){return Object.assign({},x)});
+var states=['Nuevo','Contactado','Seguimiento','Venta','Instalado'];
+var page='dashboard';
+var $=function(id){return document.getElementById(id)};
+var currency=function(x){return new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(x||0)};
+var safe=function(x){return String(x==null?'':x).replace(/[&<>"']/g,function(k){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[k]})};
+function tag(s){var color=s==='Instalado'?'green':s==='Venta'?'green':s==='Seguimiento'?'amber':s==='Nuevo'?'':s==='Contactado'?'amber':'';return '<span class="tag '+color+'">'+safe(s)+'</span>'}
+function cards(arr){return arr.map(function(o){return '<div class="card kpi"><small>'+safe(o.t)+'</small><strong>'+safe(o.v)+'</strong><span class="delta">'+safe(o.sub||'Datos de demostración')+'</span></div>'}).join('')}
+function bars(rows){var max=Math.max(1,...rows.map(function(r){return r[1]}));return rows.map(function(r){return '<div class="bar-row"><span>'+safe(r[0])+'</span><div class="track"><span style="width:'+Math.max(3,Math.round(r[1]/max*100))+'%"></span></div><b>'+r[1]+'</b></div>'}).join('')}
+function render(){
+ var n=leads.length,sale=leads.filter(function(x){return x.state==='Venta'}).length,installed=leads.filter(function(x){return x.state==='Instalado'}).length,follow=leads.filter(function(x){return x.state==='Seguimiento'}).length;
+ $('kpis').innerHTML=cards([{t:'Prospectos',v:n,sub:'Total en esta demostración'},{t:'Seguimientos',v:follow,sub:'Por contactar nuevamente'},{t:'Ventas',v:sale,sub:'Pendientes de instalación'},{t:'Instalados',v:installed,sub:'Servicios finalizados'}]);
+ $('pipeline').innerHTML=bars(states.map(function(s){return [s,leads.filter(function(x){return x.state===s}).length]}));
+ $('saleKpis').innerHTML=cards([{t:'Ventas abiertas',v:sale},{t:'Instalados',v:installed},{t:'Negocios cerrados',v:sale+installed},{t:'Valor mensual',v:currency(leads.filter(function(x){return ['Venta','Instalado'].includes(x.state)}).reduce(function(a,x){return a+x.value},0))}]);
+ $('callKpis').innerHTML=cards([{t:'Llamadas ejemplo',v:'48'},{t:'Contactos útiles',v:'31'},{t:'Interesados',v:'12'},{t:'Seguimientos',v:'7'}]);
+ $('reportKpis').innerHTML=cards([{t:'Registros',v:n},{t:'Cierres',v:sale+installed},{t:'Conversión demo',v:(Math.round((sale+installed)/n*100))+'%'},{t:'Ciudades',v:new Set(leads.map(function(x){return x.city})).size}]);
+ var search=$('leadSearch').value.toLocaleLowerCase('es').trim(),filter=$('leadFilter').value;
+ var matching=leads.filter(function(x){return (!search||[x.name,x.city,x.product,x.origin].join(' ').toLocaleLowerCase('es').includes(search))&&(!filter||x.state===filter)});
+ $('leadRows').innerHTML=matching.map(function(x){return '<tr><td><b>'+safe(x.name)+'</b></td><td>'+safe(x.city)+'</td><td>'+safe(x.origin)+'</td><td>'+safe(x.product)+'</td><td>'+tag(x.state)+'</td><td>'+currency(x.value)+'</td><td><select aria-label="Cambiar estado de '+safe(x.name)+'" data-state-id="'+x.id+'" style="padding:8px;border:1px solid #dbe6f3;border-radius:8px;background:white">'+states.map(function(s){return '<option'+(s===x.state?' selected':'')+'>'+s+'</option>'}).join('')+'</select></td></tr>'}).join('')||'<tr><td colspan="7" class="empty">No hay registros con esos filtros.</td></tr>';
+ var sold=leads.filter(function(x){return x.state==='Venta'||x.state==='Instalado'});
+ $('saleRows').innerHTML=sold.map(function(x){return '<tr><td>'+safe(x.name)+'</td><td>'+safe(x.city)+'</td><td>'+safe(x.product)+'</td><td>'+currency(x.value)+'</td><td>'+tag(x.state)+'</td></tr>'}).join('')||'<tr><td colspan="5" class="empty">Sin ventas de ejemplo.</td></tr>';
+ var pending=leads.filter(function(x){return x.state==='Seguimiento'||x.state==='Contactado'});
+ $('followRows').innerHTML=pending.map(function(x,i){return '<tr><td><b>'+safe(x.name)+'</b></td><td>'+safe(x.product)+'</td><td>'+tag(i%2===0?'Alta':'Media')+'</td><td>Asesor Demo '+(i%2?'B':'A')+'</td><td><button type="button" data-go="prospectos" class="btn secondary">Ver prospecto</button></td></tr>'}).join('')||'<tr><td colspan="5" class="empty">Sin seguimientos de ejemplo.</td></tr>';
+ $('campaignBars').innerHTML=bars([['Redes',42],['Referidos',27],['Web',19],['Otros',12]]);
+ var cityMap={};leads.forEach(function(x){cityMap[x.city]=(cityMap[x.city]||0)+1});
+ $('cityBars').innerHTML=bars(Object.entries(cityMap).sort(function(a,b){return b[1]-a[1]}));
+}
+function navigate(key){
+ if(key==='menu'){openMenu();return}
+ if(!$('view-'+key))return;
+ page=key;
+ document.querySelectorAll('.view').forEach(function(el){el.classList.toggle('active',el.id==='view-'+key)});
+ document.querySelectorAll('[data-page]').forEach(function(el){el.classList.toggle('active',el.dataset.page===key)});
+ document.querySelectorAll('[data-mobile]').forEach(function(el){el.classList.toggle('active',el.dataset.mobile===key)});
+ closeMenu();window.scrollTo({top:0,behavior:'smooth'});
+}
+function openMenu(){document.body.classList.add('drawer-open')}
+function closeMenu(){document.body.classList.remove('drawer-open')}
+function exportCsv(){
+ var lines=[['Cliente','Ciudad','Origen','Producto','Estado','Valor mensual']].concat(leads.map(function(x){return [x.name,x.city,x.origin,x.product,x.state,x.value]}));
+ var csv='\ufeff'+lines.map(function(row){return row.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"'}).join(';')}).join('\r\n');
+ var url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ var a=document.createElement('a');a.href=url;a.download='MIRED360_CRM_DEMO_DATOS_FICTICIOS.csv';a.click();setTimeout(function(){URL.revokeObjectURL(url)},1000);
+}
+document.addEventListener('click',function(e){
+ var nav=e.target.closest('[data-page]'),go=e.target.closest('[data-go]'),mob=e.target.closest('[data-mobile]');
+ if(nav)navigate(nav.dataset.page);
+ if(go)navigate(go.dataset.go);
+ if(mob)navigate(mob.dataset.mobile);
+});
+document.addEventListener('change',function(e){var el=e.target.closest('[data-state-id]');if(!el)return;var l=leads.find(function(x){return x.id===Number(el.dataset.stateId)});if(l&&states.includes(el.value)){l.state=el.value;render()}});
+$('leadSearch').addEventListener('input',render);
+$('leadFilter').addEventListener('change',render);
+$('globalSearch').addEventListener('input',function(){
+ var s=this.value;
+ if(s.trim()){navigate('prospectos');$('leadSearch').value=s;render()}
+ else{$('leadSearch').value='';render()}
+});
+$('exportDemo').addEventListener('click',exportCsv);$('exportReport').addEventListener('click',exportCsv);
+$('addLead').addEventListener('click',function(){$('dialogOverlay').classList.add('open');$('newName').focus()});
+$('cancelLead').addEventListener('click',function(){$('dialogOverlay').classList.remove('open')});
+$('dialogOverlay').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+$('leadForm').addEventListener('submit',function(e){
+ e.preventDefault();var n=$('newName').value.trim(),c=$('newCity').value.trim(),p=$('newProduct').value.trim(),v=Number($('newValue').value);
+ if(!n||!c||!p||!Number.isFinite(v)||v<0)return;
+ leads.unshift({id:Date.now(),name:n,city:c,origin:'Demo',product:p,state:'Nuevo',value:v});
+ this.reset();$('dialogOverlay').classList.remove('open');navigate('prospectos');render();
+});
+$('openMenu').addEventListener('click',openMenu);$('scrim').addEventListener('click',closeMenu);
+$('fullScreen').addEventListener('click',function(){if(document.fullscreenElement){if(document.exitFullscreen)document.exitFullscreen().catch(function(){})}else if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(function(){})});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){$('dialogOverlay').classList.remove('open');closeMenu()}});
+render();
+})();
+</script>
+</body></html>
