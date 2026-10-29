@@ -58,3 +58,13 @@
 #ccAssignCard h2{color:#214b86}
 #view-callcenter .page-head .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 @media(max-width:720px){#ccAssignShortcut{width:100%}}
+
+/* Importación Excel: mapeo manual de columnas y vista previa */
+.cc-import-mapping{padding:16px;border:1px solid #bed8f6;border-radius:14px;background:#f5f9ff;margin:9px 0}
+.cc-import-mapping h3{font-size:15px;color:#173c70;margin:0 0 7px}
+.cc-map-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cc-map-grid label{min-width:0;display:grid;gap:5px;font-size:12px;font-weight:700;color:#334e70}
+.cc-map-grid select{min-width:0;width:100%;max-width:100%;font-size:12px}
+.cc-preview-summary{font-size:12px;line-height:1.6;margin:15px 0}
+.cc-preview-table{min-width:460px!important}
+@media(max-width:650px){.cc-map-grid{grid-template-columns:1fr}.cc-import-mapping{padding:10px}}
