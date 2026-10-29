@@ -620,6 +620,18 @@ function events(){
   if(p){page+=Number(p.dataset.ccPage);renderContacts()}
  });
 }
-window.MiredSaasCallCenter={load,reset};
+async function openContactFromSupervisor(baseId,contactId){
+ if(!manager())return core.flash('Solo gerencia puede navegar desde la supervisión.',true);
+ if(!orgId||!bases.some(b=>b.id===baseId))await load();
+ if(!bases.some(b=>b.id===baseId))return core.flash('No tienes acceso a esta base.',true);
+ selected=baseId;
+ $('ccWorkBase').value=baseId;
+ $('ccSearch').value='';$('ccStateFilter').value='';$('ccAgendaFilter').value='';
+ await loadContacts();
+ const c=contacts.find(x=>x.id===contactId);
+ if(!c)return core.flash('El contacto no está disponible en esta base.',true);
+ manageContact(contactId);
+}
+window.MiredSaasCallCenter={load,reset,openContactFromSupervisor};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',events);else events();
 })();
