@@ -107,7 +107,7 @@ async function bootstrap(){
  const {data:orgRows,error:orgError}=await db.from('saas_organizaciones').select('*').order('creado_en',{ascending:true});
  if(orgError){show('authScreen');setAuthMessage('No fue posible leer tus empresas: '+orgError.message);return}
  organizations=orgRows||[];
- const {data:ms,error:msError}=await db.from('saas_miembros').select('organizacion_id,usuario_id,rol').eq('usuario_id',user.id);
+ const {data:ms,error:msError}=await db.from('saas_miembros').select('organizacion_id,usuario_id,rol,sucursal_id').eq('usuario_id',user.id);
  if(msError){show('authScreen');setAuthMessage('No fue posible verificar los permisos: '+msError.message);return}
  memberships=ms||[];
  if(!organizations.length){show('onboardingScreen');return}
@@ -162,7 +162,7 @@ async function enterOrg(){
  $('teamAdmin').classList.toggle('hidden',!isOwner());$('inviteHistoryCard').classList.toggle('hidden',!isOwner());
  $('settingsForm').querySelectorAll('input,button').forEach(el=>el.disabled=!isOwner());
  $('subscriptionDetails').innerHTML='<p><strong>Plan actual:</strong> '+escapeHTML(org.plan)+'</p><p><strong>Estado:</strong> '+escapeHTML(org.estado_suscripcion)+'</p><p><strong>Fin de prueba:</strong> '+dateFmt(org.prueba_hasta)+'</p><p><strong>Suscripción hasta:</strong> '+dateFmt(org.vigente_hasta)+'</p>';
- show('saasApp');await Promise.all([loadLeads(),loadTeam()]);navigate('dashboard');
+ show('saasApp');await Promise.all([loadLeads(),loadTeam()]);if(window.MiredSaasOps)await window.MiredSaasOps.load();navigate('dashboard');
 }
 async function loadLeads(){
  if(!org)return;
@@ -177,7 +177,7 @@ async function loadLeads(){
   }
   leads=all;
   $('syncStatus').textContent='Datos actualizados';
-  render();
+  render();if(window.MiredSaasOps)window.MiredSaasOps.render();
  }catch(e){$('syncStatus').textContent='Error de sincronización';flash(fail(e),true)}
 }
 function card(title,value,desc){return '<div class="metric"><small>'+escapeHTML(title)+'</small><strong>'+escapeHTML(value)+'</strong><em>'+escapeHTML(desc)+'</em></div>'}
@@ -201,7 +201,7 @@ function render(){
  $('nextTasks').innerHTML=tasks.slice(0,5).map(l=>'<div class="task"><div><b>'+escapeHTML(l.nombre)+'</b><small>'+dateFmt(l.proximo_seguimiento)+'</small></div><button data-edit="'+l.id+'">Abrir</button></div>').join('')||'<p class="muted">No hay seguimientos pendientes.</p>';
  const query=$('leadSearch').value.toLocaleLowerCase('es').trim(),state=$('leadFilter').value;
  const filtered=leads.filter(l=>(!state||l.estado===state)&&(!query||[l.nombre,l.telefono,l.ciudad,l.producto,l.origen].join(' ').toLocaleLowerCase('es').includes(query)));
- $('leadRows').innerHTML=filtered.map(l=>'<tr><td><b>'+escapeHTML(l.nombre)+'</b></td><td>'+escapeHTML(l.telefono)+'</td><td>'+escapeHTML(l.ciudad)+'</td><td>'+escapeHTML(l.producto)+'</td><td>'+badge(l.estado)+'</td><td>'+money(l.valor_mensual)+'</td><td><button class="btn secondary" data-edit="'+l.id+'">Editar</button></td></tr>').join('')||tableEmpty(7,'No hay prospectos que coincidan.');
+ $('leadRows').innerHTML=filtered.map(l=>'<tr><td><b>'+escapeHTML(l.nombre)+'</b></td><td>'+escapeHTML(l.telefono)+'</td><td>'+escapeHTML(window.MiredSaasOps?.branchName(l.sucursal_id)||'Sin sucursal')+'</td><td>'+escapeHTML(window.MiredSaasOps?.memberName(l.creado_por)||'Colaborador')+'</td><td>'+escapeHTML(l.ciudad)+'</td><td>'+escapeHTML(l.producto)+'</td><td>'+badge(l.estado)+'</td><td>'+money(l.valor_mensual)+'</td><td><button class="btn secondary" data-edit="'+l.id+'">Editar</button></td></tr>').join('')||tableEmpty(9,'No hay prospectos que coincidan.');
  $('taskRows').innerHTML=tasks.map(l=>'<tr><td>'+escapeHTML(l.nombre)+'</td><td>'+escapeHTML(l.telefono)+'</td><td>'+dateFmt(l.proximo_seguimiento)+'</td><td>'+badge(l.estado)+'</td><td><button class="btn secondary" data-edit="'+l.id+'">Gestionar</button></td></tr>').join('')||tableEmpty(5,'Sin gestiones programadas.');
  $('salesRows').innerHTML=sold.map(l=>'<tr><td>'+escapeHTML(l.nombre)+'</td><td>'+escapeHTML(l.producto)+'</td><td>'+escapeHTML(l.ciudad)+'</td><td>'+badge(l.estado)+'</td><td>'+money(l.valor_mensual)+'</td></tr>').join('')||tableEmpty(5,'Sin ventas registradas.');
 }
@@ -237,6 +237,7 @@ function openLead(id){
  $('leadAuthorization').checked=!!l;
  const fields={leadName:'nombre',leadPhone:'telefono',leadEmail:'correo',leadCity:'ciudad',leadSource:'origen',leadProduct:'producto',leadStatus:'estado',leadValue:'valor_mensual',leadFollow:'proximo_seguimiento',leadNotes:'notas'};
  Object.entries(fields).forEach(([id,key])=>{if(l)$(id).value=l[key]??''});
+ if(window.MiredSaasOps)window.MiredSaasOps.prepareLead(l);
  $('leadTitle').textContent=l?'Editar prospecto':'Nuevo prospecto';
  $('leadModal').classList.remove('hidden');$('leadName').focus()
 }
@@ -247,7 +248,8 @@ async function saveLead(e){
  nombre:$('leadName').value.trim(),telefono:$('leadPhone').value.trim(),correo:$('leadEmail').value.trim(),
  ciudad:$('leadCity').value.trim(),origen:$('leadSource').value,producto:$('leadProduct').value.trim(),
  estado:$('leadStatus').value,valor_mensual:Number($('leadValue').value||0),
- proximo_seguimiento:$('leadFollow').value||null,notas:$('leadNotes').value.trim()
+ proximo_seguimiento:$('leadFollow').value||null,notas:$('leadNotes').value.trim(),
+ sucursal_id:$('leadBranch').value||null,campana_id:$('leadCampaign').value||null
  };
  if(!$('leadAuthorization').checked)return flash('Confirma que puedes tratar los datos del cliente.',true);
  if(payload.nombre.length<2||!Number.isFinite(payload.valor_mensual)||payload.valor_mensual<0)return flash('Revisa el nombre y el valor.',true);
@@ -365,5 +367,6 @@ async function init(){
  if(session?.user){try{await bootstrap()}catch(e){show('authScreen');setAuthMessage('Error al iniciar: '+fail(e))}}
  else{show('authScreen');authUI('login')}
 }
+window.MiredSaas={db,get org(){return org},get user(){return user},get leads(){return leads},get memberships(){return memberships},get members(){return members},editable,isOwner,currentRole,flash,esc:escapeHTML,money,dateFmt};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
