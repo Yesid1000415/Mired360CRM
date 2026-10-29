@@ -7,7 +7,7 @@ create or replace function public.saas_cc_reporte_gerencia(
 declare v_result jsonb; v_rol text;
 begin
  v_rol:=mired_private.saas_rol(p_org);
- if (select auth.uid()) is null or v_rol is distinct from all(array['propietario'::text,'administrador'::text])
+ if (select auth.uid()) is null or v_rol not in ('propietario','administrador')
  then raise exception 'No tienes permiso para consultar la supervisión empresarial' using errcode='42501';end if;
  if p_desde is null or p_hasta is null or p_hasta<p_desde
     or p_hasta-p_desde>366
@@ -30,8 +30,8 @@ begin
   from public.saas_cc_gestiones g
   join v_bases b on b.id=g.base_id
   where g.organizacion_id=p_org
-   and g.creado_en>=p_desde::timestamp at time zone 'America/Bogota'
-   and g.creado_en<(p_hasta+1)::timestamp at time zone 'America/Bogota'
+   and g.creado_en >= (p_desde::timestamp at time zone 'America/Bogota')
+   and g.creado_en < ((p_hasta+1)::timestamp at time zone 'America/Bogota')
  ),
  v_hoy as (select (now() at time zone 'America/Bogota')::date as fecha),
  v_summary as (
