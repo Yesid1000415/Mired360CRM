@@ -6,7 +6,7 @@ const core=window.MiredSaas;
 if(!core||!core.db)return;
 const $=id=>document.getElementById(id), db=core.db, esc=core.esc;
 const n=v=>Number(v)||0, fmt=v=>n(v).toLocaleString('es-CO');
-let report=null,people=[],period='mes',sequence=0,company=null;
+let report=null,people=[],agenda=[],agendaError='',period='mes',sequence=0,company=null;
 function manager(){return ['propietario','administrador'].includes(core.currentRole())}
 function active(){return !!window.MiredSaasOps?.active('llamadas')}
 function fmtDay(date){return new Intl.DateTimeFormat('es-CO',{timeZone:'UTC',day:'2-digit',month:'short'}).format(new Date(date+'T12:00:00Z'))}
@@ -98,6 +98,21 @@ function render(){
   const total=n(b.total),pct=total?Math.round(n(b.gestionados)/total*100):0;
   return '<tr><td><b>'+esc(b.nombre)+'</b><br><small>'+esc(b.estado)+'</small></td><td>'+esc(fullName(b.asignado_a))+'</td><td>'+fmt(total)+'</td><td>'+fmt(b.gestionados)+'</td><td>'+fmt(b.pendientes)+'</td><td>'+fmt(b.ventas)+'</td><td>'+fmt(b.vencidos)+'</td><td><b>'+pct+'%</b><div class="cc-sup-progress"><span style="width:'+Math.min(pct,100)+'%"></span></div></td></tr>';
  }).join('')||blank(8,'No hay bases en esta empresa.');
+ const today=coDate(),bases=new Map((report.bases||[]).map(b=>[b.id,b]));
+ const scheduled=agenda.filter(c=>bases.get(c.base_id)?.estado==='activa');
+ $('ccSupFollowupRows').innerHTML=scheduled.map(c=>{
+  const base=bases.get(c.base_id),late=c.proxima_llamada<today;
+  const due=late?'Vencido':c.proxima_llamada===today?'Hoy':'Próximo';
+  const phone=String(c.telefono||'').replace(/[^\d+]/g,'');
+  return '<tr><td><b>'+esc(c.proxima_llamada)+'</b><br><small class="'+(late?'cc-sup-overdue':'')+'">'+due+'</small></td>'+
+   '<td><b>'+esc(c.nombre)+'</b><br><small>'+esc(c.ciudad||'')+'</small></td>'+
+   '<td>'+esc(base?.nombre||'Base')+'</td><td>'+esc(fullName(base?.asignado_a))+'</td><td>'+esc(c.estado)+'</td>'+
+   '<td><a class="btn secondary" href="tel:'+encodeURIComponent(phone)+'">Llamar</a> '+
+   '<button type="button" class="btn primary" data-cc-followup-contact="'+esc(c.id)+'" data-cc-followup-base="'+esc(c.base_id)+'">Gestionar</button></td></tr>';
+ }).join('')||blank(6,'No hay seguimientos vencidos o próximos en las bases activas.');
+ $('ccSupFollowupInfo').textContent=agendaError?
+  'No se pudo consultar la agenda: '+agendaError:
+  'Muestra hasta 100 contactos próximos o vencidos de bases activas, ordenados por fecha. Agenda vigente a hoy, sin depender del período seleccionado.';
  $('ccSupCount').textContent='Datos del '+report.desde+' al '+report.hasta+' · '+fmt(summary.bases)+' bases · '+fmt(summary.contactos)+' contactos en cartera.';
  $('ccSupExport').disabled=false;
 }
@@ -117,14 +132,20 @@ async function refresh(){
  $('ccSupStatus').textContent='Actualizando indicadores…';
  $('ccSupRefresh').disabled=true;
  try{
-  const [result,teamResult]=await Promise.all([
+  const [result,teamResult,followupResult]=await Promise.all([
    db.rpc('saas_cc_reporte_gerencia',{p_org:orgId,p_desde:from,p_hasta:to}),
-   db.rpc('saas_listar_equipo',{p_org:orgId})
+   db.rpc('saas_listar_equipo',{p_org:orgId}),
+   db.from('saas_cc_contactos')
+    .select('id,base_id,nombre,telefono,ciudad,estado,proxima_llamada')
+    .eq('organizacion_id',orgId).not('proxima_llamada','is',null)
+    .lte('proxima_llamada',dateShift(coDate(),7))
+    .in('estado',['Pendiente','Sin respuesta','Contactado','Interesado','Seguimiento'])
+    .order('proxima_llamada',{ascending:true}).limit(100)
   ]);
   if(seq!==sequence||core.org?.id!==orgId)return;
   if(result.error)throw result.error;
   if(teamResult.error)throw teamResult.error;
-  company=orgId;report=result.data;people=teamResult.data||[];
+  company=orgId;report=result.data;people=teamResult.data||[];agenda=followupResult.data||[];agendaError=followupResult.error?.message||'';
   render();
   $('ccSupStatus').textContent='Actualizado. Indicadores calculados desde las gestiones guardadas; no son registros de la central IP.';
  }catch(err){
@@ -134,8 +155,8 @@ async function refresh(){
  }finally{if(seq===sequence)$('ccSupRefresh').disabled=false}
 }
 function reset(){
- sequence++;report=null;people=[];company=null;period='mes';
- for(const id of ['ccSupMetrics','ccSupAdvisorRows','ccSupExtRows','ccSupDayRows','ccSupOutcomeRows','ccSupBaseRows'])if($(id))$(id).innerHTML='';
+ sequence++;report=null;people=[];agenda=[];agendaError='';company=null;period='mes';
+ for(const id of ['ccSupMetrics','ccSupAdvisorRows','ccSupExtRows','ccSupDayRows','ccSupOutcomeRows','ccSupBaseRows','ccSupFollowupRows'])if($(id))$(id).innerHTML='';
  if($('ccSupStatus'))$('ccSupStatus').textContent='';
  if($('ccSupExport'))$('ccSupExport').disabled=true;
 }
@@ -154,6 +175,11 @@ function events(){
  $('ccSupEnd').addEventListener('change',()=>{period='personalizado';document.querySelectorAll('[data-cc-period]').forEach(b=>b.classList.remove('active'))});
  $('ccSupExport').addEventListener('click',csvExport);
  document.addEventListener('click',e=>{
+  const follow=e.target.closest('[data-cc-followup-contact]');
+  if(follow&&manager()&&active()){
+   document.querySelector('[data-page="callcenter"]')?.click();
+   window.MiredSaasCallCenter?.openContactFromSupervisor(follow.dataset.ccFollowupBase,follow.dataset.ccFollowupContact);
+  }
   if(e.target.closest('[data-page="supervision"],[data-go="supervision"]')&&manager()&&active()&&company===core.org?.id)
     refresh();
  });
