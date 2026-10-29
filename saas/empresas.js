@@ -28,6 +28,10 @@ function authUI(mode){
  $('authPassword').autocomplete=mode==='register'?'new-password':'current-password';
  const names={login:['Bienvenido a MIRED360','Ingresa para administrar la información de tu empresa.','Ingresar a mi empresa'],register:['Empieza a organizar tu negocio','Crea tu cuenta y configura una empresa con prueba de 14 días.','Crear cuenta'],recover:['Recuperar contraseña','Recibirás un enlace para actualizarla.','Enviar enlace'],update:['Cambiar contraseña','Escribe una nueva contraseña para tu cuenta.','Guardar contraseña']};
  const t=names[mode]||names.login;
+ const inviteVisible=!!invitationToken()&&(mode==='login'||mode==='register');
+ $('inviteModeBox').classList.toggle('hidden',!inviteVisible);
+ $('inviteLogin').disabled=mode==='login';
+ $('inviteRegister').disabled=mode==='register';
  $('authHeading').textContent=t[0];
  $('authSubheading').textContent=t[1];
  if(invitationToken()&&mode==='login')$('authSubheading').textContent='Te invitaron a colaborar en una empresa. Si ya tienes cuenta en MIRED360, ingresa con tu correo y tu contraseña; no necesitas crear otra.';
@@ -68,7 +72,7 @@ async function onAuthSubmit(e){
    if(data.session){await bootstrap()}
    else{
     authUI('login');
-    setAuthMessage('Si es tu primera cuenta, revisa el correo de confirmación y la carpeta de spam. Si ya estabas registrado, no necesitas otro correo: ingresa con tu contraseña existente. Si no la recuerdas, elige «Olvidé mi contraseña».',true);
+    setAuthMessage('Si nunca habías utilizado este correo, revisa Recibidos y Spam. Si ya tenías cuenta, el sistema puede aceptar la solicitud sin enviar otra confirmación: selecciona «Ingresar» con tu contraseña anterior o usa «Olvidé mi contraseña».',true);
    }
   }else{
    const {error}=await db.auth.signInWithPassword({email,password});
@@ -306,6 +310,8 @@ function exportCsv(){
 function events(){
  $('authForm').addEventListener('submit',onAuthSubmit);
  $('authSwitch').addEventListener('click',()=>authUI(authMode==='login'?'register':'login'));
+ $('inviteLogin').addEventListener('click',()=>authUI('login'));
+ $('inviteRegister').addEventListener('click',()=>authUI('register'));
  $('authReset').addEventListener('click',()=>authUI('recover'));
  $('companyForm').addEventListener('submit',createOrg);
  $('consentForm').addEventListener('submit',async e=>{
