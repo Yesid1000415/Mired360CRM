@@ -119,7 +119,7 @@ async function createOrg(e){
  finally{setLoading(false)}
 }
 function editable(){
- return !!org && (org.estado_suscripcion==='activa'||(org.estado_suscripcion==='prueba'&&new Date(org.prueba_hasta)>new Date()));
+ return !!org && ((org.estado_suscripcion==='activa'&&org.vigente_hasta&&new Date(org.vigente_hasta)>new Date())||(org.estado_suscripcion==='prueba'&&new Date(org.prueba_hasta)>new Date()));
 }
 function isOwner(){return !!org&&!!user&&org.propietario_id===user.id}
 function currentRole(){return (memberships.find(x=>x.organizacion_id===org?.id)||{}).rol||'asesor'}
@@ -143,7 +143,7 @@ async function enterOrg(){
  switcher.value=org.id;switcher.classList.toggle('hidden',organizations.length<2);
  $('teamAdmin').classList.toggle('hidden',!isOwner());$('inviteHistoryCard').classList.toggle('hidden',!isOwner());
  $('settingsForm').querySelectorAll('input,button').forEach(el=>el.disabled=!isOwner());
- $('subscriptionDetails').innerHTML='<p><strong>Plan actual:</strong> '+escapeHTML(org.plan)+'</p><p><strong>Estado:</strong> '+escapeHTML(org.estado_suscripcion)+'</p><p><strong>Fin de prueba:</strong> '+dateFmt(org.prueba_hasta)+'</p>';
+ $('subscriptionDetails').innerHTML='<p><strong>Plan actual:</strong> '+escapeHTML(org.plan)+'</p><p><strong>Estado:</strong> '+escapeHTML(org.estado_suscripcion)+'</p><p><strong>Fin de prueba:</strong> '+dateFmt(org.prueba_hasta)+'</p><p><strong>Suscripción hasta:</strong> '+dateFmt(org.vigente_hasta)+'</p>';
  show('saasApp');await Promise.all([loadLeads(),loadTeam()]);navigate('dashboard');
 }
 async function loadLeads(){
