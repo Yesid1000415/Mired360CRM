@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="saas/empresas.css?v=20261029-8">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="saas/empresas.js?v=20261029-10"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-1"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -65,7 +65,7 @@
   <div class="brand"><span class="brand-logo">M</span><div><strong>MIRED<span>360</span></strong><small>CRM EMPRESAS</small></div></div>
   <div class="org-info"><span class="org-avatar" id="orgAvatar">E</span><div><b id="orgNameSide">Mi empresa</b><small id="orgPlanSide">Plan prueba</small></div></div>
   <div class="nav-title">OPERACIÓN COMERCIAL</div>
-  <nav id="nav"><button data-page="dashboard" class="active">▦ <span>Panel principal</span></button><button data-page="prospectos">♧ <span>Prospectos</span></button><button data-page="seguimientos">◷ <span>Seguimientos</span></button><button data-page="ventas">▤ <span>Ventas</span></button><button data-page="reportes">▥ <span>Reportes</span></button><button data-page="campanas" data-module="campanas">◎ <span>Campañas</span></button><button data-page="llamadas" data-module="llamadas">☎ <span>Registro de llamadas</span></button><div class="nav-title">ADMINISTRACIÓN</div><button data-page="rendimiento">▤ <span>Rendimiento del equipo</span></button><button data-page="sucursales" data-module="sucursales">▦ <span>Sucursales</span></button><button data-page="equipo">♙ <span>Equipo y accesos</span></button><button data-page="configuracion">⚙ <span>Configuración</span></button></nav>
+  <nav id="nav"><button data-page="dashboard" class="active">▦ <span>Panel principal</span></button><button data-page="prospectos">♧ <span>Prospectos</span></button><button data-page="seguimientos">◷ <span>Seguimientos</span></button><button data-page="ventas">▤ <span>Ventas</span></button><button data-page="reportes">▥ <span>Reportes</span></button><button data-page="campanas" data-module="campanas">◎ <span>Campañas</span></button><button data-page="callcenter" data-module="llamadas">◉ <span>Call Center</span></button><button data-page="llamadas" data-module="llamadas">☎ <span>Llamadas de prospectos</span></button><div class="nav-title">ADMINISTRACIÓN</div><button data-page="rendimiento">▤ <span>Rendimiento del equipo</span></button><button data-page="sucursales" data-module="sucursales">▦ <span>Sucursales</span></button><button data-page="equipo">♙ <span>Equipo y accesos</span></button><button data-page="configuracion">⚙ <span>Configuración</span></button></nav>
   <div class="sidebar-foot"><div class="sync"><i></i> <span id="syncStatus">Conectado</span></div><small id="sidebarEmail"></small><button id="logout" class="logout" type="button">Cerrar sesión</button></div>
  </aside>
  <main>
@@ -75,7 +75,7 @@
   <section id="view-dashboard" class="view active">
    <div class="hero"><div><span class="eyebrow">CENTRO DE OPERACIONES</span><h1>Tu empresa, bajo control.</h1><p>Organiza las oportunidades, tus seguimientos, los cierres y el trabajo de tu equipo desde una sola plataforma.</p></div><div class="hero-trial"><strong id="heroPlan">Plan de prueba</strong><small id="heroDays">14 días de acceso</small></div></div>
    <div class="section-heading"><h2>Accesos rápidos</h2><small>Herramientas de tu empresa</small></div>
-   <div class="quick"><button data-go="prospectos">♧ <b>Prospectos</b><small>Gestionar clientes</small></button><button data-go="seguimientos">◷ <b>Seguimientos</b><small>Próximas gestiones</small></button><button data-go="ventas">▤ <b>Ventas</b><small>Control comercial</small></button><button data-go="reportes">▥ <b>Reportes</b><small>Resultados de tu equipo</small></button><button data-go="campanas" data-module="campanas">◎ <b>Campañas</b><small>Control por canal y sucursal</small></button><button data-go="llamadas" data-module="llamadas">☎ <b>Llamadas</b><small>Bitácora y seguimiento</small></button></div>
+   <div class="quick"><button data-go="prospectos">♧ <b>Prospectos</b><small>Gestionar clientes</small></button><button data-go="seguimientos">◷ <b>Seguimientos</b><small>Próximas gestiones</small></button><button data-go="ventas">▤ <b>Ventas</b><small>Control comercial</small></button><button data-go="reportes">▥ <b>Reportes</b><small>Resultados de tu equipo</small></button><button data-go="campanas" data-module="campanas">◎ <b>Campañas</b><small>Control por canal y sucursal</small></button><button data-go="callcenter" data-module="llamadas">◉ <b>Call Center</b><small>Bases, asesores y extensiones</small></button><button data-go="llamadas" data-module="llamadas">☎ <b>Gestiones</b><small>Seguimiento de prospectos</small></button></div>
    <div id="startGuide" class="start-guide hidden"><div><span class="start-icon">✦</span></div><div class="start-guide-content"><strong>¡Tu empresa está lista para empezar!</strong><p>Agrega tu primer contacto de prueba, programa un seguimiento y conoce los permisos de tu equipo.</p><div class="start-guide-buttons"><button type="button" class="btn primary" id="guideNewLead">+ Registrar primer prospecto</button><button type="button" class="btn secondary" data-go="equipo">Configurar equipo</button></div></div></div>
    <div class="metrics" id="metrics"></div>
    <div class="split"><div class="card"><div class="section-heading"><h2>Embudo comercial</h2><small>Información de tu empresa</small></div><div class="stage-bars" id="pipeline"></div></div><div class="card"><div class="section-heading"><h2>Próximos seguimientos</h2></div><div id="nextTasks" class="task-list"></div></div></div>
@@ -98,6 +98,60 @@
    <div class="page-head"><div><h1>Campañas comerciales</h1><p>Registra campañas reales y relaciona los prospectos captados.</p></div></div>
    <div class="card" id="campaignAdmin"><h2>Nueva campaña</h2><form id="campaignForm" class="inline-form"><label>Nombre<input id="campaignName" required maxlength="120" placeholder="Campaña de nuevos clientes"></label><label>Sucursal<select id="campaignBranch" required></select></label><label>Canal<select id="campaignChannel"><option>Facebook</option><option>WhatsApp</option><option>Instagram</option><option>Web</option><option>Llamada</option><option>Referidos</option><option>Otro</option></select></label><label>Presupuesto (COP)<input id="campaignBudget" min="0" step="1" type="number" value="0"></label><button class="btn primary" id="campaignSubmit" type="submit">Crear campaña</button></form></div>
    <div class="card"><h2>Campañas registradas</h2><div class="table-wrap"><table><thead><tr><th>Campaña</th><th>Sucursal</th><th>Canal</th><th>Presupuesto</th><th>Clientes</th><th>Ventas</th><th>Estado / Acción</th></tr></thead><tbody id="campaignRows"></tbody></table></div></div>
+  </section>
+  <section id="view-callcenter" class="view">
+   <div class="page-head"><div><h1>Call Center empresarial</h1><p>Bases, extensiones, asesores y resultados de llamadas, separados por empresa y sucursal.</p></div><button type="button" id="ccRefresh" class="btn secondary">Actualizar</button></div>
+   <div class="cc-explanation"><strong>Telefonía:</strong> la opción «Llamar» abre el marcador del dispositivo. Las extensiones son identificadores internos; para marcar mediante una central IP será necesaria su conexión y autorización.</div>
+   <div class="metrics" id="ccMetrics"></div>
+   <div class="split cc-admin-only" id="ccSetupArea">
+    <div class="card"><h2>Nueva base de llamadas</h2>
+     <form id="ccBaseForm" class="form-grid">
+      <label>Nombre de la base<input id="ccBaseName" required minlength="3" maxlength="110" placeholder="Ej. Clientes interesados de octubre"></label>
+      <label>Sucursal<select id="ccBaseBranch" required></select></label>
+      <label class="check-line wide"><input type="checkbox" id="ccBaseAuthorization" required><span>Declaro que la empresa cuenta con una autorización o base legal válida para tratar y contactar estos datos. Conservaré sus soportes y respetaré las solicitudes de no contacto.</span></label>
+      <div class="wide"><button class="btn primary" type="submit" id="ccBaseCreate">Crear base</button></div>
+     </form></div>
+    <div class="card"><h2>Extensiones y metas</h2><p class="muted">Esta configuración registra asignaciones internas, sin almacenar contraseñas SIP.</p>
+     <form id="ccExtForm" class="form-grid">
+      <label>Número de extensión<input id="ccExtCode" required inputmode="numeric" minlength="2" maxlength="8" pattern="[0-9]{2,8}" placeholder="104"></label>
+      <label>Sucursal<select id="ccExtBranch" required></select></label>
+      <label>Asesor<select id="ccExtAdvisor"><option value="">Sin asignar</option></select></label>
+      <label>Meta mensual<input id="ccExtTarget" required type="number" value="15" min="1" max="10000"></label>
+      <div class="wide"><button class="btn primary" id="ccExtSave" type="submit">Guardar extensión</button></div>
+     </form>
+     <div class="table-wrap cc-smalltable"><table><thead><tr><th>Extensión</th><th>Sede</th><th>Responsable</th><th>Meta</th></tr></thead><tbody id="ccExtRows"></tbody></table></div>
+    </div>
+   </div>
+   <div class="card"><div class="section-heading"><h2>Bases de contactos</h2><small>Solo verás las bases que tienes autorizadas</small></div>
+    <div class="table-wrap"><table><thead><tr><th>Base</th><th>Sucursal</th><th>Asesor</th><th>Extensión</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="ccBaseRows"></tbody></table></div></div>
+   <div class="card cc-admin-only" id="ccAssignCard">
+    <h2>Asignar base al equipo</h2><form id="ccAssignForm" class="inline-form">
+    <label>Base<select id="ccAssignBase" required></select></label>
+    <label>Asesor<select id="ccAssignAdvisor"><option value="">Sin asignar</option></select></label>
+    <label>Extensión<select id="ccAssignExt"><option value="">Sin extensión</option></select></label>
+    <button class="btn primary" id="ccAssignSave" type="submit">Guardar asignación</button></form></div>
+   <div class="card cc-admin-only" id="ccImportCard">
+    <h2>Importar contactos a una base</h2><p class="muted">Archivo CSV, TSV o TXT con columnas como nombre, teléfono, ciudad y observaciones. Hasta 2.000 contactos por importación. No se enviarán mensajes automáticamente.</p>
+    <form id="ccImportForm" class="form-grid">
+     <label>Base destino<select id="ccImportBase" required></select></label>
+     <label>Archivo<input id="ccImportFile" type="file" required accept=".csv,.tsv,.txt,text/csv,text/plain"></label>
+     <label class="check-line wide"><input id="ccImportConsent" type="checkbox" required><span>Confirmo que puedo utilizar legalmente la información de este archivo, con evidencia de autorización o base aplicable para cada contacto.</span></label>
+     <div class="wide"><button class="btn primary" id="ccImportSubmit" type="submit">Importar contactos</button><span id="ccImportStatus" class="cc-import-status" role="status"></span></div>
+    </form></div>
+   <div class="card">
+    <div class="page-head"><div><h2>Contactos asignados</h2><p class="muted">Selecciona una base. Registra el resultado de cada llamada y su seguimiento.</p></div>
+    <select id="ccWorkBase" aria-label="Seleccionar base de trabajo"></select></div>
+    <div class="filters"><input id="ccSearch" type="search" placeholder="Buscar nombre o teléfono"><select id="ccStateFilter"><option value="">Todos los estados</option><option>Pendiente</option><option>Sin respuesta</option><option>Contactado</option><option>Interesado</option><option>Seguimiento</option><option>Venta</option><option>No interesado</option></select></div>
+    <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Teléfono</th><th>Ciudad</th><th>Estado</th><th>Próximo contacto</th><th>Gestión</th></tr></thead><tbody id="ccContactRows"></tbody></table></div><div class="cc-pagination" id="ccPagination"></div>
+   </div>
+   <div class="card"><h2>Registrar resultado</h2><form id="ccManageForm" class="form-grid">
+    <label>Contacto seleccionado<select id="ccManageContact" required><option value="">Selecciona un contacto</option></select></label>
+    <label>Resultado<select id="ccManageResult"><option>Contactado</option><option>Sin respuesta</option><option>Interesado</option><option>Seguimiento</option><option>Venta</option><option>No interesado</option></select></label>
+    <label>Fecha próximo contacto<input id="ccManageNext" type="date"></label>
+    <label class="wide">Observaciones<textarea id="ccManageNotes" rows="3" maxlength="2000" placeholder="Resultado de la gestión"></textarea></label>
+    <div class="wide"><button id="ccManageSave" type="submit" class="btn primary">Guardar gestión</button></div>
+   </form></div>
+   <div class="card"><h2>Últimas gestiones</h2><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Contacto</th><th>Asesor</th><th>Resultado</th><th>Próximo contacto</th><th>Detalle</th></tr></thead><tbody id="ccHistoryRows"></tbody></table></div></div>
   </section>
   <section id="view-llamadas" class="view">
    <div class="page-head"><div><h1>Gestión de llamadas</h1><p>Bitácora manual para registrar contactos, resultados y próximas llamadas. No realiza llamadas telefónicas automáticamente.</p></div></div>
