@@ -60,7 +60,7 @@ async function load(){
 async function loadMonthResults(seq){
  if(!org())return;
  const first=new Date(),start=new Date(first.getFullYear(),first.getMonth(),1).toISOString();
- const {data,error}=await db.from('saas_cc_gestiones').select('usuario_id,contacto_id,resultado,creado_en').eq('organizacion_id',orgId).gte('creado_en',start).eq('resultado','Venta').order('creado_en',{ascending:false}).limit(5000);
+ const {data,error}=await db.from('saas_cc_gestiones').select('usuario_id,extension_id,contacto_id,resultado,creado_en').eq('organizacion_id',orgId).gte('creado_en',start).eq('resultado','Venta').order('creado_en',{ascending:false}).limit(5000);
  if(seq!==refreshSeq)return;
  if(error){monthResults=[];return}
  monthResults=data||[];
@@ -97,7 +97,7 @@ function renderLists(){
  metric('Próximas llamadas',pending,'Con fecha registrada');
  if($('ccExtPerformanceRows')){
   $('ccExtPerformanceRows').innerHTML=extensions.map(e=>{
-   const sold=new Set(monthResults.filter(x=>x.usuario_id===e.usuario_id&&e.usuario_id).map(x=>x.contacto_id)).size;
+   const sold=new Set(monthResults.filter(x=>x.extension_id===e.id).map(x=>x.contacto_id)).size;
    return '<tr><td>'+esc(e.codigo)+'</td><td>'+esc(teamName(e.usuario_id))+'</td><td>'+sold+'</td><td>'+e.meta_mensual+'</td><td>'+Math.round(sold/e.meta_mensual*100)+'%</td></tr>';
   }).join('')||empty(5,'Sin extensiones registradas.');
  }
@@ -272,33 +272,28 @@ function mapCsv(rows){
  return {result,invalid,dupes};
 }
 async function importContacts(e){
- e.preventDefault();if(!manager()||!checkWrite()||!$('ccImportConsent').checked)return;
+ e.preventDefault();
+ if(!manager()||!checkWrite()||!$('ccImportConsent').checked)return;
  const base=bases.find(x=>x.id===$('ccImportBase').value),file=$('ccImportFile').files?.[0],status=$('ccImportStatus');
- if(!base||base.estado!=='activa'||!file)return core.flash('Selecciona una base activa y archivo válido.',true);
- if(file.size>2*1024*1024)return core.flash('El archivo supera los 2 MB. Divídelo en archivos CSV más pequeños.',true);
- $('ccImportSubmit').disabled=true;let saved=0;
+ if(!base||base.estado!=='activa'||!file)return core.flash('Selecciona una base activa y un archivo válido.',true);
+ if(file.size>2*1024*1024)return core.flash('El archivo supera 2 MB. Divídelo en archivos CSV más pequeños.',true);
+ $('ccImportSubmit').disabled=true;status.textContent='Validando archivo…';
  try{
   const parsed=mapCsv(parseCsv(await file.text()));
   if(parsed.result.length>2000)throw Error('Máximo 2.000 contactos por importación. Divide el archivo.');
-  const existing=new Set();let cursor=0;
-  while(cursor<MAX_CONTACTS){
-   const {data,error}=await db.from('saas_cc_contactos').select('telefono').eq('organizacion_id',orgId).eq('base_id',base.id).range(cursor,cursor+499);
-   if(error)throw error;(data||[]).forEach(v=>existing.add(v.telefono.replace(/\D/g,'')));
-   if(!data||data.length<500)break;cursor+=500;
-  }
-  const pending=parsed.result.filter(x=>!existing.has(x.telefono.replace(/\D/g,'')));
-  if(!pending.length){status.textContent='No hay contactos nuevos para esta base.';return}
-  if(!confirm('Importar '+pending.length+' contactos nuevos a «'+base.nombre+'»? Declara que tienes autorización de tratamiento para todos.'))return;
-  for(let i=0;i<pending.length;i+=100){
-   const group=pending.slice(i,i+100).map(x=>({...x,organizacion_id:orgId,sucursal_id:base.sucursal_id,base_id:base.id}));
-   const {error}=await db.from('saas_cc_contactos').insert(group);
-   if(error)throw error;
-   saved+=group.length;status.textContent=saved+' / '+pending.length+' contactos guardados.';
-  }
-  selected=base.id;$('ccImportFile').value='';$('ccImportConsent').checked=false;
-  await load();status.textContent=saved+' contactos importados. Repetidos: '+(parsed.dupes+parsed.result.length-pending.length)+'. Inválidos: '+parsed.invalid+'.';
-  core.flash(saved+' contactos importados correctamente.');
- }catch(err){status.textContent='Importados: '+saved+'. Error: '+err.message;core.flash('Importación detenida: '+err.message,true)}
+  if(!confirm('Importar hasta '+parsed.result.length+' contactos a «'+base.nombre+'»? Se omitirán los teléfonos que ya existan y los repetidos.'))return;
+  status.textContent='Guardando contactos…';
+  const {data,error}=await db.rpc('saas_cc_importar_contactos',{
+   p_org:orgId,p_base:base.id,p_registros:parsed.result
+  });
+  if(error)throw error;
+  const saved=Number(data?.importados||0),duplicates=Number(data?.repetidos||0)+parsed.dupes;
+  const invalid=Number(data?.invalidos||0)+parsed.invalid;
+  selected=base.id;$('ccImportForm').reset();
+  await load();
+  status.textContent=saved+' importados · '+duplicates+' repetidos · '+invalid+' inválidos.';
+  core.flash(saved+' contactos registrados en la base. Los repetidos no se duplicaron.');
+ }catch(err){status.textContent='Error de importación: '+err.message;core.flash(err.message,true)}
  finally{$('ccImportSubmit').disabled=false}
 }
 function events(){
