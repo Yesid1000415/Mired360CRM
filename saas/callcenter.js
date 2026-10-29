@@ -39,6 +39,7 @@ async function load(){
  $('ccSetupArea').classList.toggle('hidden',!manager());
  $('ccAssignCard').classList.toggle('hidden',!manager());
  $('ccAssignShortcut').classList.toggle('hidden',!manager());
+ $('ccSupervisionShortcut').classList.toggle('hidden',!manager());
  $('ccRoleNotice').textContent=manager()?'Administración: puedes asignar la base a un asesor, vincular su extensión y cambiar la asignación cuando lo necesites.':'Has ingresado como asesor. Puedes trabajar las bases que te asignaron, pero para asignar o cambiar bases debes ingresar con una cuenta de propietario o administrador.';
  $('ccImportCard').classList.toggle('hidden',!manager());
  const branches=(await db.from('saas_sucursales').select('id,nombre,activa').eq('organizacion_id',current)).data||[];
