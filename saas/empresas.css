@@ -18,3 +18,11 @@
 .start-guide-content{flex:1;min-width:0}.start-guide strong{font:800 15px Manrope,sans-serif;color:#184677}
 .start-guide p{margin:7px 0 12px;color:#547597;font-size:12px;line-height:1.6}
 .start-guide-buttons{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Invited collaborator: distinguish verified existing accounts from genuine first-time registration. */
+.invite-mode-box{background:#edf6ff;border:1px solid #bedaf8;padding:16px;border-radius:12px;margin:16px 0;color:#24476b}
+.invite-mode-box strong{font:800 13px Manrope,sans-serif;color:#143d69}
+.invite-mode-box p{font-size:12px;line-height:1.6;margin:9px 0 13px;color:#526f8a}
+.invite-mode-actions{display:flex;flex-wrap:wrap;gap:8px}
+.invite-mode-actions .btn{font-size:11px;flex:1 1 130px}
+.invite-mode-actions .btn:disabled{opacity:.56;cursor:default}
