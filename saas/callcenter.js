@@ -259,7 +259,7 @@ function mapCsv(rows){
  if(rows.length<2)throw Error('El archivo no tiene encabezados y contactos.');
  const headers=rows[0].map(normalizeHeader);
  const idx=(names)=>headers.findIndex(x=>names.includes(x));
- const name=idx(['nombre','nombres','cliente','fullname','nombrecompleto','razonsocial']),phone=idx(['telefono','celular','movil','telefono1','cel','numero','phone','contacto']);
+ const name=idx(['nombre','nombres','cliente','fullname','nombrecompleto','razonsocial','nombrecliente','nombreyapellido','nombresyapellidos']),phone=idx(['telefono','celular','movil','telefono1','cel','numero','phone','contacto','numerocelular','numerodetelefono','numerotelefono','tel','whatsapp','celular1','telefonocontacto','movil1']);
  const city=idx(['ciudad','municipio','city']),notes=idx(['observaciones','nota','notas','comentarios','barrio','direccion']);
  if(name<0||phone<0)throw Error('El archivo debe tener columnas «nombre» y «telefono» o «celular».');
  const result=[],seen=new Set();let invalid=0,dupes=0;
@@ -275,61 +275,68 @@ function mapCsv(rows){
  if(!result.length)throw Error('No se encontraron teléfonos y nombres válidos.');
  return {result,invalid,dupes};
 }
-let excelLoader=null;
-function loadExcelParser(){
- if(window.ExcelJS)return Promise.resolve(window.ExcelJS);
- if(excelLoader)return excelLoader;
- excelLoader=new Promise((resolve,reject)=>{
-  const tag=document.createElement('script');
-  tag.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
-  tag.integrity='sha512-ggd305P5+Cw/oOst5Mh0Zkm7tvNJmWsAcJV8d+VvOXO2UK7c89pCoRo/Pi/eNJvQeM1AG1M2ae5/6ETpTHFxsA==';
-  tag.crossOrigin='anonymous';
-  tag.onload=()=>window.ExcelJS?resolve(window.ExcelJS):reject(Error('No se pudo inicializar el lector de Excel.'));
-  tag.onerror=()=>reject(Error('No se pudo cargar el lector de Excel. Verifica internet e inténtalo de nuevo.'));
-  document.head.appendChild(tag);
- }).catch(error=>{excelLoader=null;throw error});
- return excelLoader;
-}
-function excelCellText(value){
- if(value===null||value===undefined)return '';
- if(typeof value==='object'){
-  if(Array.isArray(value.richText))return value.richText.map(r=>r.text||'').join('');
-  if(value.result!==undefined&&value.result!==null)return String(value.result);
-  if(value.text!==undefined&&value.text!==null)return String(value.text);
-  if(value instanceof Date)return value.toISOString();
-  return '';
+// XLS/XLSX import: SheetJS is used in the original MIRED360 Call Center.
+// Load it on demand (client-side only) and show explicit diagnostics if the CDN is unavailable.
+let spreadsheetLoader=null;
+function loadSpreadsheetReader(){
+ if(window.XLSX?.read&&window.XLSX?.utils?.sheet_to_json)return Promise.resolve(window.XLSX);
+ if(spreadsheetLoader)return spreadsheetLoader;
+ const urls=[
+  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+  'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+ ];
+ function next(index){
+  return new Promise((resolve,reject)=>{
+   const tag=document.createElement('script');
+   tag.src=urls[index];tag.crossOrigin='anonymous';
+   tag.onload=()=>window.XLSX?.read?resolve(window.XLSX):reject(Error('Se descargó el lector, pero no inició.'));
+   tag.onerror=()=>reject(Error('No se pudo acceder al servidor del lector Excel.'));
+   document.head.appendChild(tag);
+  }).catch(err=>index+1<urls.length?next(index+1):Promise.reject(Error('No se pudo cargar el lector Excel. Verifica la conexión a internet o guarda una copia CSV e inténtalo de nuevo.')));
  }
- return String(value);
+ spreadsheetLoader=next(0).catch(e=>{spreadsheetLoader=null;throw e});
+ return spreadsheetLoader;
+}
+function csvHeadersPresent(row){
+ const headers=(row||[]).map(normalizeHeader);
+ const hasName=headers.some(v=>['nombre','nombres','cliente','fullname','nombrecompleto','razonsocial','nombrecliente','nombreyapellido','nombresyapellidos'].includes(v));
+ const hasPhone=headers.some(v=>['telefono','celular','movil','telefono1','cel','numero','phone','contacto','numerocelular','numerodetelefono','numerotelefono','tel','whatsapp','celular1','telefono_contacto','telefonocontacto','movil1'].includes(v));
+ return hasName&&hasPhone;
+}
+function locateDataHeader(rows){
+ const limit=Math.min(rows.length,15);
+ for(let i=0;i<limit;i++){if(csvHeadersPresent(rows[i]))return rows.slice(i)}
+ return rows;
 }
 async function readImportRows(file){
- if(/\.xlsx$/i.test(file.name)){
-  const Excel=await loadExcelParser();
-  const wb=new Excel.Workbook();
-  await wb.xlsx.load(await file.arrayBuffer());
-  const ws=wb.worksheets.find(x=>x.actualRowCount>1);
-  if(!ws)throw Error('El Excel debe contener encabezados y al menos un contacto.');
-  if(ws.actualRowCount>2002)throw Error('Máximo 2.000 contactos por archivo. Divide el Excel en hojas o archivos más pequeños.');
-  const rows=[];
-  ws.eachRow({includeEmpty:false},row=>{
-   const cells=[];
-   for(let c=1;c<=Math.min(row.cellCount,50);c++)cells.push(excelCellText(row.getCell(c).value).trim());
-   if(cells.some(Boolean))rows.push(cells);
-  });
-  return rows;
+ const extension=(file.name.split('.').pop()||'').toLowerCase();
+ if(['xlsx','xls'].includes(extension)){
+  const XLSX=await loadSpreadsheetReader();
+  let wb;
+  try{
+   wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellText:true,cellDates:false,cellFormula:false});
+  }catch(err){throw Error('No se pudo leer el Excel. Comprueba que no esté protegido con contraseña y que el archivo sea .xlsx o .xls válido.')}
+  for(const name of wb.SheetNames){
+   const ws=wb.Sheets[name];if(!ws)continue;
+   const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:'',blankrows:false});
+   const candidate=locateDataHeader(rows);
+   if(candidate.length>=2&&csvHeadersPresent(candidate[0]))return candidate;
+  }
+  throw Error('No encuentro encabezados «Nombre» y «Teléfono/Celular» en las primeras 15 filas. Revisa los títulos de columnas del Excel.');
  }
- if(/\.(csv|tsv|txt)$/i.test(file.name))return parseCsv(await file.text());
- if(/\.xls$/i.test(file.name))throw Error('El formato Excel antiguo .xls debe guardarse como .xlsx antes de importarlo.');
- throw Error('Formato no compatible. Selecciona un Excel .xlsx o un CSV.');
+ if(['csv','tsv','txt'].includes(extension))return locateDataHeader(parseCsv(await file.text()));
+ throw Error('Archivo no compatible. Usa Excel .xlsx, .xls o CSV.');
 }
 async function importContacts(e){
  e.preventDefault();
  if(!manager()||!checkWrite()||!$('ccImportConsent').checked)return;
  const base=bases.find(x=>x.id===$('ccImportBase').value),file=$('ccImportFile').files?.[0],status=$('ccImportStatus');
  if(!base||base.estado!=='activa'||!file)return core.flash('Selecciona una base activa y un archivo válido.',true);
- if(file.size>2*1024*1024)return core.flash('El archivo supera 2 MB. Divide el Excel o CSV en archivos más pequeños.',true);
+ if(file.size>8*1024*1024){$('ccImportStatus').textContent='El archivo supera 8 MB; divídelo en partes.';return core.flash('Archivo demasiado grande. Máximo 8 MB por importación.',true)}
  $('ccImportSubmit').disabled=true;status.textContent='Validando archivo…';
  try{
   const parsed=mapCsv(await readImportRows(file));
+  status.textContent='Archivo válido: '+parsed.result.length+' contactos; '+parsed.dupes+' repetidos y '+parsed.invalid+' incompletos. Confirma para importar.';
   if(parsed.result.length>2000)throw Error('Máximo 2.000 contactos por importación. Divide el archivo.');
   if(!confirm('Importar hasta '+parsed.result.length+' contactos a «'+base.nombre+'»? Se omitirán los teléfonos que ya existan y los repetidos.'))return;
   status.textContent='Guardando contactos…';
@@ -343,7 +350,12 @@ async function importContacts(e){
   await load();
   status.textContent=saved+' importados · '+duplicates+' repetidos · '+invalid+' inválidos.';
   core.flash(saved+' contactos registrados en la base. Los repetidos no se duplicaron.');
- }catch(err){status.textContent='Error de importación: '+err.message;core.flash(err.message,true)}
+ }catch(err){
+  console.error('MIRED360 Call Center · Importación:',err);
+  const msg=(err?.hint?err.hint+' · ':'')+(err?.message||String(err));
+  status.textContent='No se importaron contactos: '+msg;
+  core.flash('Importación: '+msg,true);
+}
  finally{$('ccImportSubmit').disabled=false}
 }
 function events(){
