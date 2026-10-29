@@ -255,24 +255,58 @@ function parseCsv(text){
  return rows;
 }
 function normalizeHeader(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]/g,'').toLowerCase()}
-function mapCsv(rows){
- if(rows.length<2)throw Error('El archivo no tiene encabezados y contactos.');
- const headers=rows[0].map(normalizeHeader);
- const idx=(names)=>headers.findIndex(x=>names.includes(x));
- const name=idx(['nombre','nombres','cliente','fullname','nombrecompleto','razonsocial','nombrecliente','nombreyapellido','nombresyapellidos']),phone=idx(['telefono','celular','movil','telefono1','cel','numero','phone','contacto','numerocelular','numerodetelefono','numerotelefono','tel','whatsapp','celular1','telefonocontacto','movil1']);
- const city=idx(['ciudad','municipio','city']),notes=idx(['observaciones','nota','notas','comentarios','barrio','direccion']);
- if(name<0||phone<0)throw Error('El archivo debe tener columnas «nombre» y «telefono» o «celular».');
- const result=[],seen=new Set();let invalid=0,dupes=0;
- for(const row of rows.slice(1)){
-  const n=String(row[name]||'').trim(),rawTel=String(row[phone]||'').trim().replace(/[^\d+]/g,'');
-  const digits=rawTel.replace(/\D/g,'');
-  const key=digits.length===12&&digits.startsWith('57')&&digits[2]==='3'?digits.slice(2):digits;
-  const tel=key;
-  if(n.length<2||key.length<7||key.length>18){invalid++;continue}
-  if(seen.has(key)){dupes++;continue}
-  seen.add(key);result.push({nombre:n.slice(0,150),telefono:tel,ciudad:city>=0?String(row[city]||'').slice(0,110):'',observaciones:notes>=0?String(row[notes]||'').slice(0,1000):''});
+const ccHeaderPatterns={
+ name:/^(nombre|nombres|cliente|usuario|titular|contacto|name|full ?name|razonsocial|nom)(s|completo|delcliente|yapellidos|apellido|apellidos|1|2|contacto|titular)?$/,
+ phone:/(celular|telefono|telefonico|movil|whatsapp|msisdn|phone|numero(?:de)?(?:celular|telefono|movil)|numcel|numtel|telef|cel|movil1)/,
+ city:/(ciudad|municipio|city|localidad|poblacion)/,
+ notes:/(observacion|comentario|detalle|nota|direccion|barrio|referencia)/
+};
+function headerMatch(value,type){
+ const t=normalizeHeader(value);if(!t)return false;
+ if(type==='name')return ccHeaderPatterns.name.test(t)||((t.includes('nombre')||t.includes('apellido'))&&!t.includes('archivo'));
+ return ccHeaderPatterns[type].test(t);
+}
+function inferColumn(head,type){
+ let idx=head.findIndex(v=>headerMatch(v,type));
+ if(idx>=0)return idx;
+ if(type==='phone'){
+  const alias=head.map(normalizeHeader);
+  idx=alias.findIndex(v=>/^(numero|tel|cel|linea|contacto|numerodecontacto|numeromovil)$/.test(v));
  }
- if(!result.length)throw Error('No se encontraron teléfonos y nombres válidos.');
+ return idx;
+}
+function suggestHeader(rows){
+ for(let i=0;i<Math.min(160,rows.length);i++){
+  const row=rows[i]||[];
+  if(inferColumn(row,'phone')>=0&&inferColumn(row,'name')>=0)return i;
+ }
+ for(let i=0;i<Math.min(160,rows.length);i++){
+  if(inferColumn(rows[i]||[],'phone')>=0)return i;
+ }
+ return rows.length?0:-1;
+}
+function normalizedPhone(value){
+ const text=String(value??'').replace(/[^\d+]/g,''),digits=text.replace(/\D/g,'');
+ return digits.length===12&&digits.startsWith('57')&&digits[2]==='3'?digits.slice(2):digits;
+}
+function prepareContacts(rows,columns,headerIndex){
+ const result=[],seen=new Set();
+ let invalid=0,dupes=0;
+ const start=headerIndex>=0?headerIndex+1:0;
+ for(const row of rows.slice(start)){
+  if(!row||!row.some(x=>String(x??'').trim()))continue;
+  const phone=normalizedPhone(row[columns.phone]);
+  let name=columns.name>=0?String(row[columns.name]??'').trim():'';
+  if(!name&&phone.length>=7)name='Contacto '+phone.slice(-4);
+  if(name.length<2||phone.length<7||phone.length>18){invalid++;continue}
+  if(seen.has(phone)){dupes++;continue}
+  seen.add(phone);
+  result.push({
+   nombre:name.slice(0,150),telefono:phone,
+   ciudad:columns.city>=0?String(row[columns.city]??'').trim().slice(0,110):'',
+   observaciones:columns.notes>=0?String(row[columns.notes]??'').trim().slice(0,1000):''
+  });
+ }
  return {result,invalid,dupes};
 }
 // XLS/XLSX import: SheetJS is used in the original MIRED360 Call Center.
@@ -327,36 +361,165 @@ async function readImportRows(file){
  if(['csv','tsv','txt'].includes(extension))return locateDataHeader(parseCsv(await file.text()));
  throw Error('Archivo no compatible. Usa Excel .xlsx, .xls o CSV.');
 }
+let ccImportSource=null,ccImportSeq=0;
+async function readImportSheets(file){
+ const extension=(file.name.split('.').pop()||'').toLowerCase();
+ if(['xlsx','xls'].includes(extension)){
+  const XLSX=await loadSpreadsheetReader();
+  let wb;
+  try{wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellText:true,cellDates:false,cellFormula:false})}
+  catch(e){throw Error('El Excel no se pudo abrir. Comprueba que no esté protegido ni dañado.')}
+  const sheets=[];
+  for(const name of wb.SheetNames){
+   const ws=wb.Sheets[name];if(!ws)continue;
+   const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:'',blankrows:false});
+   if(rows.length)sheets.push({name,rows});
+  }
+  if(!sheets.length)throw Error('El Excel no contiene hojas con datos.');
+  return sheets;
+ }
+ if(['csv','tsv','txt'].includes(extension)){
+  const rows=parseCsv(await file.text());
+  if(!rows.length)throw Error('El archivo está vacío.');
+  return [{name:'Datos del archivo',rows}];
+ }
+ throw Error('Formato no compatible. Selecciona Excel (.xlsx o .xls), CSV o TXT.');
+}
+function ccSelectOptions(select,items,selected){
+ select.innerHTML=items.map(x=>'<option value="'+esc(String(x.value))+'">'+esc(x.label)+'</option>').join('');
+ if(items.some(x=>String(x.value)===String(selected)))select.value=String(selected);
+}
+function ccCurrentSheet(){
+ return ccImportSource?.sheets?.[Number($('ccImportSheet').value)]||null;
+}
+function ccHeaderIndex(){return Number($('ccImportHeaderRow').value)}
+function ccColumnOptions(rows,header){
+ const length=Math.min(65,Math.max(1,...rows.slice(0,Math.min(rows.length,40)).map(r=>r.length)));
+ const labels=header>=0?rows[header]||[]:rows[0]||[];
+ const exampleIndex=Math.min(rows.length-1,header>=0?header+1:0);
+ const examples=rows[exampleIndex]||[];
+ const opts=[{value:-1,label:'No disponible / usar automático'}];
+ for(let i=0;i<length;i++){
+  const c=i+1;let n=c;let letter='';
+  while(n>0){n--;letter=String.fromCharCode(65+n%26)+letter;n=Math.floor(n/26)}
+  const title=header>=0?String(labels[i]??'').trim().slice(0,55):'';
+  const example=String(examples[i]??'').trim().slice(0,36);
+  opts.push({value:i,label:'Columna '+letter+(title?' · '+title:'')+(example?' (ej.: '+example+')':'')});
+ }
+ return opts;
+}
+function ccMapValues(){
+ return {name:Number($('ccImportNameCol').value),phone:Number($('ccImportPhoneCol').value),
+ city:Number($('ccImportCityCol').value),notes:Number($('ccImportNotesCol').value)};
+}
+function ccResetColumns(){
+ const sheet=ccCurrentSheet();if(!sheet)return;
+ const head=ccHeaderIndex(),header=head>=0?sheet.rows[head]||[]:[];
+ const options=ccColumnOptions(sheet.rows,head);
+ for(const [type,id] of [['name','ccImportNameCol'],['phone','ccImportPhoneCol'],['city','ccImportCityCol'],['notes','ccImportNotesCol']]){
+  ccSelectOptions($(id),options,inferColumn(header,type));
+ }
+ ccRenderImportPreview();
+}
+function ccRenderImportPreview(){
+ if(!ccImportSource)return;
+ const sheet=ccCurrentSheet();if(!sheet)return;
+ const columns=ccMapValues(),head=ccHeaderIndex(),info=$('ccImportPreviewInfo');
+ $('ccImportSubmit').disabled=true;
+ if(columns.phone<0){
+  info.textContent='Selecciona cuál columna contiene los teléfonos. Puedes dejar el nombre en «No disponible» si el archivo solo tiene números.';
+  $('ccImportPreviewRows').innerHTML='';
+  return;
+ }
+ if([columns.name,columns.city,columns.notes].includes(columns.phone)){
+  info.textContent='La columna de teléfono debe ser distinta de las otras columnas seleccionadas.';
+  $('ccImportPreviewRows').innerHTML='';
+  return;
+ }
+ const parsed=prepareContacts(sheet.rows,columns,head);
+ const count=parsed.result.length;
+ info.textContent='Se detectaron '+count+' contactos válidos, '+parsed.dupes+' repetidos y '+parsed.invalid+' filas incompletas. Revisa esta vista previa antes de importar.';
+ $('ccImportPreviewRows').innerHTML=parsed.result.slice(0,5).map(x=>
+  '<tr><td>'+esc(x.nombre)+'</td><td>•••• '+esc(x.telefono.slice(-4))+'</td><td>'+esc(x.ciudad)+'</td></tr>'
+ ).join('')||empty(3,'No hay contactos válidos con estas columnas. Cambia la selección.');
+ if(count>2000)info.textContent+=' El máximo es 2.000 contactos por archivo. Divide el Excel.';
+ $('ccImportSubmit').disabled=count===0||count>2000;
+}
+function ccChangeSheet(){
+ const sheet=ccCurrentSheet();if(!sheet)return;
+ const proposed=suggestHeader(sheet.rows),limit=Math.min(sheet.rows.length,220),options=[
+  {value:-1,label:'Mi archivo no tiene encabezados (la primera fila es un contacto)'}
+ ];
+ for(let i=0;i<limit;i++){
+  const row=sheet.rows[i]||[];
+  const glimpse=row.filter(x=>String(x??'').trim()).slice(0,3).map(x=>String(x).slice(0,32)).join(' | ');
+  options.push({value:i,label:'Fila '+(i+1)+(glimpse?' · '+glimpse:'')});
+ }
+ ccSelectOptions($('ccImportHeaderRow'),options,proposed);
+ ccResetColumns();
+}
+async function ccReadFile(){
+ const file=$('ccImportFile').files?.[0],request=++ccImportSeq;
+ ccImportSource=null;$('ccImportMapping').classList.add('hidden');
+ $('ccImportSubmit').disabled=true;
+ if(!file){$('ccImportStatus').textContent='';return}
+ if(file.size>8*1024*1024){$('ccImportStatus').textContent='El archivo supera 8 MB. Divídelo en partes.';return}
+ $('ccImportStatus').textContent='Leyendo '+file.name+' y preparando vista previa...';
+ try{
+  const sheets=await readImportSheets(file);
+  if(request!==ccImportSeq)return;
+  ccImportSource={file,sheets};
+  const options=sheets.map((sheet,i)=>({value:i,label:sheet.name+' ('+sheet.rows.length+' filas)'}));
+  const selected=sheets.findIndex(sheet=>suggestHeader(sheet.rows)>=0&&inferColumn(sheet.rows[suggestHeader(sheet.rows)]||[],'phone')>=0);
+  ccSelectOptions($('ccImportSheet'),options,Math.max(0,selected));
+  $('ccImportMapping').classList.remove('hidden');
+  ccChangeSheet();
+  $('ccImportStatus').textContent='Archivo leído. Selecciona las columnas y comprueba la vista previa antes de importar.';
+ }catch(err){
+  if(request!==ccImportSeq)return;
+  $('ccImportStatus').textContent='Error leyendo archivo: '+(err?.message||String(err));
+  core.flash(err?.message||String(err),true);
+ }
+}
 async function importContacts(e){
  e.preventDefault();
  if(!manager()||!checkWrite()||!$('ccImportConsent').checked)return;
- const base=bases.find(x=>x.id===$('ccImportBase').value),file=$('ccImportFile').files?.[0],status=$('ccImportStatus');
- if(!base||base.estado!=='activa'||!file)return core.flash('Selecciona una base activa y un archivo válido.',true);
- if(file.size>8*1024*1024){$('ccImportStatus').textContent='El archivo supera 8 MB; divídelo en partes.';return core.flash('Archivo demasiado grande. Máximo 8 MB por importación.',true)}
- $('ccImportSubmit').disabled=true;status.textContent='Validando archivo…';
+ const base=bases.find(x=>x.id===$('ccImportBase').value),status=$('ccImportStatus');
+ const sheet=ccCurrentSheet();
+ if(!base||base.estado!=='activa')return core.flash('Selecciona una base activa.',true);
+ if(!ccImportSource||!sheet)return core.flash('Carga el archivo y revisa primero las columnas.',true);
+ const columns=ccMapValues();
+ if(columns.phone<0)return core.flash('Indica la columna del teléfono.',true);
+ if([columns.name,columns.city,columns.notes].includes(columns.phone))return core.flash('El teléfono debe tener su propia columna.',true);
+ const parsed=prepareContacts(sheet.rows,columns,ccHeaderIndex());
+ if(!parsed.result.length)return core.flash('No hay números válidos con las columnas seleccionadas.',true);
+ if(parsed.result.length>2000)return core.flash('Máximo 2.000 contactos por archivo. Divide el Excel.',true);
+ if(!confirm('Importar '+parsed.result.length+' contactos a «'+base.nombre+'»? Verifica que cuentas con autorización para contactar a estas personas.'))return;
+ const request=ccImportSeq;
+ $('ccImportSubmit').disabled=true;status.textContent='Guardando '+parsed.result.length+' contactos...';
  try{
-  const parsed=mapCsv(await readImportRows(file));
-  status.textContent='Archivo válido: '+parsed.result.length+' contactos; '+parsed.dupes+' repetidos y '+parsed.invalid+' incompletos. Confirma para importar.';
-  if(parsed.result.length>2000)throw Error('Máximo 2.000 contactos por importación. Divide el archivo.');
-  if(!confirm('Importar hasta '+parsed.result.length+' contactos a «'+base.nombre+'»? Se omitirán los teléfonos que ya existan y los repetidos.'))return;
-  status.textContent='Guardando contactos…';
   const {data,error}=await db.rpc('saas_cc_importar_contactos',{
    p_org:orgId,p_base:base.id,p_registros:parsed.result
   });
   if(error)throw error;
-  const saved=Number(data?.importados||0),duplicates=Number(data?.repetidos||0)+parsed.dupes;
-  const invalid=Number(data?.invalidos||0)+parsed.invalid;
-  selected=base.id;$('ccImportForm').reset();
+  const saved=Number(data?.importados||0),duplicates=Number(data?.repetidos||0)+parsed.dupes,invalid=Number(data?.invalidos||0)+parsed.invalid;
+  selected=base.id;
   await load();
-  status.textContent=saved+' importados · '+duplicates+' repetidos · '+invalid+' inválidos.';
-  core.flash(saved+' contactos registrados en la base. Los repetidos no se duplicaron.');
+  status.textContent=saved+' contactos nuevos guardados · '+duplicates+' repetidos · '+invalid+' inválidos.';
+  if(request===ccImportSeq){
+   ccImportSeq++;ccImportSource=null;
+   $('ccImportForm').reset();$('ccImportMapping').classList.add('hidden');
+  }
+  core.flash(saved?('Se guardaron '+saved+' contactos correctamente.'):('No se agregaron contactos nuevos: '+duplicates+' repetidos.'));
  }catch(err){
-  console.error('MIRED360 Call Center · Importación:',err);
+  console.error('MIRED360 Call Center import:',err);
   const msg=(err?.hint?err.hint+' · ':'')+(err?.message||String(err));
-  status.textContent='No se importaron contactos: '+msg;
+  status.textContent='Error al guardar: '+msg;
   core.flash('Importación: '+msg,true);
-}
- finally{$('ccImportSubmit').disabled=false}
+ }finally{
+  if(ccImportSource)ccRenderImportPreview();
+  else $('ccImportSubmit').disabled=true;
+ }
 }
 function events(){
  $('ccAssignShortcut').addEventListener('click',()=>{if(!manager())return core.flash('Solo el propietario o administrador puede asignar bases.',true);$('ccAssignCard').scrollIntoView({behavior:'smooth',block:'start'});$('ccAssignBase').focus();});
@@ -365,6 +528,11 @@ function events(){
  $('ccExtForm').addEventListener('submit',saveExtension);
  $('ccAssignForm').addEventListener('submit',assignBase);
  $('ccImportForm').addEventListener('submit',importContacts);
+ $('ccImportFile').addEventListener('change',ccReadFile);
+ $('ccImportSheet').addEventListener('change',ccChangeSheet);
+ $('ccImportHeaderRow').addEventListener('change',ccResetColumns);
+ for(const id of ['ccImportNameCol','ccImportPhoneCol','ccImportCityCol','ccImportNotesCol'])
+  $(id).addEventListener('change',ccRenderImportPreview);
  $('ccManageForm').addEventListener('submit',submitManage);
  $('ccConvertForm').addEventListener('submit',convertSale);
  $('ccWorkBase').addEventListener('change',e=>{selected=e.target.value;loadContacts()});
