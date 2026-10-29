@@ -3,9 +3,9 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1b36">
 <meta name="description" content="MIRED360 CRM Empresas: gestiona prospectos, ventas, seguimientos y colaboradores de tu empresa.">
 <title>MIRED360 CRM Empresas · Plataforma de gestión</title>
-<link rel="stylesheet" href="saas/empresas.css?v=20261029-1">
+<link rel="stylesheet" href="saas/empresas.css?v=20261029-6">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
-<script defer src="saas/empresas.js?v=20261029-5"></script>
+<script defer src="saas/empresas.js?v=20261029-6"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -13,6 +13,14 @@
     <span class="eyebrow">LA GESTIÓN DE TU NEGOCIO</span>
     <h1 id="authHeading">Bienvenido a MIRED360</h1>
     <p id="authSubheading">Ingresa para trabajar con el CRM exclusivo de tu empresa.</p>
+    <div id="inviteModeBox" class="invite-mode-box hidden">
+      <strong>Te invitaron a un equipo comercial</strong>
+      <p>Si ya utilizaste este correo en MIRED360, selecciona «Ya tengo cuenta». No esperes otro mensaje de confirmación.</p>
+      <div class="invite-mode-actions">
+        <button id="inviteLogin" type="button" class="btn primary">Ya tengo cuenta · Ingresar</button>
+        <button id="inviteRegister" type="button" class="btn secondary">Es mi primera vez</button>
+      </div>
+    </div>
     <form id="authForm">
       <label>Correo electrónico<input id="authEmail" type="email" autocomplete="email" placeholder="tu@empresa.com" required></label>
       <label>Contraseña<input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="Tu contraseña" required></label>
