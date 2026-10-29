@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="saas/empresas.css?v=20261029-9">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="saas/empresas.js?v=20261029-11"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-2"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-3"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -152,6 +152,14 @@
     <label class="wide">Observaciones<textarea id="ccManageNotes" rows="3" maxlength="2000" placeholder="Resultado de la gestión"></textarea></label>
     <div class="wide"><button id="ccManageSave" type="submit" class="btn primary">Guardar gestión</button></div>
    </form></div>
+   <div class="card"><h2>Pasar una venta al CRM</h2><p class="muted">Solo se pueden convertir contactos con resultado Venta. Se crea un prospecto comercial real sin duplicar el registro.</p>
+    <form id="ccConvertForm" class="form-grid">
+     <label>Venta seleccionada<select id="ccConvertContact" required><option value="">Selecciona una venta desde la tabla</option></select></label>
+     <label>Producto o servicio vendido<input id="ccConvertProduct" maxlength="110" required minlength="3" placeholder="Ej. Internet 500 megas"></label>
+     <label>Valor mensual (COP)<input id="ccConvertValue" type="number" min="0" max="100000000" step="1" value="0" required></label>
+     <div class="wide"><button type="submit" id="ccConvertSave" class="btn primary">Registrar venta en el CRM</button></div>
+    </form>
+   </div>
    <div class="card"><h2>Últimas gestiones</h2><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Contacto</th><th>Asesor</th><th>Resultado</th><th>Próximo contacto</th><th>Detalle</th></tr></thead><tbody id="ccHistoryRows"></tbody></table></div></div>
   </section>
   <section id="view-llamadas" class="view">
