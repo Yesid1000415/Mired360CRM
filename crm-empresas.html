@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="saas/empresas.css?v=20261029-18">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="saas/empresas.js?v=20261029-18"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-19"></script><script defer src="saas/supervision.js?v=20261029-19"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-20"></script><script defer src="saas/supervision.js?v=20261029-19"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -157,13 +157,17 @@
    <div class="card">
     <div class="page-head"><div><h2>Contactos asignados</h2><p class="muted">Selecciona una base. Registra el resultado de cada llamada y su seguimiento.</p></div>
     <select id="ccWorkBase" aria-label="Seleccionar base de trabajo"></select></div>
-    <div class="filters"><input id="ccSearch" type="search" placeholder="Buscar nombre o teléfono"><select id="ccStateFilter"><option value="">Todos los estados</option><option>Pendiente</option><option>Sin respuesta</option><option>Contactado</option><option>Interesado</option><option>Seguimiento</option><option>Venta</option><option>No interesado</option></select></div>
+    <div class="cc-workflow-help"><strong>Agenda del asesor:</strong> revisa seguimientos pendientes, atiende al cliente y registra el resultado. Solo las ventas reales deben pasarse al CRM.</div>
+    <div id="ccAgendaBar" class="cc-agenda-bar" aria-label="Agenda de la base"></div>
+    <div class="filters"><input id="ccSearch" type="search" placeholder="Buscar nombre o teléfono"><select id="ccStateFilter"><option value="">Todos los estados</option><option>Pendiente</option><option>Sin respuesta</option><option>Contactado</option><option>Interesado</option><option>Seguimiento</option><option>Venta</option><option>No interesado</option></select>
+    <select id="ccAgendaFilter" aria-label="Filtrar seguimientos"><option value="">Toda la agenda</option><option value="vencidos">Seguimientos vencidos</option><option value="hoy">Para hoy</option><option value="proximos">Próximos 7 días</option><option value="interesados">Interesados sin fecha</option><option value="pendientes">Sin gestionar</option></select></div>
     <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Teléfono</th><th>Ciudad</th><th>Estado</th><th>Próximo contacto</th><th>Gestión</th></tr></thead><tbody id="ccContactRows"></tbody></table></div><div class="cc-pagination" id="ccPagination"></div>
    </div>
    <div class="card"><h2>Registrar resultado</h2><form id="ccManageForm" class="form-grid">
     <label>Contacto seleccionado<select id="ccManageContact" required><option value="">Selecciona un contacto</option></select></label>
     <label>Resultado<select id="ccManageResult"><option>Contactado</option><option>Sin respuesta</option><option>Interesado</option><option>Seguimiento</option><option>Venta</option><option>No interesado</option></select></label>
     <label>Fecha próximo contacto<input id="ccManageNext" type="date"></label>
+    <p id="ccManageHint" class="cc-workflow-hint wide" role="status">Selecciona un contacto para registrar una gestión.</p>
     <label class="wide">Observaciones<textarea id="ccManageNotes" rows="3" maxlength="2000" placeholder="Resultado de la gestión"></textarea></label>
     <div class="wide"><button id="ccManageSave" type="submit" class="btn primary">Guardar gestión</button></div>
    </form></div>
