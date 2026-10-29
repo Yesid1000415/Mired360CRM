@@ -106,3 +106,19 @@
 .cc-sup-clarification{font-size:12px;color:#5c7190;line-height:1.5}
 @media(max-width:1200px){.cc-sup-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cc-sup-split{grid-template-columns:1fr}}
 @media(max-width:640px){.cc-sup-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cc-sup-metric{padding:12px}.cc-sup-metric strong{font-size:25px}.cc-sup-filters input{width:100%}.cc-sup-filters label{flex:1 1 120px}.cc-sup-periods{width:100%}.cc-sup-periods .btn{flex:1 1 auto;padding:8px}}
+
+/* Agenda operativa: seguimientos reales, sin automatizar llamadas. */
+.cc-workflow-help{border:1px solid #cde0f2;background:#f1f7fe;padding:13px 15px;border-radius:12px;font-size:12px;color:#3b5877;margin:12px 0;line-height:1.5}
+.cc-workflow-hint{font-size:12px;color:#496886;margin:0;line-height:1.5}
+.cc-agenda-bar{display:flex;flex-wrap:wrap;gap:9px;align-items:stretch;margin-bottom:14px}
+.cc-agenda-chip{border:1px solid #d0dfef;background:#fff;border-radius:11px;padding:10px 13px;display:flex;gap:12px;align-items:center;justify-content:space-between;min-height:45px;color:#31557e;cursor:pointer;font-size:12px;flex:1 1 160px}
+.cc-agenda-chip b{font-size:20px;color:#184979}
+.cc-agenda-chip:hover{background:#f3f8fe}
+.cc-agenda-chip.active{background:#e1eefc;border-color:#84b4e5}
+.cc-agenda-clear{font-size:12px;border:0;background:transparent;color:#2264a6;cursor:pointer;padding:8px}
+.cc-due{display:inline-block;font-size:12px;white-space:nowrap}
+.cc-due-hoy{color:#986700;font-weight:750}
+.cc-due-vencidos{color:#ad342b;font-weight:750}
+.cc-due-proximos{color:#16618b}
+.cc-due-posterior{color:#59738b}
+@media(max-width:600px){.cc-agenda-chip{flex-basis:calc(50% - 5px);padding:9px}.cc-agenda-chip b{font-size:18px}}
