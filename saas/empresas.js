@@ -28,7 +28,11 @@ function authUI(mode){
  $('authPassword').autocomplete=mode==='register'?'new-password':'current-password';
  const names={login:['Bienvenido a MIRED360','Ingresa para administrar la información de tu empresa.','Ingresar a mi empresa'],register:['Empieza a organizar tu negocio','Crea tu cuenta y configura una empresa con prueba de 14 días.','Crear cuenta'],recover:['Recuperar contraseña','Recibirás un enlace para actualizarla.','Enviar enlace'],update:['Cambiar contraseña','Escribe una nueva contraseña para tu cuenta.','Guardar contraseña']};
  const t=names[mode]||names.login;
- $('authHeading').textContent=t[0];$('authSubheading').textContent=t[1];$('authSubmit').textContent=t[2];
+ $('authHeading').textContent=t[0];
+ $('authSubheading').textContent=t[1];
+ if(invitationToken()&&mode==='login')$('authSubheading').textContent='Te invitaron a colaborar en una empresa. Si ya tienes cuenta en MIRED360, ingresa con tu correo y tu contraseña; no necesitas crear otra.';
+ if(invitationToken()&&mode==='register')$('authSubheading').textContent='Solo crea una cuenta si nunca te registraste en MIRED360. Si ya tienes una cuenta, selecciona «Volver a ingresar».';
+ $('authSubmit').textContent=t[2];
  $('authSwitch').textContent=mode==='login'?'Crear cuenta':'Volver a ingresar';
  $('authReset').classList.toggle('hidden',mode==='recover'||mode==='update');
  $('authEmail').closest('label').classList.toggle('hidden',mode==='update');
@@ -62,7 +66,10 @@ async function onAuthSubmit(e){
    const {data,error}=await db.auth.signUp({email,password,options:{emailRedirectTo:confirmUrl}});
    if(error)throw error;
    if(data.session){await bootstrap()}
-   else{setAuthMessage('Cuenta registrada. Revisa tu correo y confirma tu dirección antes de ingresar.',true);authUI('login');setAuthMessage('Revisa tu correo para confirmar la cuenta y luego ingresa.',true)}
+   else{
+    authUI('login');
+    setAuthMessage('Si es tu primera cuenta, revisa el correo de confirmación y la carpeta de spam. Si ya estabas registrado, no necesitas otro correo: ingresa con tu contraseña existente. Si no la recuerdas, elige «Olvidé mi contraseña».',true);
+   }
   }else{
    const {error}=await db.auth.signInWithPassword({email,password});
    if(error)throw error;
