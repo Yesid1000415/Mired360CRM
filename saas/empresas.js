@@ -163,7 +163,10 @@ async function enterOrg(){
  $('settingsForm').querySelectorAll('input,button').forEach(el=>el.disabled=!isOwner());
  $('subscriptionDetails').innerHTML='<p><strong>Plan actual:</strong> '+escapeHTML(org.plan)+'</p><p><strong>Estado:</strong> '+escapeHTML(org.estado_suscripcion)+'</p><p><strong>Fin de prueba:</strong> '+dateFmt(org.prueba_hasta)+'</p><p><strong>Suscripción hasta:</strong> '+dateFmt(org.vigente_hasta)+'</p>';
  if(window.MiredSaasOps)window.MiredSaasOps.reset();
- show('saasApp');await Promise.all([loadLeads(),loadTeam()]);if(window.MiredSaasOps)await window.MiredSaasOps.load();navigate('dashboard');
+ if(window.MiredSaasCallCenter)window.MiredSaasCallCenter.reset();
+ show('saasApp');await Promise.all([loadLeads(),loadTeam()]);if(window.MiredSaasOps)await window.MiredSaasOps.load();
+ if(window.MiredSaasCallCenter)await window.MiredSaasCallCenter.load();
+ navigate('dashboard');
 }
 async function loadLeads(){
  if(!org)return;
@@ -222,7 +225,10 @@ async function loadTeam(){
  }
 }
 function navigate(page){
- if(!$('view-'+page))return;activePage=page;
+ if(!$('view-'+page))return;
+ const gated={sucursales:'sucursales',campanas:'campanas',llamadas:'llamadas',callcenter:'llamadas'};
+ if(gated[page]&&window.MiredSaasOps&&!window.MiredSaasOps.active(gated[page]))return flash('El módulo no está habilitado.',true);
+ activePage=page;
  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+page));
  document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
  document.querySelectorAll('[data-mobile]').forEach(b=>b.classList.toggle('active',b.dataset.mobile===page));
