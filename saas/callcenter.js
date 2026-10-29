@@ -175,7 +175,13 @@ function renderContacts(){
  const slice=rows.slice(page*PAGE,(page+1)*PAGE);
  $('ccContactRows').innerHTML=slice.map(c=>{
   const number=c.telefono.replace(/[^\d+]/g,'');
-  return '<tr><td><b>'+esc(c.nombre)+'</b></td><td>'+esc(c.telefono)+'</td><td>'+esc(c.ciudad)+'</td><td>'+esc(c.estado)+'</td><td>'+(c.proxima_llamada?'<span class="cc-due cc-due-'+dueType(c,today)+'">'+esc(c.proxima_llamada)+(dueType(c,today)==='hoy'?' · Hoy':dueType(c,today)==='vencidos'?' · Vencido':'')+'</span>':'—')+'</td><td class="cc-actions"><a class="btn secondary" href="tel:'+encodeURIComponent(number)+'">Llamar</a> <button type="button" class="btn primary" data-cc-manage="'+c.id+'">Gestionar</button> '+(c.estado==='Venta'?(c.prospecto_id?'<span class="badge ok">En CRM</span>':'<button type="button" class="btn secondary" data-cc-convert="'+c.id+'">Pasar al CRM</button>'):'')+'</td></tr>'
+  return '<tr><td><b>'+esc(c.nombre)+'</b></td><td>'+esc(c.telefono)+'</td><td>'+esc(c.ciudad)+'</td><td>'+esc(c.estado)+'</td><td>'+(c.proxima_llamada?'<span class="cc-due cc-due-'+dueType(c,today)+'">'+esc(c.proxima_llamada)+(dueType(c,today)==='hoy'?' · Hoy':dueType(c,today)==='vencidos'?' · Vencido':'')+'</span>':'—')+'</td><td class="cc-actions"><a class="btn secondary" href="tel:'+encodeURIComponent(number)+'">Llamar</a> '+
+  (c.prospecto_id?'<span class="badge ok">En CRM</span>':
+   '<button type="button" class="btn primary" data-cc-manage="'+c.id+'">Gestionar</button> '+
+   (['Pendiente','Contactado','Sin respuesta'].includes(c.estado)?'<button type="button" class="btn secondary" data-cc-interested="'+c.id+'">Interesado</button> ': '')+
+   (['Interesado','Seguimiento'].includes(c.estado)?'<button type="button" class="btn secondary" data-cc-follow="'+c.id+'">Agendar</button> ': '')+
+   (c.estado==='Venta'?'<button type="button" class="btn secondary" data-cc-convert="'+c.id+'">Pasar al CRM</button>':'')
+  )+'</td></tr>'
  }).join('')||empty(6,'No hay contactos disponibles con este filtro.');
  $('ccPagination').innerHTML='<span>'+rows.length+' contactos · Página '+(page+1)+' / '+(maxPage+1)+'</span> '+
  '<button class="btn secondary" type="button" data-cc-page="-1" '+(!page?'disabled':'')+'>Anterior</button> '+
@@ -223,14 +229,17 @@ async function toggleBase(id){
  if(error)return core.flash(error.message,true);
  await load();core.flash('Base '+(status==='activa'?'reactivada.':'pausada.'));
 }
-function manageContact(id){
+function manageContact(id,desired){
  const c=contacts.find(x=>x.id===id);if(!c)return;
+ if(c.prospecto_id)return core.flash('Esta venta ya está en el CRM. Continúa desde Prospectos.',true);
  $('ccManageContact').innerHTML=option('', 'Selecciona un contacto', '')+option(c.id,c.nombre,c.id);
- $('ccManageResult').value=c.estado==='Pendiente'?'Contactado':c.estado;
+ $('ccManageResult').value=desired|| (c.estado==='Pendiente'?'Contactado':c.estado);
  $('ccManageNext').value=c.proxima_llamada||'';
  $('ccManageNotes').value=c.observaciones||'';
  updateManageHint();
- $('ccManageSave').scrollIntoView({behavior:'smooth',block:'center'});
+ $('ccManageForm').scrollIntoView({behavior:'smooth',block:'start'});
+ if(['Interesado','Seguimiento'].includes($('ccManageResult').value))$('ccManageNext').focus();
+ else $('ccManageNotes').focus();
 }
 async function submitManage(e){
  e.preventDefault();if(!checkWrite())return;
@@ -599,11 +608,13 @@ function events(){
  $('ccManageResult').addEventListener('change',updateManageHint);
  $('ccManageContact').addEventListener('change',updateManageHint);
  document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-cc-base]'),m=e.target.closest('[data-cc-manage]'),p=e.target.closest('[data-cc-page]'),v=e.target.closest('[data-cc-convert]'),toggle=e.target.closest('[data-cc-toggle]'),assign=e.target.closest('[data-cc-assign-base]'),agenda=e.target.closest('[data-cc-agenda]');
+  const b=e.target.closest('[data-cc-base]'),m=e.target.closest('[data-cc-manage]'),p=e.target.closest('[data-cc-page]'),v=e.target.closest('[data-cc-convert]'),toggle=e.target.closest('[data-cc-toggle]'),assign=e.target.closest('[data-cc-assign-base]'),agenda=e.target.closest('[data-cc-agenda]'),interest=e.target.closest('[data-cc-interested]'),follow=e.target.closest('[data-cc-follow]');
   if(agenda){$('ccAgendaFilter').value=agenda.dataset.ccAgenda;page=0;renderContacts();}
   if(assign&&manager()){const id=assign.dataset.ccAssignBase;$('ccAssignBase').value=id;refreshAssignmentOptions();$('ccAssignCard').scrollIntoView({behavior:'smooth',block:'start'});$('ccAssignAdvisor').focus();}
   if(b){selected=b.dataset.ccBase;$('ccWorkBase').value=selected;loadContacts();$('ccSearch').scrollIntoView({behavior:'smooth'})}
   if(m)manageContact(m.dataset.ccManage);
+  if(interest)manageContact(interest.dataset.ccInterested,'Interesado');
+  if(follow)manageContact(follow.dataset.ccFollow,'Seguimiento');
   if(v)selectConvert(v.dataset.ccConvert);
   if(toggle)toggleBase(toggle.dataset.ccToggle);
   if(p){page+=Number(p.dataset.ccPage);renderContacts()}
