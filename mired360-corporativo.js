@@ -92,6 +92,14 @@ function init(){
   var userLabel=document.getElementById('userLabel');
   function updateAvatar(){var email=(userLabel&&userLabel.textContent||'').trim(),avatar=document.getElementById('m360Avatar');if(avatar)avatar.textContent=email?email[0].toUpperCase():'M'}
   if(userLabel){new MutationObserver(updateAvatar).observe(userLabel,{childList:true,characterData:true,subtree:true});updateAvatar()}
+  var loginCard=document.querySelector('#loginPage .login-card');
+  if(loginCard&&!loginCard.querySelector('.m360-demo-link')){
+    var demoLink=document.createElement('a');
+    demoLink.className='m360-demo-link';demoLink.href='demo-crm.html';
+    demoLink.target='_blank';demoLink.rel='noopener noreferrer';
+    demoLink.textContent='Ver demostración comercial (datos ficticios)';
+    loginCard.appendChild(demoLink);
+  }
   var dash=document.getElementById('dashboard');
   if(dash){
     var hero=document.createElement('div');hero.className='m360-hero';
