@@ -1,0 +1,63 @@
+/* MIRED360 · Sistema visual compartido entre módulos operativos */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap');
+html{scroll-padding-top:78px}
+body.m360-module-mode{
+  --n:#091a35;--navy:#0f2b51;--blue:#4268f5;--b:#4268f5;--c:#20c2dc;--cyan:#20c2dc;
+  --bg:#f4f7fb;--line:#e2e9f3;--l:#e2e9f3;--muted:#687c96;--m:#687c96;
+  color:#1a304e;font-family:'DM Sans','Segoe UI',Arial,sans-serif;background:#f4f7fb;
+  -webkit-font-smoothing:antialiased;
+}
+body.m360-module-mode *{box-sizing:border-box}
+body.m360-module-mode .m360-modulebar{
+  position:sticky;top:0;z-index:79;display:flex;align-items:center;justify-content:space-between;
+  padding:11px clamp(12px,2.2vw,28px);gap:12px;color:white;
+  background:linear-gradient(115deg,#0a1c37,#133864);border-bottom:1px solid #254363;
+  box-shadow:0 7px 20px #091a351e;min-height:64px;
+}
+body.m360-module-mode .m360-modulebrand{display:flex;align-items:center;gap:12px;min-width:0}
+body.m360-module-mode .m360-modulemark{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;border-radius:11px;background:linear-gradient(135deg,#4f70ff,#16bbd5);font:800 21px Manrope,sans-serif;color:white;box-shadow:0 5px 15px #197fe533}
+body.m360-module-mode .m360-modulebrand b{display:block;font:800 14px Manrope,sans-serif;color:#fff;letter-spacing:-.2px}
+body.m360-module-mode .m360-modulebrand small{display:block;color:#a8d0f0;font-size:11px;max-width:380px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+body.m360-module-mode .m360-modulebar-actions{display:flex;align-items:center;gap:7px}
+body.m360-module-mode .m360-modulebar a,body.m360-module-mode .m360-modulebar button{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 12px;border:1px solid #557398;border-radius:10px;background:#ffffff0f;
+  color:white;text-decoration:none;font:700 11.5px 'DM Sans',sans-serif;cursor:pointer;white-space:nowrap
+}
+body.m360-module-mode .m360-modulebar a:hover,body.m360-module-mode .m360-modulebar button:hover{background:#ffffff24;border-color:#81b8e5}
+body.m360-module-mode .m360-modulebar .m360-primary-link{background:#ecf5ff;color:#184272;border-color:#ecf5ff}
+body.m360-module-mode .m360-modulebar svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+body.m360-module-mode header h1,body.m360-module-mode h1{font-family:Manrope,Arial,sans-serif;letter-spacing:-.65px}
+body.m360-module-mode h2{font-family:Manrope,Arial,sans-serif;letter-spacing:-.2px}
+body.m360-module-mode :is(.card,.panel){border-radius:17px;border-color:#e1e9f3;box-shadow:0 3px 16px rgba(20,46,80,.04)}
+body.m360-module-mode :is(button,.btn,a.btn){border-radius:10px}
+body.m360-module-mode :is(input,select,textarea){border-radius:10px}
+body.m360-module-mode :is(input,select,textarea):focus{outline:2px solid #a8ccff;outline-offset:1px}
+body.m360-module-mode :is(.wrap,main){max-width:min(1700px,100%)}
+body.m360-module-mode .app main{max-width:none}
+body.m360-module-mode :is(table,td,th){font-family:'DM Sans',sans-serif}
+body.m360-module-mode th{background:#f4f8fc}
+body.m360-module-mode a:focus-visible,body.m360-module-mode button:focus-visible{outline:3px solid #7fbdff;outline-offset:2px}
+body.m360-module-mode .m360-appfooter{padding:18px;text-align:center;font:600 11px 'DM Sans',sans-serif;color:#8394a9}
+body.m360-module-mode .m360-appfooter span{color:#3771cc}
+body.m360-module-mode.m360-module-standalone .app{min-height:calc(100dvh - 64px)}
+body.m360-module-mode .table,body.m360-module-mode .table-wrap{max-width:100%;overflow-x:auto}
+body.m360-module-mode .m360-official-badge{font-size:10px;color:#97c5ee;text-transform:uppercase;letter-spacing:1px;font-weight:800}
+@media(max-width:850px){
+ body.m360-module-mode .m360-modulebar{padding:10px 12px;min-height:60px}
+ body.m360-module-mode .m360-modulebrand small{max-width:150px}
+ body.m360-module-mode .m360-modulebar-actions .m360-optional{display:none}
+ body.m360-module-mode :is(.wrap,main){width:100%;min-width:0}
+ body.m360-module-mode :is(.card,.panel){max-width:100%}
+}
+@media(max-width:500px){
+ body.m360-module-mode .m360-modulebar a,body.m360-module-mode .m360-modulebar button{padding:9px 10px;font-size:11px}
+ body.m360-module-mode .m360-modulebrand{gap:8px}
+ body.m360-module-mode .m360-modulebrand b{font-size:12px}
+ body.m360-module-mode .m360-modulebrand small{font-size:10px;max-width:90px}
+ body.m360-module-mode .m360-modulebar .m360-return-label{display:none}
+ body.m360-module-mode :is(.wrap,main){padding-left:12px;padding-right:12px}
+}
+@media print{
+ body.m360-module-mode .m360-modulebar,body.m360-module-mode .m360-appfooter{display:none!important}
+}
