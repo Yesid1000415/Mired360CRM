@@ -275,15 +275,61 @@ function mapCsv(rows){
  if(!result.length)throw Error('No se encontraron teléfonos y nombres válidos.');
  return {result,invalid,dupes};
 }
+let excelLoader=null;
+function loadExcelParser(){
+ if(window.ExcelJS)return Promise.resolve(window.ExcelJS);
+ if(excelLoader)return excelLoader;
+ excelLoader=new Promise((resolve,reject)=>{
+  const tag=document.createElement('script');
+  tag.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
+  tag.integrity='sha512-ggd305P5+Cw/oOst5Mh0Zkm7tvNJmWsAcJV8d+VvOXO2UK7c89pCoRo/Pi/eNJvQeM1AG1M2ae5/6ETpTHFxsA==';
+  tag.crossOrigin='anonymous';
+  tag.onload=()=>window.ExcelJS?resolve(window.ExcelJS):reject(Error('No se pudo inicializar el lector de Excel.'));
+  tag.onerror=()=>reject(Error('No se pudo cargar el lector de Excel. Verifica internet e inténtalo de nuevo.'));
+  document.head.appendChild(tag);
+ }).catch(error=>{excelLoader=null;throw error});
+ return excelLoader;
+}
+function excelCellText(value){
+ if(value===null||value===undefined)return '';
+ if(typeof value==='object'){
+  if(Array.isArray(value.richText))return value.richText.map(r=>r.text||'').join('');
+  if(value.result!==undefined&&value.result!==null)return String(value.result);
+  if(value.text!==undefined&&value.text!==null)return String(value.text);
+  if(value instanceof Date)return value.toISOString();
+  return '';
+ }
+ return String(value);
+}
+async function readImportRows(file){
+ if(/\.xlsx$/i.test(file.name)){
+  const Excel=await loadExcelParser();
+  const wb=new Excel.Workbook();
+  await wb.xlsx.load(await file.arrayBuffer());
+  const ws=wb.worksheets.find(x=>x.actualRowCount>1);
+  if(!ws)throw Error('El Excel debe contener encabezados y al menos un contacto.');
+  if(ws.actualRowCount>2002)throw Error('Máximo 2.000 contactos por archivo. Divide el Excel en hojas o archivos más pequeños.');
+  const rows=[];
+  ws.eachRow({includeEmpty:false},row=>{
+   const cells=[];
+   for(let c=1;c<=Math.min(row.cellCount,50);c++)cells.push(excelCellText(row.getCell(c).value).trim());
+   if(cells.some(Boolean))rows.push(cells);
+  });
+  return rows;
+ }
+ if(/\.(csv|tsv|txt)$/i.test(file.name))return parseCsv(await file.text());
+ if(/\.xls$/i.test(file.name))throw Error('El formato Excel antiguo .xls debe guardarse como .xlsx antes de importarlo.');
+ throw Error('Formato no compatible. Selecciona un Excel .xlsx o un CSV.');
+}
 async function importContacts(e){
  e.preventDefault();
  if(!manager()||!checkWrite()||!$('ccImportConsent').checked)return;
  const base=bases.find(x=>x.id===$('ccImportBase').value),file=$('ccImportFile').files?.[0],status=$('ccImportStatus');
  if(!base||base.estado!=='activa'||!file)return core.flash('Selecciona una base activa y un archivo válido.',true);
- if(file.size>2*1024*1024)return core.flash('El archivo supera 2 MB. Divídelo en archivos CSV más pequeños.',true);
+ if(file.size>2*1024*1024)return core.flash('El archivo supera 2 MB. Divide el Excel o CSV en archivos más pequeños.',true);
  $('ccImportSubmit').disabled=true;status.textContent='Validando archivo…';
  try{
-  const parsed=mapCsv(parseCsv(await file.text()));
+  const parsed=mapCsv(await readImportRows(file));
   if(parsed.result.length>2000)throw Error('Máximo 2.000 contactos por importación. Divide el archivo.');
   if(!confirm('Importar hasta '+parsed.result.length+' contactos a «'+base.nombre+'»? Se omitirán los teléfonos que ya existan y los repetidos.'))return;
   status.textContent='Guardando contactos…';
