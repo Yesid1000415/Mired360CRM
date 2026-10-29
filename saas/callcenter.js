@@ -192,7 +192,7 @@ async function submitManage(e){
  try{
   const {error}=await db.rpc('saas_cc_registrar_gestion',{p_org:orgId,p_contacto:id,p_resultado:$('ccManageResult').value,p_notas:$('ccManageNotes').value.trim(),p_proxima:$('ccManageNext').value||null});
   if(error)throw error;
-  $('ccManageForm').reset();await loadContacts();core.flash('Gestión registrada y guardada en historial.');
+  $('ccManageForm').reset();await load();core.flash('Gestión registrada y guardada en historial.');
  }catch(err){core.flash(err.message,true)}
  finally{$('ccManageSave').disabled=false}
 }
