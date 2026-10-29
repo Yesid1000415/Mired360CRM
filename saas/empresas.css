@@ -122,3 +122,9 @@
 .cc-due-proximos{color:#16618b}
 .cc-due-posterior{color:#59738b}
 @media(max-width:600px){.cc-agenda-chip{flex-basis:calc(50% - 5px);padding:9px}.cc-agenda-chip b{font-size:18px}}
+
+/* Supervisión: alertas de seguimiento y acciones del propietario. */
+#ccSupFollowupInfo{font-size:12px;line-height:1.5;margin:10px 0 14px}
+#ccSupFollowupRows small.cc-sup-overdue{color:#ad342b;font-weight:700}
+#ccSupFollowupRows td:last-child{white-space:nowrap}
+#ccSupFollowupRows .btn{font-size:12px;padding:7px 10px;margin:2px}
