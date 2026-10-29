@@ -49,7 +49,7 @@ async function load(){
  if(!org()||org().id!==oid)return;
  [branches,members,campaigns,calls,modules]=results.map(r=>r.data||[]);
  dropdown('leadBranch',myBranch());dropdown('campaignBranch',myBranch());
- renderCampaignSelect('');render();
+ renderCampaignSelect('');render();core.render();
 }
 function render(){
  if(!org()||!$('branchRows'))return;
@@ -89,7 +89,7 @@ function render(){
   return '<tr><td>'+dateFmt(c.creado_en)+'</td><td>'+esc(l?.nombre||'Prospecto')+'</td><td>'+esc(memberName(c.usuario_id))+'</td><td>'+esc(c.resultado)+'</td><td>'+dateFmt(c.siguiente_contacto)+'</td><td>'+esc(c.detalle)+'</td></tr>';
  }).join('')||empty(6,'Todavía no hay llamadas registradas.');
 }
-function reset(){branches=[];members=[];campaigns=[];calls=[];modules=[];render()}
+function reset(){branches=[];members=[];campaigns=[];calls=[];modules=[];['callLead','branchRows','branchPerformance','advisorPerformance','campaignRows','callRows'].forEach(id=>{if($(id))$(id).innerHTML=''})}
 async function refreshAll(){await load()}
 async function addBranch(e){
  e.preventDefault();if(!checkWrite('sucursales')||!manage())return;
