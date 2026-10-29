@@ -162,6 +162,7 @@ async function enterOrg(){
  $('teamAdmin').classList.toggle('hidden',!isOwner());$('inviteHistoryCard').classList.toggle('hidden',!isOwner());
  $('settingsForm').querySelectorAll('input,button').forEach(el=>el.disabled=!isOwner());
  $('subscriptionDetails').innerHTML='<p><strong>Plan actual:</strong> '+escapeHTML(org.plan)+'</p><p><strong>Estado:</strong> '+escapeHTML(org.estado_suscripcion)+'</p><p><strong>Fin de prueba:</strong> '+dateFmt(org.prueba_hasta)+'</p><p><strong>Suscripción hasta:</strong> '+dateFmt(org.vigente_hasta)+'</p>';
+ if(window.MiredSaasOps)window.MiredSaasOps.reset();
  show('saasApp');await Promise.all([loadLeads(),loadTeam()]);if(window.MiredSaasOps)await window.MiredSaasOps.load();navigate('dashboard');
 }
 async function loadLeads(){
