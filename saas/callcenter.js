@@ -52,6 +52,7 @@ async function load(){
  dropdown('ccImportBase',available,selected);
  if(!bases.some(b=>b.id===selected))selected=bases[0]?.id||'';
  $('ccWorkBase').value=selected;$('ccAssignBase').value=selected;$('ccImportBase').value=selected;
+ refreshAssignmentOptions();
  await loadMonthResults(seq);
  if(seq!==refreshSeq)return;
  renderLists();await loadContacts();
