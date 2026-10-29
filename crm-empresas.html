@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="saas/empresas.css?v=20261029-13">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="saas/empresas.js?v=20261029-13"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-13"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-14"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -133,10 +133,10 @@
    <div class="card"><div class="section-heading"><h2>Bases de contactos</h2><small>Solo verás las bases que tienes autorizadas</small></div>
     <div class="table-wrap"><table><thead><tr><th>Base</th><th>Sucursal</th><th>Asesor</th><th>Extensión</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="ccBaseRows"></tbody></table></div></div>
    <div class="card cc-admin-only" id="ccImportCard">
-    <h2>Importar contactos a una base</h2><p class="muted">Archivo CSV, TSV o TXT con columnas como nombre, teléfono, ciudad y observaciones. Hasta 2.000 contactos por importación. No se enviarán mensajes automáticamente.</p>
+    <h2>Importar contactos a una base</h2><p class="muted">Admite Excel (.xlsx), CSV, TSV o TXT. La primera fila debe contener encabezados como nombre, teléfono, ciudad y observaciones. Máximo 2.000 contactos por archivo (2 MB). No se enviarán mensajes automáticamente.</p>
     <form id="ccImportForm" class="form-grid">
      <label>Base destino<select id="ccImportBase" required></select></label>
-     <label>Archivo<input id="ccImportFile" type="file" required accept=".csv,.tsv,.txt,text/csv,text/plain"></label>
+     <label>Archivo<input id="ccImportFile" type="file" required accept=".xlsx,.csv,.tsv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/plain"></label>
      <label class="check-line wide"><input id="ccImportConsent" type="checkbox" required><span>Confirmo que puedo utilizar legalmente la información de este archivo, con evidencia de autorización o base aplicable para cada contacto.</span></label>
      <div class="wide"><button class="btn primary" id="ccImportSubmit" type="submit">Importar contactos</button><span id="ccImportStatus" class="cc-import-status" role="status"></span></div>
     </form></div>
