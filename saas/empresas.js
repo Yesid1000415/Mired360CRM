@@ -10,7 +10,7 @@ const escapeHTML=value=>String(value==null?'':value).replace(/[&<>"']/g,c=>({'&'
 const statuses=['Nuevo','Contactado','Seguimiento','Venta','Instalado','Perdido'];
 let user=null,organizations=[],org=null,memberships=[],members=[],leads=[],authMode='login',loading=false;
 let modalEditing=null,activePage='dashboard';
-function show(id){['authScreen','onboardingScreen','saasApp'].forEach(k=>$(k).classList.toggle('hidden',k!==id))}
+function show(id){['authScreen','consentScreen','onboardingScreen','saasApp'].forEach(k=>$(k).classList.toggle('hidden',k!==id))}
 function setAuthMessage(s,success=false){$('authMessage').textContent=s;$('authMessage').classList.toggle('success',success)}
 function flash(s,bad=false){
  const el=$('flash');el.textContent=s;el.classList.toggle('error',bad);el.classList.remove('hidden');
@@ -23,6 +23,7 @@ function fail(e,def='No fue posible completar la acción'){
 function setLoading(b){loading=b;$('authSubmit').disabled=b;$('companySubmit').disabled=b;$('leadSubmit').disabled=b;$('inviteSubmit').disabled=b}
 function authUI(mode){
  authMode=mode;const showPw=mode!=='recover';
+ $('authLegalLabel').classList.toggle('hidden',mode!=='register');$('authLegal').required=mode==='register';
  $('authPassword').closest('label').classList.toggle('hidden',!showPw);$('authPassword').required=showPw;
  $('authPassword').autocomplete=mode==='register'?'new-password':'current-password';
  const names={login:['Bienvenido a MIRED360','Ingresa para administrar la información de tu empresa.','Ingresar a mi empresa'],register:['Empieza a organizar tu negocio','Crea tu cuenta y configura una empresa con prueba de 14 días.','Crear cuenta'],recover:['Recuperar contraseña','Recibirás un enlace para actualizarla.','Enviar enlace'],update:['Cambiar contraseña','Escribe una nueva contraseña para tu cuenta.','Guardar contraseña']};
@@ -54,6 +55,7 @@ async function onAuthSubmit(e){
    setAuthMessage('Contraseña actualizada. Ingresa nuevamente.',true);
    await db.auth.signOut();authUI('login');
   }else if(authMode==='register'){
+   if(!$('authLegal').checked)throw Error('Debes aceptar los términos y el aviso de privacidad.');
    if(password.length<8)throw Error('La contraseña debe tener mínimo ocho caracteres.');
    const {data,error}=await db.auth.signUp({email,password});
    if(error)throw error;
@@ -80,6 +82,9 @@ async function bootstrap(){
  $('sidebarEmail').textContent=user.email||'';
  $('userAvatar').textContent=(user.email||'M')[0].toUpperCase();
  $('companyEmail').value=user.email||'';
+ const {data:acceptance,error:acceptanceError}=await db.from('saas_aceptaciones').select('version').eq('usuario_id',user.id).eq('version','2026-10-29-v1').maybeSingle();
+ if(acceptanceError){show('authScreen');setAuthMessage('No se pudo comprobar la aceptación de condiciones: '+acceptanceError.message);return}
+ if(!acceptance){show('consentScreen');return}
  const token=invitationToken();
  if(token){
   const {error}=await db.rpc('saas_aceptar_invitacion',{p_token:token});
@@ -215,6 +220,7 @@ function openLead(id){
  const l=id?leads.find(x=>x.id===id):null;
  if(id&&!l)return;
  $('leadForm').reset();$('leadId').value=l?.id||'';
+ $('leadAuthorization').checked=!!l;
  const fields={leadName:'nombre',leadPhone:'telefono',leadEmail:'correo',leadCity:'ciudad',leadSource:'origen',leadProduct:'producto',leadStatus:'estado',leadValue:'valor_mensual',leadFollow:'proximo_seguimiento',leadNotes:'notas'};
  Object.entries(fields).forEach(([id,key])=>{if(l)$(id).value=l[key]??''});
  $('leadTitle').textContent=l?'Editar prospecto':'Nuevo prospecto';
@@ -229,6 +235,7 @@ async function saveLead(e){
  estado:$('leadStatus').value,valor_mensual:Number($('leadValue').value||0),
  proximo_seguimiento:$('leadFollow').value||null,notas:$('leadNotes').value.trim()
  };
+ if(!$('leadAuthorization').checked)return flash('Confirma que puedes tratar los datos del cliente.',true);
  if(payload.nombre.length<2||!Number.isFinite(payload.valor_mensual)||payload.valor_mensual<0)return flash('Revisa el nombre y el valor.',true);
  $('leadSubmit').disabled=true;
  try{
@@ -237,7 +244,7 @@ async function saveLead(e){
    res=await db.from('saas_prospectos').update({...payload,actualizado_en:new Date().toISOString()}).eq('id',modalEditing).eq('organizacion_id',org.id).select('id').maybeSingle();
    if(!res.error&&!res.data)throw Error('No tienes permiso para actualizar este prospecto.');
   }else{
-   res=await db.from('saas_prospectos').insert({...payload,organizacion_id:org.id,creado_por:user.id}).select('id').single();
+   res=await db.from('saas_prospectos').insert({...payload,organizacion_id:org.id,creado_por:user.id,autorizacion_confirmada:true}).select('id').single();
   }
   if(res.error)throw res.error;
   const wasEdit=!!modalEditing;
@@ -291,6 +298,14 @@ function events(){
  $('authSwitch').addEventListener('click',()=>authUI(authMode==='login'?'register':'login'));
  $('authReset').addEventListener('click',()=>authUI('recover'));
  $('companyForm').addEventListener('submit',createOrg);
+ $('consentForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(!user||!$('termsCheck').checked)return;
+  const {error}=await db.from('saas_aceptaciones').insert({usuario_id:user.id,version:'2026-10-29-v1'});
+  if(error){$('consentMessage').textContent=fail(error);return}
+  $('consentMessage').textContent='';
+  await bootstrap();
+ });
+ $('consentLogout').addEventListener('click',logout);
  $('companyLogout').addEventListener('click',logout);
  $('logout').addEventListener('click',logout);
  $('leadForm').addEventListener('submit',saveLead);
