@@ -59,8 +59,8 @@ async function load(){
 }
 async function loadMonthResults(seq){
  if(!org())return;
- const first=new Date(),start=new Date(Date.UTC(first.getFullYear(),first.getMonth(),1)).toISOString();
- const {data,error}=await db.from('saas_cc_gestiones').select('usuario_id,resultado,creado_en').eq('organizacion_id',orgId).gte('creado_en',start).eq('resultado','Venta').order('creado_en',{ascending:false}).limit(5000);
+ const first=new Date(),start=new Date(first.getFullYear(),first.getMonth(),1).toISOString();
+ const {data,error}=await db.from('saas_cc_gestiones').select('usuario_id,contacto_id,resultado,creado_en').eq('organizacion_id',orgId).gte('creado_en',start).eq('resultado','Venta').order('creado_en',{ascending:false}).limit(5000);
  if(seq!==refreshSeq)return;
  if(error){monthResults=[];return}
  monthResults=data||[];
@@ -86,7 +86,7 @@ function renderLists(){
  $('ccExtRows').innerHTML=extensions.map(e=>'<tr><td><b>'+esc(e.codigo)+'</b></td><td>'+esc(branchName(e.sucursal_id))+'</td><td>'+esc(teamName(e.usuario_id))+'</td><td>'+e.meta_mensual+'</td></tr>').join('')||empty(4,'Sin extensiones configuradas.');
  $('ccBaseRows').innerHTML=bases.map(b=>{
   const e=extensions.find(e=>e.id===b.extension_id);
-  return '<tr><td><b>'+esc(b.nombre)+'</b></td><td>'+esc(branchName(b.sucursal_id))+'</td><td>'+esc(teamName(b.asignado_a))+'</td><td>'+esc(e?.codigo||'—')+'</td><td>'+esc(b.estado)+'</td><td><button type="button" class="btn secondary" data-cc-base="'+b.id+'">Trabajar base</button></td></tr>';
+  return '<tr><td><b>'+esc(b.nombre)+'</b></td><td>'+esc(branchName(b.sucursal_id))+'</td><td>'+esc(teamName(b.asignado_a))+'</td><td>'+esc(e?.codigo||'—')+'</td><td>'+esc(b.estado)+'</td><td><button type="button" class="btn secondary" data-cc-base="'+b.id+'">Trabajar base</button> '+(manager()?'<button type="button" class="btn secondary" data-cc-toggle="'+b.id+'">'+(b.estado==='activa'?'Pausar':'Reactivar')+'</button>':'')+'</td></tr>';
  }).join('')||empty(6,manager()?'Crea una base para comenzar.':'Todavía no te han asignado una base.');
  const n=contacts.length,worked=contacts.filter(x=>x.estado!=='Pendiente').length,sold=contacts.filter(x=>x.estado==='Venta').length,
  pending=contacts.filter(x=>x.proxima_llamada&&x.estado!=='Venta').length;
@@ -97,7 +97,7 @@ function renderLists(){
  metric('Próximas llamadas',pending,'Con fecha registrada');
  if($('ccExtPerformanceRows')){
   $('ccExtPerformanceRows').innerHTML=extensions.map(e=>{
-   const sold=monthResults.filter(x=>x.usuario_id===e.usuario_id&&e.usuario_id).length;
+   const sold=new Set(monthResults.filter(x=>x.usuario_id===e.usuario_id&&e.usuario_id).map(x=>x.contacto_id)).size;
    return '<tr><td>'+esc(e.codigo)+'</td><td>'+esc(teamName(e.usuario_id))+'</td><td>'+sold+'</td><td>'+e.meta_mensual+'</td><td>'+Math.round(sold/e.meta_mensual*100)+'%</td></tr>';
   }).join('')||empty(5,'Sin extensiones registradas.');
  }
@@ -110,7 +110,7 @@ async function loadContacts(){
  let offset=0;
  try{
   while(offset<MAX_CONTACTS){
-   const {data,error}=await db.from('saas_cc_contactos').select('id,nombre,telefono,ciudad,estado,proxima_llamada,observaciones,base_id').eq('organizacion_id',orgId).eq('base_id',baseId).order('creado_en',{ascending:false}).range(offset,offset+499);
+   const {data,error}=await db.from('saas_cc_contactos').select('id,nombre,telefono,ciudad,estado,proxima_llamada,observaciones,base_id,prospecto_id').eq('organizacion_id',orgId).eq('base_id',baseId).order('creado_en',{ascending:false}).range(offset,offset+499);
    if(error)throw error;if(seq!==refreshSeq||selected!==baseId)return;
    contacts.push(...(data||[]));if(!data||data.length<500)break;offset+=500;
   }
@@ -129,11 +129,14 @@ function renderContacts(){
  const slice=rows.slice(page*PAGE,(page+1)*PAGE);
  $('ccContactRows').innerHTML=slice.map(c=>{
   const number=c.telefono.replace(/[^\d+]/g,'');
-  return '<tr><td><b>'+esc(c.nombre)+'</b></td><td>'+esc(c.telefono)+'</td><td>'+esc(c.ciudad)+'</td><td>'+esc(c.estado)+'</td><td>'+core.dateFmt(c.proxima_llamada)+'</td><td class="cc-actions"><a class="btn secondary" href="tel:'+encodeURIComponent(number)+'">Llamar</a> <button type="button" class="btn primary" data-cc-manage="'+c.id+'">Gestionar</button></td></tr>'
+  return '<tr><td><b>'+esc(c.nombre)+'</b></td><td>'+esc(c.telefono)+'</td><td>'+esc(c.ciudad)+'</td><td>'+esc(c.estado)+'</td><td>'+core.dateFmt(c.proxima_llamada)+'</td><td class="cc-actions"><a class="btn secondary" href="tel:'+encodeURIComponent(number)+'">Llamar</a> <button type="button" class="btn primary" data-cc-manage="'+c.id+'">Gestionar</button> '+(c.estado==='Venta'?(c.prospecto_id?'<span class="badge ok">En CRM</span>':'<button type="button" class="btn secondary" data-cc-convert="'+c.id+'">Pasar al CRM</button>'):'')+'</td></tr>'
  }).join('')||empty(6,'No hay contactos disponibles con este filtro.');
  $('ccPagination').innerHTML='<span>'+rows.length+' contactos · Página '+(page+1)+' / '+(maxPage+1)+'</span> '+
  '<button class="btn secondary" type="button" data-cc-page="-1" '+(!page?'disabled':'')+'>Anterior</button> '+
  '<button class="btn secondary" type="button" data-cc-page="1" '+(page>=maxPage?'disabled':'')+'>Siguiente</button>';
+ const convertSelected=$('ccConvertContact').value;
+ const converted=contacts.find(x=>x.id===convertSelected&&x.estado==='Venta'&&!x.prospecto_id);
+ $('ccConvertContact').innerHTML='<option value="">Selecciona una venta desde la tabla</option>'+(converted?option(converted.id,converted.nombre,converted.id):'');
  const existing=$('ccManageContact').value;
  const pick=contacts.find(x=>x.id===existing);
  $('ccManageContact').innerHTML='<option value="">Selecciona un contacto desde la tabla</option>'+(pick?option(pick.id,pick.nombre,pick.id):'');
@@ -141,6 +144,38 @@ function renderContacts(){
   const c=contacts.find(v=>v.id===h.contacto_id);
   return '<tr><td>'+core.dateFmt(h.creado_en)+'</td><td>'+esc(c?.nombre||'Cliente')+'</td><td>'+esc(teamName(h.usuario_id))+'</td><td>'+esc(h.resultado)+'</td><td>'+core.dateFmt(h.proxima_llamada)+'</td><td>'+esc(h.notas)+'</td></tr>';
  }).join('')||empty(6,'Sin gestiones todavía.');
+}
+function selectConvert(id){
+ const c=contacts.find(x=>x.id===id&&x.estado==='Venta'&&!x.prospecto_id);
+ if(!c)return core.flash('Solo se pueden convertir ventas que aún no están en CRM.',true);
+ $('ccConvertContact').innerHTML=option('', 'Selecciona una venta','')+option(c.id,c.nombre,c.id);
+ $('ccConvertSave').scrollIntoView({behavior:'smooth',block:'center'});
+ $('ccConvertProduct').focus();
+}
+async function convertSale(e){
+ e.preventDefault();if(!checkWrite())return;
+ const id=$('ccConvertContact').value;
+ if(!contacts.some(c=>c.id===id&&c.estado==='Venta'&&!c.prospecto_id))return core.flash('Selecciona una venta sin convertir.',true);
+ const product=$('ccConvertProduct').value.trim(),value=Number($('ccConvertValue').value);
+ if(product.length<3||!Number.isFinite(value)||value<0)return core.flash('Indica producto y valor válido.',true);
+ $('ccConvertSave').disabled=true;
+ try{
+  const {error}=await db.rpc('saas_cc_pasar_crm',{p_org:orgId,p_contacto:id,p_producto:product,p_valor:value});
+  if(error)throw error;
+  $('ccConvertForm').reset();
+  await Promise.all([core.reloadLeads(),loadContacts()]);
+  core.flash('Venta enviada al CRM y contabilizada en los reportes comerciales.');
+ }catch(err){core.flash(err.message,true)}
+ finally{$('ccConvertSave').disabled=false}
+}
+async function toggleBase(id){
+ if(!manager()||!checkWrite())return;
+ const base=bases.find(b=>b.id===id);if(!base)return;
+ const status=base.estado==='activa'?'pausada':'activa';
+ if(!confirm((status==='pausada'?'Pausar':'Reactivar')+' la base «'+base.nombre+'»?'))return;
+ const {error}=await db.rpc('saas_cc_estado_base',{p_org:orgId,p_base:id,p_estado:status});
+ if(error)return core.flash(error.message,true);
+ await load();core.flash('Base '+(status==='activa'?'reactivada.':'pausada.'));
 }
 function manageContact(id){
  const c=contacts.find(x=>x.id===id);if(!c)return;
@@ -273,6 +308,7 @@ function events(){
  $('ccAssignForm').addEventListener('submit',assignBase);
  $('ccImportForm').addEventListener('submit',importContacts);
  $('ccManageForm').addEventListener('submit',submitManage);
+ $('ccConvertForm').addEventListener('submit',convertSale);
  $('ccWorkBase').addEventListener('change',e=>{selected=e.target.value;loadContacts()});
  $('ccAssignBase').addEventListener('change',refreshAssignmentOptions);
  $('ccAssignAdvisor').addEventListener('change',refreshExtensionOptions);
@@ -280,9 +316,11 @@ function events(){
  $('ccSearch').addEventListener('input',()=>{page=0;renderContacts()});
  $('ccStateFilter').addEventListener('change',()=>{page=0;renderContacts()});
  document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-cc-base]'),m=e.target.closest('[data-cc-manage]'),p=e.target.closest('[data-cc-page]');
+  const b=e.target.closest('[data-cc-base]'),m=e.target.closest('[data-cc-manage]'),p=e.target.closest('[data-cc-page]'),v=e.target.closest('[data-cc-convert]'),toggle=e.target.closest('[data-cc-toggle]');
   if(b){selected=b.dataset.ccBase;$('ccWorkBase').value=selected;loadContacts();$('ccSearch').scrollIntoView({behavior:'smooth'})}
   if(m)manageContact(m.dataset.ccManage);
+  if(v)selectConvert(v.dataset.ccConvert);
+  if(toggle)toggleBase(toggle.dataset.ccToggle);
   if(p){page+=Number(p.dataset.ccPage);renderContacts()}
  });
 }
