@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap');
+/* MIRED360 Corporate Preview — presentation layer only. Data and CRM workflows stay unchanged. */
+body.m360-pro-mode{--n:#091a35;--n2:#102b51;--c:#20c2dc;--b:#4268f5;--bg:#f4f7fb;--card:#fff;--t:#182942;--m:#65758d;--l:#e2e9f3;--ok:#12a477;--w:#e8a13d;--d:#e05266;font-family:'DM Sans','Segoe UI',sans-serif;background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased}
+.m360-pro-mode .app{grid-template-columns:270px minmax(0,1fr);min-height:100dvh;align-items:start}
+.m360-pro-mode .app>aside{height:100dvh;top:0;position:sticky;z-index:30;padding:24px 14px 18px;display:flex;flex-direction:column;background:linear-gradient(160deg,#0d2140 0%,#08172e 54%,#0a1d37 100%);box-shadow:8px 0 34px rgba(15,30,60,.06);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#365270 transparent}
+.m360-pro-mode .app>aside .brand{margin:0 4px 19px;padding:2px 4px 20px;border-bottom:1px solid rgba(255,255,255,.105);gap:12px;flex-shrink:0}
+.m360-pro-mode .app>aside .brand .logo,.m360-pro-mode .login-card .logo{width:46px;height:46px;background:linear-gradient(145deg,#4b73ff,#14bfd7);border:1px solid rgba(255,255,255,.25);border-radius:14px;color:#fff;font-family:Manrope,sans-serif;font-size:23px;box-shadow:0 10px 28px rgba(8,141,231,.25)}
+.m360-pro-mode .app>aside .brand b{font-family:Manrope,sans-serif;letter-spacing:.3px;font-size:19px;font-weight:800}
+.m360-pro-mode .app>aside .brand span{font-size:9px;letter-spacing:2.15px;font-weight:800;margin-top:5px}
+.m360-pro-mode .app>aside nav{display:block;overflow:visible;flex:1}
+.m360-pro-mode .m360-nav-group{margin:0 0 12px}
+.m360-pro-mode .m360-nav-heading{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:#6988aa;font-weight:800;padding:13px 12px 5px;user-select:none}
+.m360-pro-mode .app>aside nav button{width:100%;display:flex;gap:12px;align-items:center;border:1px solid transparent;border-radius:11px;background:transparent;color:#b9c8da;padding:11px 12px;min-height:43px;font-size:12.8px;font-weight:600;line-height:1.2;margin:2px 0;white-space:normal;transition:background .18s,border-color .18s,color .18s}
+.m360-pro-mode .app>aside nav button:hover{background:rgba(147,190,255,.10);color:white}
+.m360-pro-mode .app>aside nav button.active{background:linear-gradient(95deg,rgba(60,109,237,.33),rgba(31,167,224,.14));color:#fff;border-color:rgba(87,174,254,.20);box-shadow:inset 3px 0 0 #3bd5f0}
+.m360-pro-mode .app>aside nav button .wa-nav-badge{margin-left:auto}
+.m360-pro-mode .m360-nav-icon{width:18px;height:18px;flex:0 0 18px;display:inline-flex;align-items:center;justify-content:center;color:#90a9c7}
+.m360-pro-mode .app>aside nav button.active .m360-nav-icon{color:#63e4ff}
+.m360-pro-mode .m360-nav-icon svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.85;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.m360-pro-mode .statusbar{margin:8px 4px 0;padding:15px 12px 0;border-top:1px solid rgba(255,255,255,.11);color:#97b0cd;overflow-wrap:anywhere;line-height:1.85;font-size:11px;flex-shrink:0}
+.m360-pro-mode .statusbar #syncText{color:#d4e3f3;font-weight:700}
+.m360-pro-mode .app>main{max-width:none;margin:0;width:100%;min-width:0;padding:25px clamp(18px,2.7vw,44px) 52px}
+.m360-pro-mode .m360-topbar{display:flex;align-items:center;gap:15px;margin-bottom:25px;padding:4px 0 20px;border-bottom:1px solid #e3eaf3;position:relative}
+.m360-pro-mode .m360-topbar-start{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.m360-pro-mode .m360-topbar-eyebrow{display:block;color:#8d9aab;font-size:10px;letter-spacing:1.3px;font-weight:800;text-transform:uppercase}
+.m360-pro-mode .m360-topbar-title{font-size:14px;font-weight:800;color:#182d49;font-family:Manrope,sans-serif;letter-spacing:-.2px}
+.m360-pro-mode .m360-topbar-search{position:relative;flex:1;max-width:480px;margin-left:auto}
+.m360-pro-mode .m360-topbar-search>svg{position:absolute;top:50%;left:15px;transform:translateY(-50%);width:17px;height:17px;color:#7e92ae;pointer-events:none}
+.m360-pro-mode .m360-topbar-search input{width:100%;border:1px solid #e1e9f2;background:white;box-shadow:0 1px 4px rgba(18,39,75,.025);padding:12px 52px 12px 42px;outline:none;font-size:12px;height:44px;border-radius:12px}
+.m360-pro-mode .m360-topbar-search input:focus{border-color:#8aaff9;box-shadow:0 0 0 3px rgba(66,104,245,.10)}
+.m360-pro-mode .m360-keyhint{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:#91a0b5;background:#f2f5f9;border:1px solid #e3e9f2;border-radius:6px;padding:3px 6px;font-size:10px}
+.m360-pro-mode .m360-search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:#fff;border:1px solid #dfe7f2;border-radius:14px;box-shadow:0 18px 50px rgba(10,27,58,.17);z-index:65;padding:8px;max-height:350px;overflow:auto}
+.m360-pro-mode .m360-search-results button{display:flex;gap:9px;align-items:center;border:0;background:white;color:#243755;text-align:left;padding:11px 12px;border-radius:9px;width:100%;font-size:13px;cursor:pointer}
+.m360-pro-mode .m360-search-results button:hover,.m360-pro-mode .m360-search-results button:focus{background:#edf4ff;outline:none}
+.m360-pro-mode .m360-search-results small{color:#8998aa;font-size:11px}
+.m360-pro-mode .m360-topbar-actions{display:flex;align-items:center;gap:9px}
+.m360-pro-mode .m360-icon-button{height:43px;width:43px;flex:0 0 43px;display:grid;place-items:center;background:#fff;border:1px solid #e1e8f2;border-radius:12px;color:#506580;cursor:pointer}
+.m360-pro-mode .m360-icon-button:hover{color:#315cdd;border-color:#acc9fc;background:#fafdff}
+.m360-pro-mode .m360-icon-button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.m360-pro-mode .m360-avatar{height:43px;width:43px;flex:0 0 43px;border-radius:13px;background:linear-gradient(135deg,#dfeaff,#d7f8f8);border:1px solid #c8e2f6;color:#234ca2;display:grid;place-items:center;font-size:13px;font-weight:900}
+.m360-pro-mode .m360-menu-toggle{display:none}
+.m360-pro-mode .m360-hero{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(105deg,#0e2b55 0%,#163e73 61%,#1c6ba0 100%);color:#fff;border-radius:22px;padding:28px 31px;display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:19px;box-shadow:0 14px 36px rgba(14,45,89,.16)}
+.m360-pro-mode .m360-hero:after{content:"";position:absolute;z-index:-1;right:-75px;top:-130px;width:390px;height:390px;border:1px solid rgba(255,255,255,.15);border-radius:50%;box-shadow:0 0 0 50px rgba(255,255,255,.025),0 0 0 112px rgba(255,255,255,.026)}
+.m360-pro-mode .m360-hero-eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:2.3px;font-weight:800;color:#71e0ed}
+.m360-pro-mode .m360-hero h2{font-family:Manrope,sans-serif;font-size:clamp(22px,2vw,32px);letter-spacing:-.9px;line-height:1.2;margin:9px 0}
+.m360-pro-mode .m360-hero p{margin:0;color:#c6dcee;font-size:13px;max-width:560px;line-height:1.6}
+.m360-pro-mode .m360-hero-meta{font-size:12px;font-weight:700;color:#e3f4ff;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.08);border-radius:11px;padding:13px 16px;white-space:nowrap}
+.m360-pro-mode .m360-module-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:5px 0 11px}
+.m360-pro-mode .m360-module-header strong{font:800 14px Manrope,sans-serif;color:#1c3151}
+.m360-pro-mode .m360-module-header small{color:#8998aa;font-size:11px}
+.m360-pro-mode .m360-launchpad{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.m360-pro-mode .m360-launchpad button{background:#fff;border:1px solid #e1e9f3;border-radius:15px;min-width:0;text-align:left;padding:17px 14px;cursor:pointer;color:#243b5b;transition:transform .18s,box-shadow .18s,border-color .18s;display:flex;flex-direction:column;gap:8px}
+.m360-pro-mode .m360-launchpad button:hover{border-color:#8ec2f4;transform:translateY(-2px);box-shadow:0 10px 26px rgba(30,73,128,.10)}
+.m360-pro-mode .m360-quickicon{width:35px;height:35px;border-radius:10px;background:#eef4ff;color:#4275d8;display:grid;place-items:center}
+.m360-pro-mode .m360-quickicon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.m360-pro-mode .m360-launchpad b{font-size:12.5px;line-height:1.3}
+.m360-pro-mode .m360-launchpad small{color:#8b98ac;font-size:11px;line-height:1.35}
+.m360-pro-mode .app header h1{font-family:Manrope,sans-serif;font-size:clamp(22px,2vw,28px);font-weight:800;letter-spacing:-.7px}
+.m360-pro-mode .app header p{font-size:13px;color:var(--m);line-height:1.5}
+.m360-pro-mode #dashboard>header{justify-content:flex-end}
+.m360-pro-mode #dashboard>header>div:first-child{display:none}
+.m360-pro-mode .app header{flex-wrap:wrap}
+.m360-pro-mode .app .grid{gap:16px}
+.m360-pro-mode .app .kpis{gap:15px;margin:0 0 18px}
+.m360-pro-mode .app .card{border:1px solid #e2e9f3;border-radius:17px;box-shadow:0 3px 17px rgba(27,53,91,.035);padding:20px}
+.m360-pro-mode .app .card.kpi{min-height:118px;position:relative;overflow:hidden;background:#fff}
+.m360-pro-mode .app .card.kpi:after{content:"";width:65px;height:65px;border-radius:50%;background:#f1f6ff;position:absolute;right:-18px;top:-18px}
+.m360-pro-mode .app .kpi small{color:#77879d;font-size:12px;font-weight:700}
+.m360-pro-mode .app .kpi strong{font-family:Manrope,sans-serif;font-size:32px;color:#132d57;letter-spacing:-1.5px;margin-top:13px;line-height:1}
+.m360-pro-mode .app .section h2{font:800 16px Manrope,sans-serif;letter-spacing:-.25px}
+.m360-pro-mode .app .section{gap:10px;flex-wrap:wrap;margin-bottom:13px}
+.m360-pro-mode .app .btn{padding:11px 15px;border-radius:10px;font-size:12px;line-height:1.3;font-weight:800;transition:filter .15s;white-space:normal}
+.m360-pro-mode .app .btn:hover{filter:brightness(.97)}
+.m360-pro-mode .app .primary{background:linear-gradient(105deg,#3267ed,#1e9ed4);box-shadow:0 5px 14px rgba(54,101,231,.17)}
+.m360-pro-mode .app .ghost{color:#2f4e73;background:#fff;border:1px solid #dce6f2}
+.m360-pro-mode .app input,.m360-pro-mode .app select,.m360-pro-mode .app textarea{border-color:#dae5f1;background:#fff;color:#22354c;min-width:0}
+.m360-pro-mode .app input:focus,.m360-pro-mode .app select:focus,.m360-pro-mode .app textarea:focus{outline:2px solid #b6d5ff;outline-offset:0}
+.m360-pro-mode .app .stage{background:#f8fbff;border:1px solid #e5edf6;border-radius:12px}
+.m360-pro-mode .app .table-wrap{border:1px solid #e4ebf4;border-radius:13px;max-width:100%;overflow-x:auto}
+.m360-pro-mode .app table th{background:#f5f8fc;color:#718198;font-size:11px;letter-spacing:.35px;text-transform:uppercase;font-weight:800;white-space:nowrap}
+.m360-pro-mode .app table td{color:#334662;font-size:12px}
+.m360-pro-mode .app table tr:hover td{background:#fafdff}
+.m360-pro-mode .app th,.m360-pro-mode .app td{border-color:#e9eef6}
+.m360-pro-mode .app .view{min-width:0}
+.m360-pro-mode .app .view>header{margin-bottom:20px}
+.m360-pro-mode .app .badge{font-size:11px}
+.m360-pro-mode .app .notice{background:#f0f8ff;border-color:#cfe8fb}
+.m360-pro-mode .login-page{background:radial-gradient(circle at 83% 17%,rgba(55,137,251,.24),transparent 35%),linear-gradient(125deg,#08182f,#15355c)}
+.m360-pro-mode .login-card{border:1px solid rgba(255,255,255,.42);box-shadow:0 25px 90px rgba(3,12,36,.3);border-radius:23px}
+.m360-pro-mode .login-card h1{font-family:Manrope,sans-serif;font-weight:800}
+.m360-pro-mode .login-card input{border-radius:12px}
+.m360-pro-mode .login-card .btn.primary{border-radius:11px}
+.m360-pro-mode .m360-mobile-nav{display:none}
+.m360-pro-mode .m360-drawer-overlay{display:none}
+.m360-pro-mode.m360-focus .app{grid-template-columns:minmax(0,1fr)}
+.m360-pro-mode.m360-focus .app>aside{display:none}
+@media(min-width:1450px){.m360-pro-mode .app .two{grid-template-columns:1.7fr 1fr}}
+@media(max-width:1280px){.m360-pro-mode .m360-launchpad{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1000px){
+.m360-pro-mode .app{grid-template-columns:minmax(0,1fr)}
+.m360-pro-mode .app>aside{position:fixed;top:0;bottom:0;left:0;width:min(300px,84vw);height:100dvh;z-index:90;transform:translateX(-105%);transition:transform .22s ease;box-shadow:none}
+.m360-pro-mode.m360-drawer-open .app>aside{transform:translateX(0);box-shadow:14px 0 70px rgba(0,0,0,.32)}
+.m360-pro-mode .m360-drawer-overlay{display:block;position:fixed;inset:0;background:rgba(6,20,38,.56);opacity:0;pointer-events:none;z-index:88;transition:opacity .22s}
+.m360-pro-mode.m360-drawer-open .m360-drawer-overlay{opacity:1;pointer-events:auto}
+.m360-pro-mode .app>main{padding:19px 20px 95px}
+.m360-pro-mode .m360-menu-toggle{display:grid}
+.m360-pro-mode .m360-mobile-nav{display:flex;position:fixed;z-index:70;bottom:0;left:0;right:0;height:calc(65px + env(safe-area-inset-bottom,0px));padding:7px 8px calc(7px + env(safe-area-inset-bottom,0px));align-items:stretch;gap:3px;background:#fff;border-top:1px solid #e5ebf2;box-shadow:0 -8px 22px rgba(24,52,88,.055)}
+.m360-pro-mode .m360-mobile-nav button{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;color:#77869b;border:0;background:transparent;border-radius:10px;font-weight:700;font-size:10px;min-width:0;cursor:pointer}
+.m360-pro-mode .m360-mobile-nav button.active{background:#eff5ff;color:#2458ca}
+.m360-pro-mode .m360-mobile-nav svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.m360-pro-mode .m360-topbar{margin-bottom:18px}
+}
+@media(max-width:650px){
+.m360-pro-mode .app>main{padding:13px 12px 95px}
+.m360-pro-mode .m360-topbar{gap:8px;padding-bottom:13px}
+.m360-pro-mode .m360-topbar-eyebrow{display:none}
+.m360-pro-mode .m360-topbar-title{font-size:12px;max-width:88px;line-height:1.2}
+.m360-pro-mode .m360-topbar-search{flex:1;min-width:0}
+.m360-pro-mode .m360-topbar-search input{height:40px;font-size:11px;padding:9px 10px 9px 34px}
+.m360-pro-mode .m360-topbar-search>svg{left:10px}
+.m360-pro-mode .m360-keyhint,.m360-pro-mode .m360-avatar{display:none}
+.m360-pro-mode .m360-icon-button{width:40px;height:40px;flex-basis:40px}
+.m360-pro-mode .m360-topbar-actions{gap:4px}
+.m360-pro-mode .m360-hero{padding:23px 20px;border-radius:17px;margin-bottom:17px}
+.m360-pro-mode .m360-hero h2{font-size:23px}
+.m360-pro-mode .m360-hero-meta{display:none}
+.m360-pro-mode .m360-launchpad{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.m360-pro-mode .m360-launchpad button{padding:13px 11px}
+.m360-pro-mode .app .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.m360-pro-mode .app .card{padding:14px;border-radius:14px}
+.m360-pro-mode .app .card.kpi{min-height:104px}
+.m360-pro-mode .app .kpi strong{font-size:26px}
+.m360-pro-mode .app .kpi small{font-size:11px}
+.m360-pro-mode .app header{align-items:flex-start}
+.m360-pro-mode .app header h1{font-size:22px}
+.m360-pro-mode #dashboard>header{justify-content:flex-start}
+.m360-pro-mode .app .section h2{font-size:14px}
+.m360-pro-mode .app .two{grid-template-columns:minmax(0,1fr)}
+.m360-pro-mode .app .toolbar{align-items:stretch}
+.m360-pro-mode .app .toolbar input,.m360-pro-mode .app .toolbar select{max-width:100%;flex:1 1 150px}
+.m360-pro-mode .app .chat-layout{grid-template-columns:minmax(0,1fr)}
+.m360-pro-mode .m360-topbar-search .m360-search-results{width:min(80vw,340px);left:auto;right:-48px}
+}
+@media(prefers-reduced-motion:reduce){.m360-pro-mode *{scroll-behavior:auto!important;transition-duration:.01ms!important}}
