@@ -26,3 +26,13 @@
 .invite-mode-actions{display:flex;flex-wrap:wrap;gap:8px}
 .invite-mode-actions .btn{font-size:11px;flex:1 1 130px}
 .invite-mode-actions .btn:disabled{opacity:.56;cursor:default}
+
+/* MIRED360 Operaciones multiempresa */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:11px}
+.module-item{display:flex;align-items:center;justify-content:space-between;gap:9px;background:#f4f8fc;border:1px solid #e0eaf5;border-radius:11px;padding:13px 15px}
+.module-item strong{font-size:12px;color:#233f5d}
+.module-item .badge{white-space:nowrap}
+#view-campanas .card,#view-sucursales .card,#view-rendimiento .card,#view-llamadas .card{margin-bottom:18px}
+#view-llamadas .form-grid{max-width:980px}
+#memberRows select{min-width:155px;padding:9px}
+@media(max-width:600px){.module-grid{grid-template-columns:1fr}.page-head h1{font-size:22px}}
