@@ -11,3 +11,10 @@
 .check-line span{flex:1}
 .check-line a{font-weight:800;text-decoration:underline}
 .auth-card .check-line{margin:15px 0}
+
+/* First-run guided onboarding for new tenant accounts. */
+.start-guide{display:flex;gap:14px;align-items:flex-start;background:#eaf5ff;border:1px solid #c7e4fb;padding:20px;border-radius:15px;margin:0 0 17px}
+.start-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(130deg,#4573f0,#21b4d8);color:white;font-size:24px}
+.start-guide-content{flex:1;min-width:0}.start-guide strong{font:800 15px Manrope,sans-serif;color:#184677}
+.start-guide p{margin:7px 0 12px;color:#547597;font-size:12px;line-height:1.6}
+.start-guide-buttons{display:flex;gap:8px;flex-wrap:wrap}
