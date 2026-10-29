@@ -5,18 +5,19 @@ Actualización: 29 de octubre de 2026
 ## Funciones disponibles
 - Crear bases separadas por empresa y sucursal, con declaración de fundamento válido para tratar contactos.
 - Cargar CSV, TSV o TXT con nombre y teléfono obligatorios; ciudad y observaciones opcionales. Hasta 2.000 contactos nuevos por archivo, límite de archivo 2 MB, validación básica y filtro de repetidos.
+- La importación de cada archivo es **atómica**: o se guarda correctamente el lote, o se revierte; otros archivos simultáneos no duplican números. Los celulares de Colombia se comparan también con y sin prefijo +57.
 - Configurar identificadores de extensión (2–8 dígitos), responsable y meta mensual.
 - Asignar bases a asesores en la misma sucursal; propietario/administrador supervisa las bases autorizadas y asesores solo ven las bases asignadas.
-- Buscar contactos, clasificar estados, registrar notas y próxima llamada, mantener historial inmutable de gestiones y observar resultados por extensión.
+- Buscar contactos, clasificar estados, registrar notas y próxima llamada, mantener historial de gestiones y observar ventas del mes por la **extensión que tenía la base al registrar cada llamada**, no por el asesor asignado después.
 - Abrir el marcador nativo del dispositivo con `tel:` cuando esté disponible.
 - Pausar o reactivar una base.
 - Convertir una gestión marcada como Venta en un prospecto con estado Venta dentro del CRM, con producto y valor, bloqueando duplicados del mismo contacto.
 - Activar/desactivar el módulo «llamadas» por empresa desde el panel SaaS administrador.
 
 ## Datos y seguridad
-Tablas nuevas: `saas_cc_extensiones`, `saas_cc_bases`, `saas_cc_contactos` y `saas_cc_gestiones`, todas con RLS. Funciones RPC protegidas: `saas_cc_guardar_extension`, `saas_cc_asignar_base`, `saas_cc_registrar_gestion`, `saas_cc_pasar_crm`, `saas_cc_estado_base`. El asesor no puede importar por su cuenta, autoasignarse otra base ni leer contactos de otra empresa/sucursal. El acceso sigue sujeto al módulo y suscripción vigentes. SQL migraciones 08, 09 y 10.
+Tablas nuevas: `saas_cc_extensiones`, `saas_cc_bases`, `saas_cc_contactos` y `saas_cc_gestiones`, todas con RLS. Funciones RPC protegidas: `saas_cc_guardar_extension`, `saas_cc_asignar_base`, `saas_cc_registrar_gestion`, `saas_cc_pasar_crm`, `saas_cc_estado_base`. El asesor no puede importar por su cuenta, autoasignarse otra base ni leer contactos de otra empresa/sucursal. El acceso sigue sujeto al módulo y suscripción vigentes. SQL migraciones 08 a 12.
 
-Se ejecutaron pruebas SQL transaccionales con dos identidades autorizadas, comprobando la importación de contacto por gerente, extensión, asignación, lectura restringida, registro de gestión, bloqueo de módulo desactivado y conversión a CRM sin duplicados. Las transacciones se revirtieron: no se persistió información ficticia.
+Se ejecutaron pruebas SQL transaccionales con dos identidades autorizadas, comprobando la importación de contacto por gerente, extensión, asignación, lectura restringida, registro de gestión, bloqueo de módulo desactivado y conversión a CRM sin duplicados. Las transacciones se revirtieron: no se persistió información ficticia. Se volvió a probar importación duplicada (+57 y sin +57), gestión del asesor, captura de extensión histórica, conversión al CRM y prevención de una segunda conversión.
 
 ## Límites importantes
 - **NO hay conexión al PBX/SIP de Comuniquémonos** ni una función de marcación automática WebRTC/SIP. Una extensión registrada es una etiqueta de gestión interna hasta enlazar proveedor y cuenta autorizada.
