@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="saas/empresas.css?v=20261029-16">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="saas/empresas.js?v=20261029-13"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-17"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-17"></script><script defer src="saas/supervision.js?v=20261029-1"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -65,7 +65,7 @@
   <div class="brand"><span class="brand-logo">M</span><div><strong>MIRED<span>360</span></strong><small>CRM EMPRESAS</small></div></div>
   <div class="org-info"><span class="org-avatar" id="orgAvatar">E</span><div><b id="orgNameSide">Mi empresa</b><small id="orgPlanSide">Plan prueba</small></div></div>
   <div class="nav-title">OPERACIÓN COMERCIAL</div>
-  <nav id="nav"><button data-page="dashboard" class="active">▦ <span>Panel principal</span></button><button data-page="prospectos">♧ <span>Prospectos</span></button><button data-page="seguimientos">◷ <span>Seguimientos</span></button><button data-page="ventas">▤ <span>Ventas</span></button><button data-page="reportes">▥ <span>Reportes</span></button><button data-page="campanas" data-module="campanas">◎ <span>Campañas</span></button><button data-page="callcenter" data-module="llamadas">◉ <span>Call Center</span></button><button data-page="llamadas" data-module="llamadas">☎ <span>Llamadas de prospectos</span></button><div class="nav-title">ADMINISTRACIÓN</div><button data-page="rendimiento">▤ <span>Rendimiento del equipo</span></button><button data-page="sucursales" data-module="sucursales">▦ <span>Sucursales</span></button><button data-page="equipo">♙ <span>Equipo y accesos</span></button><button data-page="configuracion">⚙ <span>Configuración</span></button></nav>
+  <nav id="nav"><button data-page="dashboard" class="active">▦ <span>Panel principal</span></button><button data-page="prospectos">♧ <span>Prospectos</span></button><button data-page="seguimientos">◷ <span>Seguimientos</span></button><button data-page="ventas">▤ <span>Ventas</span></button><button data-page="reportes">▥ <span>Reportes</span></button><button data-page="campanas" data-module="campanas">◎ <span>Campañas</span></button><button data-page="callcenter" data-module="llamadas">◉ <span>Call Center</span></button><button data-page="supervision" data-module="llamadas" class="hidden">▥ <span>Supervisión Call Center</span></button><button data-page="llamadas" data-module="llamadas">☎ <span>Llamadas de prospectos</span></button><div class="nav-title">ADMINISTRACIÓN</div><button data-page="rendimiento">▤ <span>Rendimiento del equipo</span></button><button data-page="sucursales" data-module="sucursales">▦ <span>Sucursales</span></button><button data-page="equipo">♙ <span>Equipo y accesos</span></button><button data-page="configuracion">⚙ <span>Configuración</span></button></nav>
   <div class="sidebar-foot"><div class="sync"><i></i> <span id="syncStatus">Conectado</span></div><small id="sidebarEmail"></small><button id="logout" class="logout" type="button">Cerrar sesión</button></div>
  </aside>
  <main>
@@ -176,6 +176,46 @@
     </form>
    </div>
    <div class="card"><h2>Últimas gestiones</h2><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Contacto</th><th>Asesor</th><th>Resultado</th><th>Próximo contacto</th><th>Detalle</th></tr></thead><tbody id="ccHistoryRows"></tbody></table></div></div>
+  </section>
+  <section id="view-supervision" class="view">
+   <div class="page-head">
+    <div><h1>Supervisión del Call Center</h1><p>Productividad por asesor, resultados diarios, metas y control de bases. Datos registrados en MIRED360.</p></div>
+    <button id="ccSupExport" type="button" class="btn secondary" disabled>Exportar reporte CSV</button>
+   </div>
+   <div class="card">
+    <div class="cc-sup-filters">
+     <div class="cc-sup-periods" aria-label="Periodo del reporte">
+      <button type="button" data-cc-period="hoy" class="btn secondary">Hoy</button>
+      <button type="button" data-cc-period="semana" class="btn secondary">7 días</button>
+      <button type="button" data-cc-period="mes" class="btn secondary active">Este mes</button>
+      <button type="button" data-cc-period="treinta" class="btn secondary">30 días</button>
+     </div>
+     <label>Desde<input id="ccSupStart" type="date"></label>
+     <label>Hasta<input id="ccSupEnd" type="date"></label>
+     <button id="ccSupRefresh" type="button" class="btn primary">Actualizar datos</button>
+    </div>
+    <p id="ccSupCount" class="muted">Reporte de actividad empresarial</p>
+    <p id="ccSupStatus" class="cc-sup-status" role="status">Selecciona un período para consultar.</p>
+   </div>
+   <div id="ccSupMetrics" class="cc-sup-metrics" aria-label="Indicadores principales"></div>
+   <div class="card"><h2>Resultados por asesor</h2><p class="muted">Cada gestión corresponde a un resultado guardado. «Contactos» y «Ventas» cuentan clientes únicos dentro del período.</p>
+    <div class="table-wrap"><table><thead><tr><th>Asesor</th><th>Gestiones</th><th>Contactos</th><th>Interesados</th><th>Seguimientos</th><th>Sin respuesta</th><th>Ventas</th><th>Conversión</th></tr></thead><tbody id="ccSupAdvisorRows"></tbody></table></div>
+   </div>
+   <div class="card"><h2>Extensiones y metas</h2><p class="muted">La venta se acredita a la extensión vinculada a la base en el momento de registrar la gestión. Las metas son mensuales y su cumplimiento se muestra al elegir «Este mes».</p>
+    <div class="table-wrap"><table><thead><tr><th>Extensión</th><th>Asesor actual</th><th>Gestiones</th><th>Contactos</th><th>Ventas</th><th>Meta y cumplimiento</th></tr></thead><tbody id="ccSupExtRows"></tbody></table></div>
+   </div>
+   <div class="cc-sup-split">
+    <div class="card"><h2>Actividad por día</h2><p class="muted">Distribución de gestiones registradas (hora de Colombia).</p>
+     <div class="table-wrap"><table><thead><tr><th>Día</th><th>Gestiones</th><th>Actividad</th><th>Contactos</th><th>Ventas</th></tr></thead><tbody id="ccSupDayRows"></tbody></table></div>
+    </div>
+    <div class="card"><h2>Resultados de las gestiones</h2><p class="muted">Las categorías cuentan gestiones realizadas, no clientes únicos.</p>
+     <div class="table-wrap"><table><thead><tr><th>Resultado</th><th>Total</th><th>Distribución</th></tr></thead><tbody id="ccSupOutcomeRows"></tbody></table></div>
+    </div>
+   </div>
+   <div class="card"><h2>Estado de las bases</h2><p class="muted">Existencias y estado actual de todas las bases autorizadas de la empresa. Estas cifras no dependen del filtro de fechas.</p>
+    <div class="table-wrap"><table><thead><tr><th>Base</th><th>Asesor asignado</th><th>Contactos</th><th>Gestionados</th><th>Pendientes</th><th>Ventas actuales</th><th>Seguimientos vencidos</th><th>Avance</th></tr></thead><tbody id="ccSupBaseRows"></tbody></table></div>
+   </div>
+   <p class="cc-sup-clarification">Los indicadores muestran gestiones registradas por los usuarios. No representan llamadas confirmadas por una central telefónica y no incluyen grabaciones ni duración de llamadas SIP.</p>
   </section>
   <section id="view-llamadas" class="view">
    <div class="page-head"><div><h1>Gestión de llamadas</h1><p>Bitácora manual para registrar contactos, resultados y próximas llamadas. No realiza llamadas telefónicas automáticamente.</p></div></div>
