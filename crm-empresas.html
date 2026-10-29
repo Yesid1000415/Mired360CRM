@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1b36">
+<meta name="description" content="MIRED360 CRM Empresas: gestiona prospectos, ventas, seguimientos y colaboradores de tu empresa.">
+<title>MIRED360 CRM Empresas · Plataforma de gestión</title>
+<link rel="stylesheet" href="saas/empresas.css?v=20261029-1">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
+<script defer src="saas/empresas.js?v=20261029-1"></script>
+</head><body>
+<div class="auth-screen" id="authScreen">
+  <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
+  <div class="auth-card">
+    <span class="eyebrow">LA GESTIÓN DE TU NEGOCIO</span>
+    <h1 id="authHeading">Bienvenido a MIRED360</h1>
+    <p id="authSubheading">Ingresa para trabajar con el CRM exclusivo de tu empresa.</p>
+    <form id="authForm">
+      <label>Correo electrónico<input id="authEmail" type="email" autocomplete="email" placeholder="tu@empresa.com" required></label>
+      <label>Contraseña<input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="Tu contraseña" required></label>
+      <button type="submit" class="btn primary full" id="authSubmit">Ingresar a mi empresa</button>
+    </form>
+    <p class="feedback" id="authMessage" role="status" aria-live="polite"></p>
+    <div class="auth-links"><button id="authSwitch" type="button" class="text-btn">Crear cuenta</button><button id="authReset" type="button" class="text-btn">Olvidé mi contraseña</button></div>
+    <div class="auth-divider"></div>
+    <p class="minor">¿Quieres conocer MIRED360 antes de registrarte? <a href="demo-crm.html">Explora la demostración</a>.</p>
+    <p class="minor"><a href="crm-planes.html">Ver planes comerciales</a></p>
+  </div>
+  <p class="auth-foot">MIRED360 CRM · Acceso empresarial · © 2026</p>
+</div>
+<div class="auth-screen hidden" id="onboardingScreen">
+  <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
+  <div class="auth-card">
+    <span class="eyebrow">CONFIGURA TU NEGOCIO</span><h1>Crear espacio empresarial</h1>
+    <p>Tu equipo, clientes y gestiones estarán separados de los de otras empresas.</p>
+    <form id="companyForm">
+      <label>Nombre comercial<input id="companyName" maxlength="120" required placeholder="Nombre de tu empresa"></label>
+      <label>Correo para facturación<input id="companyEmail" type="email" maxlength="180" required></label>
+      <button type="submit" class="btn primary full" id="companySubmit">Crear mi empresa · prueba de 14 días</button>
+    </form>
+    <p class="feedback" id="companyMessage" role="status"></p>
+    <button class="text-btn" id="companyLogout" type="button">Cerrar sesión</button>
+  </div>
+</div>
+<div class="shell hidden" id="saasApp">
+ <div class="scrim" id="scrim"></div>
+ <aside id="sidebar">
+  <div class="brand"><span class="brand-logo">M</span><div><strong>MIRED<span>360</span></strong><small>CRM EMPRESAS</small></div></div>
+  <div class="org-info"><span class="org-avatar" id="orgAvatar">E</span><div><b id="orgNameSide">Mi empresa</b><small id="orgPlanSide">Plan prueba</small></div></div>
+  <div class="nav-title">OPERACIÓN COMERCIAL</div>
+  <nav id="nav"><button data-page="dashboard" class="active">▦ <span>Panel principal</span></button><button data-page="prospectos">♧ <span>Prospectos</span></button><button data-page="seguimientos">◷ <span>Seguimientos</span></button><button data-page="ventas">▤ <span>Ventas</span></button><button data-page="reportes">▥ <span>Reportes</span></button><div class="nav-title">ADMINISTRACIÓN</div><button data-page="equipo">♙ <span>Equipo y accesos</span></button><button data-page="configuracion">⚙ <span>Configuración</span></button></nav>
+  <div class="sidebar-foot"><div class="sync"><i></i> <span id="syncStatus">Conectado</span></div><small id="sidebarEmail"></small><button id="logout" class="logout" type="button">Cerrar sesión</button></div>
+ </aside>
+ <main>
+  <div class="topbar"><button class="icon-button menu-button" id="openMenu" aria-label="Abrir menú" type="button">☰</button><div class="top-titles"><small>PLATAFORMA EMPRESARIAL</small><strong>MIRED360 CRM</strong></div><select id="orgSwitcher" class="org-switch hidden" aria-label="Seleccionar empresa"></select><span class="top-spacer"></span><button class="icon-button" id="fullscreen" title="Pantalla completa" aria-label="Pantalla completa" type="button">⛶</button><span class="top-avatar" id="userAvatar">M</span></div>
+  <div class="status-banner hidden" id="trialBanner" role="status"></div>
+  <div class="flash hidden" id="flash" role="status" aria-live="polite"></div>
+  <section id="view-dashboard" class="view active">
+   <div class="hero"><div><span class="eyebrow">CENTRO DE OPERACIONES</span><h1>Tu empresa, bajo control.</h1><p>Organiza las oportunidades, tus seguimientos, los cierres y el trabajo de tu equipo desde una sola plataforma.</p></div><div class="hero-trial"><strong id="heroPlan">Plan de prueba</strong><small id="heroDays">14 días de acceso</small></div></div>
+   <div class="section-heading"><h2>Accesos rápidos</h2><small>Herramientas de tu empresa</small></div>
+   <div class="quick"><button data-go="prospectos">♧ <b>Prospectos</b><small>Gestionar clientes</small></button><button data-go="seguimientos">◷ <b>Seguimientos</b><small>Próximas gestiones</small></button><button data-go="ventas">▤ <b>Ventas</b><small>Control comercial</small></button><button data-go="reportes">▥ <b>Reportes</b><small>Resultados de tu equipo</small></button></div>
+   <div class="metrics" id="metrics"></div>
+   <div class="split"><div class="card"><div class="section-heading"><h2>Embudo comercial</h2><small>Información de tu empresa</small></div><div class="stage-bars" id="pipeline"></div></div><div class="card"><div class="section-heading"><h2>Próximos seguimientos</h2></div><div id="nextTasks" class="task-list"></div></div></div>
+  </section>
+  <section id="view-prospectos" class="view"><div class="page-head"><div><h1>Prospectos</h1><p>Contactos y oportunidades de tu empresa.</p></div><div class="actions"><button class="btn secondary" id="exportBtn">Exportar CSV</button><button class="btn primary" id="addLead">+ Nuevo prospecto</button></div></div><div class="card"><div class="filters"><input id="leadSearch" type="search" placeholder="Buscar cliente, ciudad, producto..." aria-label="Buscar prospectos"><select id="leadFilter" aria-label="Estado"><option value="">Todos los estados</option><option>Nuevo</option><option>Contactado</option><option>Seguimiento</option><option>Venta</option><option>Instalado</option><option>Perdido</option></select></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Teléfono</th><th>Ciudad</th><th>Producto</th><th>Estado</th><th>Valor mensual</th><th>Acciones</th></tr></thead><tbody id="leadRows"></tbody></table></div></div></section>
+  <section id="view-seguimientos" class="view"><div class="page-head"><div><h1>Seguimientos</h1><p>Contactos que requieren atención.</p></div><button data-go="prospectos" class="btn secondary">Ver prospectos</button></div><div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Teléfono</th><th>Próxima gestión</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="taskRows"></tbody></table></div></div></section>
+  <section id="view-ventas" class="view"><div class="page-head"><div><h1>Ventas</h1><p>Oportunidades ganadas e instalaciones registradas.</p></div></div><div class="metrics" id="salesMetrics"></div><div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Producto</th><th>Ciudad</th><th>Estado</th><th>Valor mensual</th></tr></thead><tbody id="salesRows"></tbody></table></div></div></section>
+  <section id="view-reportes" class="view"><div class="page-head"><div><h1>Reportes</h1><p>Indicadores comerciales actualizados.</p></div><button class="btn secondary" id="exportReport">Exportar CSV</button></div><div class="metrics" id="reportMetrics"></div><div class="split"><div class="card"><h2>Prospectos por estado</h2><div class="stage-bars" id="reportBars"></div></div><div class="card"><h2>Origen de los contactos</h2><div class="stage-bars" id="sourcesBars"></div></div></div></section>
+  <section id="view-equipo" class="view"><div class="page-head"><div><h1>Equipo y accesos</h1><p>Invita colaboradores con permisos por empresa.</p></div></div><div class="card" id="teamAdmin"><h2>Invitar colaborador</h2><p class="muted">La invitación es personal, dura siete días y solo sirve con el correo indicado. Comparte el enlace de forma privada.</p><form id="inviteForm" class="inline-form"><label>Correo de la persona<input id="inviteEmail" type="email" maxlength="180" placeholder="colaborador@empresa.com" required></label><label>Permiso<select id="inviteRole"><option value="asesor">Asesor</option><option value="administrador">Administrador</option></select></label><button class="btn primary" type="submit" id="inviteSubmit">Crear invitación</button></form><div id="inviteResult" class="invite-result hidden"><label>Enlace de invitación<input readonly id="inviteLink"></label><button id="copyInvite" class="btn secondary" type="button">Copiar enlace</button><p class="muted">Guarda este enlace ahora: por seguridad el código no podrá consultarse nuevamente.</p></div></div><div class="card"><h2>Miembros</h2><div class="table-wrap"><table><thead><tr><th>Usuario</th><th>Rol</th><th>Acceso</th></tr></thead><tbody id="memberRows"></tbody></table></div></div><div class="card" id="inviteHistoryCard"><h2>Invitaciones recientes</h2><div class="table-wrap"><table><thead><tr><th>Correo</th><th>Rol</th><th>Vence</th><th>Estado</th></tr></thead><tbody id="inviteRows"></tbody></table></div></div></section>
+  <section id="view-configuracion" class="view"><div class="page-head"><div><h1>Configuración empresarial</h1><p>Datos de la cuenta, acceso y suscripción.</p></div></div><div class="card"><h2>Empresa</h2><form id="settingsForm" class="settings-form"><label>Nombre comercial<input id="settingsName" maxlength="120" required></label><label>Correo de facturación<input id="settingsEmail" type="email" maxlength="180" required></label><button class="btn primary" id="saveSettings" type="submit">Guardar cambios</button></form></div><div class="card"><h2>Plan y suscripción</h2><div class="subscription-info" id="subscriptionDetails"></div><a class="btn primary" target="_blank" rel="noopener noreferrer" href="https://wa.me/573229432085?text=Hola%2C%20quiero%20activar%20un%20plan%20de%20MIRED360%20CRM.">Solicitar activación</a><p class="muted">Las activaciones y los pagos son coordinados con el equipo MIRED360. Esta plataforma no realiza cobros automáticos.</p></div><div class="card"><h2>Seguridad</h2><p class="muted">Los prospectos están separados por empresa mediante políticas de base de datos. Cada colaborador debe utilizar su cuenta individual. No compartas contraseñas.</p><button id="changePassword" class="btn secondary" type="button">Enviar correo para cambiar contraseña</button></div></section>
+  <footer>MIRED360 CRM Empresas · Gestión privada de información · <a href="crm-planes.html">Planes y condiciones</a></footer>
+ </main>
+ <div id="mobileNav" class="mobile-nav"><button data-mobile="dashboard" class="active">⌂ <span>Inicio</span></button><button data-mobile="prospectos">♧ <span>Clientes</span></button><button data-mobile="seguimientos">◷ <span>Agenda</span></button><button data-mobile="ventas">▤ <span>Ventas</span></button><button data-mobile="menu">☰ <span>Menú</span></button></div>
+</div>
+<div class="modal hidden" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="leadTitle"><div class="dialog"><div class="modal-head"><h2 id="leadTitle">Nuevo prospecto</h2><button type="button" id="closeLead" aria-label="Cerrar" class="icon-button">✕</button></div><form id="leadForm" class="form-grid"><input id="leadId" type="hidden"><label>Nombre del cliente<input id="leadName" maxlength="130" required></label><label>Teléfono<input id="leadPhone" type="tel" maxlength="30"></label><label>Correo electrónico<input id="leadEmail" type="email" maxlength="180"></label><label>Ciudad<input id="leadCity" maxlength="110"></label><label>Origen<select id="leadSource"><option>Manual</option><option>Referido</option><option>WhatsApp</option><option>Facebook</option><option>Instagram</option><option>Web</option><option>Llamada</option><option>Otro</option></select></label><label>Producto o servicio<input id="leadProduct" maxlength="110"></label><label>Estado<select id="leadStatus"><option>Nuevo</option><option>Contactado</option><option>Seguimiento</option><option>Venta</option><option>Instalado</option><option>Perdido</option></select></label><label>Valor mensual (COP)<input type="number" min="0" step="1" id="leadValue" value="0"></label><label>Próximo seguimiento<input id="leadFollow" type="date"></label><label class="wide">Observaciones<textarea id="leadNotes" rows="3" maxlength="5000"></textarea></label><div class="modal-actions wide"><button class="btn secondary" type="button" id="cancelLead">Cancelar</button><button class="btn primary" type="submit" id="leadSubmit">Guardar prospecto</button></div></form></div></div>
+</body></html>
