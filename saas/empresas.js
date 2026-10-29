@@ -368,6 +368,6 @@ async function init(){
  if(session?.user){try{await bootstrap()}catch(e){show('authScreen');setAuthMessage('Error al iniciar: '+fail(e))}}
  else{show('authScreen');authUI('login')}
 }
-window.MiredSaas={db,get org(){return org},get user(){return user},get leads(){return leads},get memberships(){return memberships},get members(){return members},editable,isOwner,currentRole,flash,esc:escapeHTML,money,dateFmt};
+window.MiredSaas={db,get org(){return org},get user(){return user},get leads(){return leads},get memberships(){return memberships},get members(){return members},editable,isOwner,currentRole,render,flash,esc:escapeHTML,money,dateFmt};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
