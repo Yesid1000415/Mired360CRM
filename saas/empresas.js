@@ -57,7 +57,7 @@ async function onAuthSubmit(e){
   }else if(authMode==='register'){
    if(!$('authLegal').checked)throw Error('Debes aceptar los términos y el aviso de privacidad.');
    if(password.length<8)throw Error('La contraseña debe tener mínimo ocho caracteres.');
-   const {data,error}=await db.auth.signUp({email,password});
+   const {data,error}=await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
    if(error)throw error;
    if(data.session){await bootstrap()}
    else{setAuthMessage('Cuenta registrada. Revisa tu correo y confirma tu dirección antes de ingresar.',true);authUI('login');setAuthMessage('Revisa tu correo para confirmar la cuenta y luego ingresa.',true)}
