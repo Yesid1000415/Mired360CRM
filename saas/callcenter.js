@@ -38,6 +38,8 @@ async function load(){
  orgId=current;[bases,extensions,team]=data.map(x=>x.data||[]);
  $('ccSetupArea').classList.toggle('hidden',!manager());
  $('ccAssignCard').classList.toggle('hidden',!manager());
+ $('ccAssignShortcut').classList.toggle('hidden',!manager());
+ $('ccRoleNotice').textContent=manager()?'Administración: puedes asignar la base a un asesor, vincular su extensión y cambiar la asignación cuando lo necesites.':'Has ingresado como asesor. Puedes trabajar las bases que te asignaron, pero para asignar o cambiar bases debes ingresar con una cuenta de propietario o administrador.';
  $('ccImportCard').classList.toggle('hidden',!manager());
  const branches=(await db.from('saas_sucursales').select('id,nombre,activa').eq('organizacion_id',current)).data||[];
  if(seq!==refreshSeq||org()?.id!==current)return;
@@ -86,7 +88,7 @@ function renderLists(){
  $('ccExtRows').innerHTML=extensions.map(e=>'<tr><td><b>'+esc(e.codigo)+'</b></td><td>'+esc(branchName(e.sucursal_id))+'</td><td>'+esc(teamName(e.usuario_id))+'</td><td>'+e.meta_mensual+'</td></tr>').join('')||empty(4,'Sin extensiones configuradas.');
  $('ccBaseRows').innerHTML=bases.map(b=>{
   const e=extensions.find(e=>e.id===b.extension_id);
-  return '<tr><td><b>'+esc(b.nombre)+'</b></td><td>'+esc(branchName(b.sucursal_id))+'</td><td>'+esc(teamName(b.asignado_a))+'</td><td>'+esc(e?.codigo||'—')+'</td><td>'+esc(b.estado)+'</td><td><button type="button" class="btn secondary" data-cc-base="'+b.id+'">Trabajar base</button> '+(manager()?'<button type="button" class="btn secondary" data-cc-toggle="'+b.id+'">'+(b.estado==='activa'?'Pausar':'Reactivar')+'</button>':'')+'</td></tr>';
+  return '<tr><td><b>'+esc(b.nombre)+'</b></td><td>'+esc(branchName(b.sucursal_id))+'</td><td>'+esc(teamName(b.asignado_a))+'</td><td>'+esc(e?.codigo||'—')+'</td><td>'+esc(b.estado)+'</td><td><button type="button" class="btn secondary" data-cc-base="'+b.id+'">Trabajar base</button> '+(manager()?'<button type="button" class="btn primary" data-cc-assign-base="'+b.id+'">Asignar</button> <button type="button" class="btn secondary" data-cc-toggle="'+b.id+'">'+(b.estado==='activa'?'Pausar':'Reactivar')+'</button>':'')+'</td></tr>';
  }).join('')||empty(6,manager()?'Crea una base para comenzar.':'Todavía no te han asignado una base.');
  const n=contacts.length,worked=contacts.filter(x=>x.estado!=='Pendiente').length,sold=contacts.filter(x=>x.estado==='Venta').length,
  pending=contacts.filter(x=>x.proxima_llamada&&x.estado!=='Venta').length;
@@ -299,6 +301,7 @@ async function importContacts(e){
  finally{$('ccImportSubmit').disabled=false}
 }
 function events(){
+ $('ccAssignShortcut').addEventListener('click',()=>{if(!manager())return core.flash('Solo el propietario o administrador puede asignar bases.',true);$('ccAssignCard').scrollIntoView({behavior:'smooth',block:'start'});$('ccAssignBase').focus();});
  $('ccRefresh').addEventListener('click',load);
  $('ccBaseForm').addEventListener('submit',createBase);
  $('ccExtForm').addEventListener('submit',saveExtension);
@@ -313,7 +316,8 @@ function events(){
  $('ccSearch').addEventListener('input',()=>{page=0;renderContacts()});
  $('ccStateFilter').addEventListener('change',()=>{page=0;renderContacts()});
  document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-cc-base]'),m=e.target.closest('[data-cc-manage]'),p=e.target.closest('[data-cc-page]'),v=e.target.closest('[data-cc-convert]'),toggle=e.target.closest('[data-cc-toggle]');
+  const b=e.target.closest('[data-cc-base]'),m=e.target.closest('[data-cc-manage]'),p=e.target.closest('[data-cc-page]'),v=e.target.closest('[data-cc-convert]'),toggle=e.target.closest('[data-cc-toggle]'),assign=e.target.closest('[data-cc-assign-base]');
+  if(assign&&manager()){const id=assign.dataset.ccAssignBase;$('ccAssignBase').value=id;refreshAssignmentOptions();$('ccAssignCard').scrollIntoView({behavior:'smooth',block:'start'});$('ccAssignAdvisor').focus();}
   if(b){selected=b.dataset.ccBase;$('ccWorkBase').value=selected;loadContacts();$('ccSearch').scrollIntoView({behavior:'smooth'})}
   if(m)manageContact(m.dataset.ccManage);
   if(v)selectConvert(v.dataset.ccConvert);
