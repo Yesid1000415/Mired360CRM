@@ -4,7 +4,7 @@ const $=x=>document.getElementById(x);
 const client=window.supabase.createClient('https://lpiusomsuswdcraoozdn.supabase.co','sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r');
 const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=s=>s?new Date(s).toLocaleDateString('es-CO'):'—';
-let companies=[],target=null,history=[];
+let companies=[],target=null,history=[],moduleTarget=null;
 function status(o){
  if(o.estado_suscripcion==='activa' && (!o.vigente_hasta || new Date(o.vigente_hasta)<=new Date()))return 'vencida';
  if(o.estado_suscripcion==='prueba' && new Date(o.prueba_hasta)<=new Date())return 'vencida';
@@ -15,7 +15,7 @@ function render(){
  const q=$('search').value.trim().toLowerCase(),filter=$('stateFilter').value;
  const filtered=companies.filter(o=>(!filter||status(o)===filter)&&(!q||[o.nombre,o.correo_facturacion,o.plan].join(' ').toLowerCase().includes(q)));
  $('stats').textContent=companies.length+' empresas · '+companies.filter(o=>status(o)==='activa').length+' activas · '+companies.filter(o=>status(o)==='prueba').length+' en prueba';
- $('companyRows').innerHTML=filtered.map(o=>'<tr><td><b>'+safe(o.nombre)+'</b></td><td>'+safe(o.correo_facturacion)+'</td><td>'+safe(o.plan)+'</td><td>'+safe(status(o))+'</td><td>'+fmt(o.vigente_hasta||o.prueba_hasta)+'</td><td>'+Number(o.usuarios)+'</td><td>'+Number(o.prospectos)+'</td><td><button class="button primary" data-activate="'+o.id+'">Activar</button> <button class="button danger" data-suspend="'+o.id+'">Suspender</button></td></tr>').join('')||'<tr><td colspan="8">No hay empresas para mostrar.</td></tr>';
+ $('companyRows').innerHTML=filtered.map(o=>'<tr><td><b>'+safe(o.nombre)+'</b></td><td>'+safe(o.correo_facturacion)+'</td><td>'+safe(o.plan)+'</td><td>'+safe(status(o))+'</td><td>'+fmt(o.vigente_hasta||o.prueba_hasta)+'</td><td>'+Number(o.usuarios)+'</td><td>'+Number(o.prospectos)+'</td><td><button class="button primary" data-activate="'+o.id+'">Activar</button> <button class="button" data-modules="'+o.id+'">Módulos</button> <button class="button danger" data-suspend="'+o.id+'">Suspender</button></td></tr>').join('')||'<tr><td colspan="8">No hay empresas para mostrar.</td></tr>';
 }
 async function load(){
  message('Consultando empresas...');
@@ -81,11 +81,38 @@ async function suspend(id){
  if(error)return message(error.message,true);
  await load();message('Empresa suspendida.');
 }
+async function openModules(id){
+ const o=companies.find(x=>x.id===id);if(!o)return;
+ moduleTarget=id;
+ $('moduleModalTitle').textContent='Módulos: '+o.nombre;
+ $('modulesModal').classList.remove('hidden');
+ await refreshModules();
+}
+async function refreshModules(){
+ if(!moduleTarget)return;
+ const {data,error}=await client.rpc('saas_admin_listar_modulos',{p_org:moduleTarget});
+ if(error){message(error.message,true);return}
+ const names={crm:'Clientes y ventas',sucursales:'Sucursales',equipo:'Asesores y equipo',campanas:'Campañas',llamadas:'Registro de llamadas'};
+ $('adminModuleRows').innerHTML=(data||[]).map(m=>
+  '<div class="module-admin-item"><strong>'+safe(names[m.codigo]||m.codigo)+'</strong>'+
+  '<button type="button" class="button '+(m.activo?'danger':'primary')+'" data-module-code="'+safe(m.codigo)+'" data-module-active="'+(!m.activo)+'">'+(m.activo?'Desactivar':'Activar')+'</button></div>'
+ ).join('')||'<p>No hay módulos configurados.</p>';
+}
+async function updateModule(code,active){
+ if(!moduleTarget)return;
+ if(!confirm('¿Confirmas '+(active?'activar':'desactivar')+' el módulo '+code+' para esta empresa?'))return;
+ const {error}=await client.rpc('saas_admin_modulo',{p_org:moduleTarget,p_codigo:code,p_activo:active});
+ if(error)return message(error.message,true);
+ await refreshModules();message('Módulo '+code+' '+(active?'activado':'desactivado')+' correctamente.');
+}
 document.addEventListener('click',e=>{
  const a=e.target.closest('[data-activate]');
  const s=e.target.closest('[data-suspend]');
+ const m=e.target.closest('[data-modules]'),t=e.target.closest('[data-module-code]');
  if(a)activateDialog(a.dataset.activate);
  if(s)suspend(s.dataset.suspend);
+ if(m)openModules(m.dataset.modules);
+ if(t)updateModule(t.dataset.moduleCode,t.dataset.moduleActive==='true');
 });
 $('loginForm').addEventListener('submit',login);
 $('activationForm').addEventListener('submit',activate);
@@ -94,6 +121,8 @@ $('exportHistory').addEventListener('click',exportHistory);
 $('search').addEventListener('input',render);
 $('stateFilter').addEventListener('change',render);
 $('closeModal').addEventListener('click',()=>$('activationModal').classList.add('hidden'));
+$('closeModules').addEventListener('click',()=>$('modulesModal').classList.add('hidden'));
+$('modulesModal').addEventListener('click',e=>{if(e.target===$('modulesModal'))$('modulesModal').classList.add('hidden')});
 $('activationModal').addEventListener('click',e=>{if(e.target===$('activationModal'))$('activationModal').classList.add('hidden')});
 $('logout').addEventListener('click',async()=>{await client.auth.signOut();$('adminPanel').classList.add('hidden');$('loginPanel').classList.remove('hidden')});
 client.auth.getSession().then(({data:{session}})=>{if(session?.user)load()}).catch(console.warn);
