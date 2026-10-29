@@ -4,7 +4,7 @@ const $=x=>document.getElementById(x);
 const client=window.supabase.createClient('https://lpiusomsuswdcraoozdn.supabase.co','sb_publishable_ZFjdUsgyfSxOqm4L1SrJJg_Z2f0lL0r');
 const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=s=>s?new Date(s).toLocaleDateString('es-CO'):'—';
-let companies=[],target=null;
+let companies=[],target=null,history=[];
 function status(o){
  if(o.estado_suscripcion==='activa' && (!o.vigente_hasta || new Date(o.vigente_hasta)<=new Date()))return 'vencida';
  if(o.estado_suscripcion==='prueba' && new Date(o.prueba_hasta)<=new Date())return 'vencida';
@@ -23,7 +23,31 @@ async function load(){
  if(error){$('adminPanel').classList.add('hidden');$('loginPanel').classList.remove('hidden');$('loginMessage').textContent='Cuenta sin permiso administrativo: '+error.message;return}
  companies=Array.isArray(data)?data:[];
  $('adminPanel').classList.remove('hidden');$('loginPanel').classList.add('hidden');
- render();message('Información actualizada.');
+ render();await loadHistory();message('Información actualizada.');
+}
+
+async function loadHistory(){
+ const {data,error}=await client.from('saas_activaciones')
+  .select('id,organizacion_id,tipo,plan,monto,referencia,observacion,hasta,creado_en')
+  .order('creado_en',{ascending:false}).limit(1000);
+ if(error){message('No fue posible cargar los movimientos: '+error.message,true);return}
+ history=data||[];
+ $('historyRows').innerHTML=history.map(x=>{
+   const org=companies.find(c=>c.id===x.organizacion_id);
+   return '<tr><td>'+fmt(x.creado_en)+'</td><td>'+safe(org?.nombre||'Empresa')+'</td><td>'+safe(x.tipo)+'</td><td>'+safe(x.plan)+'</td><td>'+new Intl.NumberFormat('es-CO').format(Number(x.monto||0))+'</td><td>'+safe(x.referencia||x.observacion)+'</td><td>'+fmt(x.hasta)+'</td></tr>';
+ }).join('')||'<tr><td colspan="7">Aún no existen activaciones registradas.</td></tr>';
+}
+function exportHistory(){
+ const rows=[['Fecha','Empresa','Tipo','Plan','Monto','Referencia','Observación','Vigencia']];
+ history.forEach(x=>{
+   const org=companies.find(c=>c.id===x.organizacion_id);
+   rows.push([x.creado_en,org?.nombre||'',x.tipo,x.plan,x.monto,x.referencia,x.observacion,x.hasta]);
+ });
+ const quote=v=>'"'+String(v??'').replace(/^[=+\-@]/,"'").replace(/"/g,'""')+'"';
+ const csv='\ufeff'+rows.map(r=>r.map(quote).join(';')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ const a=document.createElement('a');a.href=url;a.download='MIRED360_SUSCRIPCIONES_MOVIMIENTOS.csv';a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1200);
 }
 async function login(e){
  e.preventDefault();$('loginSubmit').disabled=true;
@@ -66,6 +90,7 @@ document.addEventListener('click',e=>{
 $('loginForm').addEventListener('submit',login);
 $('activationForm').addEventListener('submit',activate);
 $('refresh').addEventListener('click',load);
+$('exportHistory').addEventListener('click',exportHistory);
 $('search').addEventListener('input',render);
 $('stateFilter').addEventListener('change',render);
 $('closeModal').addEventListener('click',()=>$('activationModal').classList.add('hidden'));
