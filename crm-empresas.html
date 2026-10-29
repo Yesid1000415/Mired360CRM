@@ -3,10 +3,10 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1b36">
 <meta name="description" content="MIRED360 CRM Empresas: gestiona prospectos, ventas, seguimientos y colaboradores de tu empresa.">
 <title>MIRED360 CRM Empresas · Plataforma de gestión</title>
-<link rel="stylesheet" href="saas/empresas.css?v=20261029-13">
+<link rel="stylesheet" href="saas/empresas.css?v=20261029-16">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="saas/empresas.js?v=20261029-13"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-15"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-16"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -133,11 +133,25 @@
    <div class="card"><div class="section-heading"><h2>Bases de contactos</h2><small>Solo verás las bases que tienes autorizadas</small></div>
     <div class="table-wrap"><table><thead><tr><th>Base</th><th>Sucursal</th><th>Asesor</th><th>Extensión</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="ccBaseRows"></tbody></table></div></div>
    <div class="card cc-admin-only" id="ccImportCard">
-    <h2>Importar contactos a una base</h2><p class="muted">Importa Excel (.xlsx o .xls), CSV, TSV o TXT. Detecta encabezados en las primeras 15 filas y busca columnas «Nombre» y «Celular» o «Teléfono». Hasta 2.000 contactos nuevos y 8 MB por archivo. No se envían mensajes automáticamente.</p>
+    <h2>Importar contactos a una base</h2><p class="muted">Sube Excel (.xlsx o .xls), CSV, TSV o TXT y selecciona las columnas de nombre y celular. El importador incluye vista previa y admite archivos sin encabezados. Hasta 2.000 contactos nuevos por carga (8 MB). No se envían mensajes automáticamente.</p>
     <form id="ccImportForm" class="form-grid">
      <label>Base destino<select id="ccImportBase" required></select></label>
      <label>Archivo<input id="ccImportFile" type="file" required accept=".xlsx,.xls,.csv,.tsv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain"></label>
-     <label class="check-line wide"><input id="ccImportConsent" type="checkbox" required><span>Confirmo que puedo utilizar legalmente la información de este archivo, con evidencia de autorización o base aplicable para cada contacto.</span></label>
+     <div id="ccImportMapping" class="wide cc-import-mapping hidden">
+      <h3>Relacionar columnas del Excel</h3>
+      <p class="muted">Puedes elegir manualmente las columnas, incluso si tu archivo tiene nombres diferentes o no tiene encabezados. El archivo solo se guarda al confirmar «Importar contactos».</p>
+      <div class="cc-map-grid">
+       <label>Hoja del Excel<select id="ccImportSheet"></select></label>
+       <label>Fila de encabezados<select id="ccImportHeaderRow"></select></label>
+       <label>Columna del nombre<select id="ccImportNameCol"></select></label>
+       <label>Columna del teléfono o celular<select id="ccImportPhoneCol" required></select></label>
+       <label>Columna de ciudad (opcional)<select id="ccImportCityCol"></select></label>
+       <label>Columna de observaciones (opcional)<select id="ccImportNotesCol"></select></label>
+      </div>
+      <p id="ccImportPreviewInfo" class="cc-preview-summary" role="status"></p>
+      <div class="table-wrap"><table class="cc-preview-table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Ciudad</th></tr></thead><tbody id="ccImportPreviewRows"></tbody></table></div>
+    </div>
+    <label class="check-line wide"><input id="ccImportConsent" type="checkbox" required><span>Confirmo que puedo utilizar legalmente la información de este archivo, con evidencia de autorización o base aplicable para cada contacto.</span></label>
      <div class="wide"><button class="btn primary" id="ccImportSubmit" type="submit">Importar contactos</button><span id="ccImportStatus" class="cc-import-status" role="status"></span></div>
     </form></div>
    <div class="card">
