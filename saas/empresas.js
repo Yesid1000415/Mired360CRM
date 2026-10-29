@@ -164,8 +164,10 @@ async function enterOrg(){
  $('subscriptionDetails').innerHTML='<p><strong>Plan actual:</strong> '+escapeHTML(org.plan)+'</p><p><strong>Estado:</strong> '+escapeHTML(org.estado_suscripcion)+'</p><p><strong>Fin de prueba:</strong> '+dateFmt(org.prueba_hasta)+'</p><p><strong>Suscripción hasta:</strong> '+dateFmt(org.vigente_hasta)+'</p>';
  if(window.MiredSaasOps)window.MiredSaasOps.reset();
  if(window.MiredSaasCallCenter)window.MiredSaasCallCenter.reset();
+ if(window.MiredSaasSupervisor)window.MiredSaasSupervisor.reset();
  show('saasApp');await Promise.all([loadLeads(),loadTeam()]);if(window.MiredSaasOps)await window.MiredSaasOps.load();
  if(window.MiredSaasCallCenter)await window.MiredSaasCallCenter.load();
+ if(window.MiredSaasSupervisor)await window.MiredSaasSupervisor.load();
  navigate('dashboard');
 }
 async function loadLeads(){
@@ -226,7 +228,8 @@ async function loadTeam(){
 }
 function navigate(page){
  if(!$('view-'+page))return;
- const gated={sucursales:'sucursales',campanas:'campanas',llamadas:'llamadas',callcenter:'llamadas'};
+ const gated={sucursales:'sucursales',campanas:'campanas',llamadas:'llamadas',callcenter:'llamadas',supervision:'llamadas'};
+ if(page==='supervision'&&!['propietario','administrador'].includes(currentRole()))return flash('La supervisión está disponible solo para la gerencia.',true);
  if(gated[page]&&window.MiredSaasOps&&!window.MiredSaasOps.active(gated[page]))return flash('El módulo no está habilitado.',true);
  activePage=page;
  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+page));
