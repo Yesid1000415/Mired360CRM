@@ -3,10 +3,10 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1b36">
 <meta name="description" content="MIRED360 CRM Empresas: gestiona prospectos, ventas, seguimientos y colaboradores de tu empresa.">
 <title>MIRED360 CRM Empresas · Plataforma de gestión</title>
-<link rel="stylesheet" href="saas/empresas.css?v=20261029-8">
+<link rel="stylesheet" href="saas/empresas.css?v=20261029-9">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
-<script defer src="saas/empresas.js?v=20261029-10"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-1"></script>
+<script defer src="saas/empresas.js?v=20261029-11"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-2"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -88,6 +88,7 @@
    <div class="page-head"><div><h1>Rendimiento del equipo</h1><p>Resultados por sucursal y por asesor, calculados desde registros reales.</p></div><button id="refreshPerformance" type="button" class="btn secondary">Actualizar resultados</button></div>
    <div class="card"><h2>Resultados por sucursal</h2><div class="table-wrap"><table><thead><tr><th>Sucursal</th><th>Prospectos</th><th>Ventas</th><th>Instalados</th><th>Valor mensual</th></tr></thead><tbody id="branchPerformance"></tbody></table></div></div>
    <div class="card"><h2>Resultados por asesor</h2><div class="table-wrap"><table><thead><tr><th>Asesor</th><th>Sucursal asignada</th><th>Prospectos</th><th>Ventas</th><th>Instalados</th><th>Valor mensual</th></tr></thead><tbody id="advisorPerformance"></tbody></table></div></div>
+   <div class="card"><h2>Ventas del mes por extensión de Call Center</h2><p class="muted">Las ventas se calculan desde gestiones guardadas con resultado Venta. No hay marcación SIP hasta conectar una central.</p><div class="table-wrap"><table><thead><tr><th>Extensión</th><th>Asesor</th><th>Ventas del mes</th><th>Meta</th><th>Cumplimiento</th></tr></thead><tbody id="ccExtPerformanceRows"></tbody></table></div></div>
   </section>
   <section id="view-sucursales" class="view">
    <div class="page-head"><div><h1>Sucursales</h1><p>Administra sedes y asigna a cada asesor su lugar de trabajo.</p></div></div>
