@@ -36,3 +36,18 @@
 #view-llamadas .form-grid{max-width:980px}
 #memberRows select{min-width:155px;padding:9px}
 @media(max-width:600px){.module-grid{grid-template-columns:1fr}.page-head h1{font-size:22px}}
+
+/* Call Center comercial multiempresa responsive */
+.cc-explanation{padding:14px 18px;border:1px solid #d4e5f6;border-radius:13px;background:#edf5fd;color:#375a7b;font-size:12px;line-height:1.6;margin-bottom:19px}
+#view-callcenter .card{margin-bottom:18px}
+#view-callcenter .split{align-items:start}
+#view-callcenter .form-grid{margin:0}
+#view-callcenter .cc-smalltable{margin-top:17px}
+#view-callcenter table{min-width:690px}
+#view-callcenter .cc-actions{white-space:nowrap}
+#view-callcenter .cc-actions .btn{padding:8px 10px}
+#view-callcenter .cc-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 2px;font-size:12px;color:#697f95;flex-wrap:wrap}
+#view-callcenter .cc-import-status{display:inline-block;margin-left:14px;color:#315b7b;font-weight:700;font-size:12px}
+#view-callcenter .check-line{display:flex;align-items:flex-start;gap:10px}
+#view-callcenter .check-line input{width:17px;min-width:17px;margin:2px 0}
+@media(max-width:800px){#view-callcenter .split{display:block}#view-callcenter .cc-pagination{justify-content:center}}
