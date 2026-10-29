@@ -34,6 +34,14 @@ RLS protege los datos por empresa. Las invitaciones se validan por correo confir
 
 Pruebas SQL en transacciones descartadas: separación entre dos empresas, rechazo a modificación de datos de otra empresa, invitación válida a un colaborador, rechazo a administrador no autorizado, creación de contacto con y sin declaración de autorización.
 
+## Verificación adicional de piloto — 29/10/2026
+- Verificado con Supabase: URL de la API y clave pública vigentes coinciden con el cliente `saas/empresas.js`.
+- Corregida la recuperación de contraseña para conservar la pantalla de cambio tras inicialización de sesión.
+- Prueba SQL transaccional: ensayo vencido bloquea la escritura; plan activo con vigencia permite insert legítimo. Registros temporales descartados.
+- La aplicación ya pasa `emailRedirectTo` en registro para regresar a `crm-empresas.html`, incluso con invitación. **El administrador debe confirmar que el patrón de URL esté autorizado en Supabase Auth.**
+- Paso manual requerido: https://supabase.com/dashboard/project/lpiusomsuswdcraoozdn/auth/url-configuration → añadir `https://yesid1000415.github.io/Mired360CRM/**` como redirect permitido; conservar los existentes. Verificar también proveedor Email, plantilla de confirmación y SMTP.
+- No hay evidencia aún de ejecución completa de registro por navegador con correo nuevo, confirmación, ingreso con un segundo usuario y activación de pago real.
+
 ## Pendientes antes de comercialización general
 - Ejecutar prueba real de extremo a extremo en navegador y smartphone: registro, verificación de correo, inicio de sesión, creación de empresa, alta de contacto, invitación, recepción y aceptación, activación, vencimiento y exportación.
 - Configurar URLs de redirección permitidas en Supabase Auth para `crm-empresas.html`, habilitar servicio SMTP propio y revisar protección de contraseñas filtradas.
