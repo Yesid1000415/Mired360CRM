@@ -153,6 +153,10 @@ function events(){
  $('ccSupStart').addEventListener('change',()=>{period='personalizado';document.querySelectorAll('[data-cc-period]').forEach(b=>b.classList.remove('active'))});
  $('ccSupEnd').addEventListener('change',()=>{period='personalizado';document.querySelectorAll('[data-cc-period]').forEach(b=>b.classList.remove('active'))});
  $('ccSupExport').addEventListener('click',csvExport);
+ document.addEventListener('click',e=>{
+  if(e.target.closest('[data-page="supervision"],[data-go="supervision"]')&&manager()&&active()&&company===core.org?.id)
+    refresh();
+ });
 }
 window.MiredSaasSupervisor={reset,load,refresh};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',events);else events();
