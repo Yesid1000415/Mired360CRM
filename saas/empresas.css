@@ -68,3 +68,15 @@
 .cc-preview-summary{font-size:12px;line-height:1.6;margin:15px 0}
 .cc-preview-table{min-width:460px!important}
 @media(max-width:650px){.cc-map-grid{grid-template-columns:1fr}.cc-import-mapping{padding:10px}}
+
+/* Call Center Excel preview/mapping controls, responsive and independent of workbook headers. */
+.cc-map-panel{border:1px solid #c8dbf3;background:#f3f8fe;border-radius:14px;padding:16px;margin:12px 0}
+.cc-map-panel h3{font-size:16px;color:#193f76;margin:0 0 7px}
+.cc-map-panel p{font-size:12px;line-height:1.55;color:#496785;margin:0 0 12px}
+.cc-map-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.cc-map-grid label{min-width:0}
+.cc-map-grid select{width:100%;max-width:100%}
+.cc-map-status{font-weight:600;margin-top:12px!important}
+.cc-map-preview .cc-import-summary{padding:10px 2px;font-size:13px}
+.cc-map-preview table{min-width:380px!important}
+@media(max-width:700px){.cc-map-grid{grid-template-columns:minmax(0,1fr)}.cc-map-panel{padding:12px}}
