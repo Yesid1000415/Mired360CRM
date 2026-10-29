@@ -179,6 +179,7 @@ function render(){
  const count=leads.length,sold=leads.filter(l=>['Venta','Instalado'].includes(l.estado)),installed=leads.filter(l=>l.estado==='Instalado');
  const tasks=leads.filter(l=>l.proximo_seguimiento&& !['Perdido','Instalado'].includes(l.estado)).sort((a,b)=>a.proximo_seguimiento.localeCompare(b.proximo_seguimiento));
  const revenue=sold.reduce((n,l)=>n+Number(l.valor_mensual||0),0);
+ $('startGuide').classList.toggle('hidden',count>0||!editable());
  $('metrics').innerHTML=card('Prospectos',count,'Contactos registrados')+card('Seguimientos',tasks.length,'Gestiones programadas')+card('Cierres',sold.length,'Ventas e instalados')+card('Instalados',installed.length,'Servicios completados');
  $('pipeline').innerHTML=bars(statuses.map(s=>[s,leads.filter(l=>l.estado===s).length]));
  $('salesMetrics').innerHTML=card('Ventas',sold.length,'Negocios cerrados')+card('Instalados',installed.length,'Registros instalados')+card('Valor mensual',money(revenue),'Total estimado')+card('Conversión',count?Math.round(sold.length/count*100)+'%':'0%','Sobre prospectos');
@@ -314,6 +315,7 @@ function events(){
  $('inviteForm').addEventListener('submit',invite);
  $('settingsForm').addEventListener('submit',saveSettings);
  $('addLead').addEventListener('click',()=>openLead());
+ $('guideNewLead').addEventListener('click',()=>openLead());
  $('closeLead').addEventListener('click',closeLead);$('cancelLead').addEventListener('click',closeLead);
  $('leadModal').addEventListener('click',e=>{if(e.target===$('leadModal'))closeLead()});
  $('leadSearch').addEventListener('input',render);$('leadFilter').addEventListener('change',render);
