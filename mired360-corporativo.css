@@ -146,3 +146,6 @@ body.m360-pro-mode{--n:#091a35;--n2:#102b51;--c:#20c2dc;--b:#4268f5;--bg:#f4f7fb
 /* Keep business forms, confirmations and editing dialogs above the mobile navigation. */
 .m360-pro-mode .modal{z-index:140}
 @media(max-width:1000px){.m360-pro-mode .modal.open{padding:16px 12px calc(76px + env(safe-area-inset-bottom,0px))}}
+
+.m360-pro-mode .m360-demo-link{display:block;text-align:center;margin:16px 0 0;padding:12px;border:1px solid #d8e7fa;border-radius:10px;background:#f2f7ff;color:#275dac;text-decoration:none;font-size:12px;font-weight:800}
+.m360-pro-mode .m360-demo-link:hover{background:#e5f1ff}
