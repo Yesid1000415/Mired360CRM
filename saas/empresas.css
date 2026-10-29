@@ -80,3 +80,29 @@
 .cc-map-preview .cc-import-summary{padding:10px 2px;font-size:13px}
 .cc-map-preview table{min-width:380px!important}
 @media(max-width:700px){.cc-map-grid{grid-template-columns:minmax(0,1fr)}.cc-map-panel{padding:12px}}
+
+/* Gerencia Call Center: reportes responsivos y datos legibles. */
+#view-supervision .card{margin-bottom:18px}
+#view-supervision .table-wrap{overflow-x:auto}
+#view-supervision table{min-width:710px}
+#view-supervision th,#view-supervision td{vertical-align:middle}
+#view-supervision td small{font-size:11px;color:#657890}
+.cc-sup-filters{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+.cc-sup-filters label{display:grid;gap:5px;font-size:12px;color:#4f6783;font-weight:700}
+.cc-sup-filters input{min-height:40px;padding:9px 11px;border:1px solid #c9d9e9;border-radius:9px}
+.cc-sup-periods{display:flex;gap:6px;flex-wrap:wrap}
+.cc-sup-periods .btn.active{background:#173a6b;color:white;border-color:#173a6b}
+.cc-sup-status{font-size:12px;color:#55769a;margin:8px 0 0}
+.cc-sup-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0 20px}
+.cc-sup-metric{background:white;border:1px solid #d5e4f4;border-radius:14px;padding:18px;display:grid;gap:7px;box-shadow:0 7px 19px #19395d09}
+.cc-sup-metric small{font-size:11px;font-weight:700;color:#627b95}
+.cc-sup-metric strong{font-size:30px;color:#153d70;line-height:1.1}
+.cc-sup-metric span{font-size:11px;color:#687f95;line-height:1.4}
+.cc-sup-split{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+.cc-sup-bar{height:10px;background:#e7eef7;border-radius:15px;min-width:75px;overflow:hidden}
+.cc-sup-bar span{display:block;height:100%;background:#1682d8;border-radius:15px}
+.cc-sup-progress{height:7px;background:#e7eef7;border-radius:15px;min-width:90px;margin-top:6px;overflow:hidden}
+.cc-sup-progress span{display:block;height:100%;background:#14a37a}
+.cc-sup-clarification{font-size:12px;color:#5c7190;line-height:1.5}
+@media(max-width:1200px){.cc-sup-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cc-sup-split{grid-template-columns:1fr}}
+@media(max-width:640px){.cc-sup-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cc-sup-metric{padding:12px}.cc-sup-metric strong{font-size:25px}.cc-sup-filters input{width:100%}.cc-sup-filters label{flex:1 1 120px}.cc-sup-periods{width:100%}.cc-sup-periods .btn{flex:1 1 auto;padding:8px}}
