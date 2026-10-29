@@ -283,7 +283,7 @@ function suggestHeader(rows){
  for(let i=0;i<Math.min(160,rows.length);i++){
   if(inferColumn(rows[i]||[],'phone')>=0)return i;
  }
- return rows.length?0:-1;
+ return -1; // No detected header: preserve the first data row instead of discarding it.
 }
 function normalizedPhone(value){
  const text=String(value??'').replace(/[^\d+]/g,''),digits=text.replace(/\D/g,'');
