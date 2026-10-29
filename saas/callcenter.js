@@ -632,6 +632,6 @@ async function openContactFromSupervisor(baseId,contactId){
  if(!c)return core.flash('El contacto no está disponible en esta base.',true);
  manageContact(contactId);
 }
-window.MiredSaasCallCenter={load,reset,openContactFromSupervisor};
+window.MiredSaasCallCenter={load,reset,openContactFromSupervisor,readImportSheets};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',events);else events();
 })();
