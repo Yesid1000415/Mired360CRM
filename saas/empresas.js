@@ -165,9 +165,11 @@ async function enterOrg(){
  if(window.MiredSaasOps)window.MiredSaasOps.reset();
  if(window.MiredSaasCallCenter)window.MiredSaasCallCenter.reset();
  if(window.MiredSaasSupervisor)window.MiredSaasSupervisor.reset();
+ if(window.MiredSaasTelefonia)window.MiredSaasTelefonia.reset();
  show('saasApp');await Promise.all([loadLeads(),loadTeam()]);if(window.MiredSaasOps)await window.MiredSaasOps.load();
  if(window.MiredSaasCallCenter)await window.MiredSaasCallCenter.load();
  if(window.MiredSaasSupervisor)await window.MiredSaasSupervisor.load();
+ if(window.MiredSaasTelefonia)await window.MiredSaasTelefonia.load();
  navigate('dashboard');
 }
 async function loadLeads(){
@@ -228,8 +230,8 @@ async function loadTeam(){
 }
 function navigate(page){
  if(!$('view-'+page))return;
- const gated={sucursales:'sucursales',campanas:'campanas',llamadas:'llamadas',callcenter:'llamadas',supervision:'llamadas'};
- if(page==='supervision'&&!['propietario','administrador'].includes(currentRole()))return flash('La supervisión está disponible solo para la gerencia.',true);
+ const gated={sucursales:'sucursales',campanas:'campanas',llamadas:'llamadas',callcenter:'llamadas',supervision:'llamadas',telefonia:'llamadas'};
+ if(['supervision','telefonia'].includes(page)&&!['propietario','administrador'].includes(currentRole()))return flash('Esta sección es exclusiva de gerencia.',true);
  if(gated[page]&&window.MiredSaasOps&&!window.MiredSaasOps.active(gated[page]))return flash('El módulo no está habilitado.',true);
  activePage=page;
  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+page));
