@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="saas/empresas.css?v=20261029-21">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="saas/empresas.js?v=20261029-18"></script>
-<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-21"></script><script defer src="saas/supervision.js?v=20261029-21"></script>
+<script defer src="saas/operaciones.js?v=20261029-10"></script><script defer src="saas/callcenter.js?v=20261029-21"></script><script defer src="saas/supervision.js?v=20261029-21"></script><script defer src="saas/telefonia.js?v=20261029-1"></script>
 </head><body>
 <div class="auth-screen" id="authScreen">
   <div class="auth-brand"><div class="brand-logo">M</div><div><strong>MIRED<span>360</span> CRM</strong><small>SOFTWARE EMPRESARIAL</small></div></div>
@@ -65,7 +65,7 @@
   <div class="brand"><span class="brand-logo">M</span><div><strong>MIRED<span>360</span></strong><small>CRM EMPRESAS</small></div></div>
   <div class="org-info"><span class="org-avatar" id="orgAvatar">E</span><div><b id="orgNameSide">Mi empresa</b><small id="orgPlanSide">Plan prueba</small></div></div>
   <div class="nav-title">OPERACIÓN COMERCIAL</div>
-  <nav id="nav"><button data-page="dashboard" class="active">▦ <span>Panel principal</span></button><button data-page="prospectos">♧ <span>Prospectos</span></button><button data-page="seguimientos">◷ <span>Seguimientos</span></button><button data-page="ventas">▤ <span>Ventas</span></button><button data-page="reportes">▥ <span>Reportes</span></button><button data-page="campanas" data-module="campanas">◎ <span>Campañas</span></button><button data-page="callcenter" data-module="llamadas">◉ <span>Call Center</span></button><button data-page="supervision" data-module="llamadas" class="hidden">▥ <span>Supervisión Call Center</span></button><button data-page="llamadas" data-module="llamadas">☎ <span>Llamadas de prospectos</span></button><div class="nav-title">ADMINISTRACIÓN</div><button data-page="rendimiento">▤ <span>Rendimiento del equipo</span></button><button data-page="sucursales" data-module="sucursales">▦ <span>Sucursales</span></button><button data-page="equipo">♙ <span>Equipo y accesos</span></button><button data-page="configuracion">⚙ <span>Configuración</span></button></nav>
+  <nav id="nav"><button data-page="dashboard" class="active">▦ <span>Panel principal</span></button><button data-page="prospectos">♧ <span>Prospectos</span></button><button data-page="seguimientos">◷ <span>Seguimientos</span></button><button data-page="ventas">▤ <span>Ventas</span></button><button data-page="reportes">▥ <span>Reportes</span></button><button data-page="campanas" data-module="campanas">◎ <span>Campañas</span></button><button data-page="callcenter" data-module="llamadas">◉ <span>Call Center</span></button><button data-page="telefonia" data-module="llamadas" class="hidden">☎ <span>Telefonía IP / CDR</span></button><button data-page="supervision" data-module="llamadas" class="hidden">▥ <span>Supervisión Call Center</span></button><button data-page="llamadas" data-module="llamadas">☎ <span>Llamadas de prospectos</span></button><div class="nav-title">ADMINISTRACIÓN</div><button data-page="rendimiento">▤ <span>Rendimiento del equipo</span></button><button data-page="sucursales" data-module="sucursales">▦ <span>Sucursales</span></button><button data-page="equipo">♙ <span>Equipo y accesos</span></button><button data-page="configuracion">⚙ <span>Configuración</span></button></nav>
   <div class="sidebar-foot"><div class="sync"><i></i> <span id="syncStatus">Conectado</span></div><small id="sidebarEmail"></small><button id="logout" class="logout" type="button">Cerrar sesión</button></div>
  </aside>
  <main>
@@ -185,6 +185,66 @@
     </form>
    </div>
    <div class="card"><h2>Últimas gestiones</h2><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Contacto</th><th>Asesor</th><th>Resultado</th><th>Próximo contacto</th><th>Detalle</th></tr></thead><tbody id="ccHistoryRows"></tbody></table></div></div>
+  </section>
+  <section id="view-telefonia" class="view">
+   <div class="page-head">
+    <div><h1>Telefonía IP · Comuniquémonos</h1>
+     <p>Consulta los registros de llamadas de la central y prepara su futura integración API.</p></div>
+    <button type="button" class="btn secondary" id="pbxLoad">Actualizar registros</button>
+   </div>
+   <div class="cc-explanation"><strong>Estado de integración:</strong> la conexión automática con Comuniquémonos todavía no está configurada.
+    Este módulo importa archivos históricos CDR exportados por el proveedor. No realiza marcación SIP ni verifica llamadas en tiempo real.</div>
+   <div class="card">
+    <h2>Solicitar acceso técnico al proveedor</h2>
+    <p class="muted">Comuniquémonos anuncia integraciones mediante API y webhooks. Solicita la documentación técnica disponible para tu cuenta y un entorno de pruebas. Nunca pegues contraseñas SIP ni claves API en la página.</p>
+    <div class="cc-pbx-actions">
+     <button type="button" id="pbxCopyRequest" class="btn secondary">Copiar solicitud técnica</button>
+     <a class="btn secondary" href="https://empresas.comuniquemonos.com/central-telefonica-ip-cloud/" target="_blank" rel="noopener noreferrer">Ver opciones del proveedor</a>
+    </div>
+    <p class="muted">Solicita: URL base de API, autenticación, marcación desde extensiones, formato del historial CDR y eventos webhook. Los tokens se alojarían en un servidor protegido, nunca en GitHub Pages.</p>
+   </div>
+   <div class="card">
+    <h2>Historial de llamadas de la central</h2>
+    <p class="muted">Cifras de archivos importados manualmente. No se suman a las gestiones comerciales del asesor ni representan una conexión automática.</p>
+    <div class="cc-sup-filters">
+     <label>Desde<input id="pbxFrom" type="date"></label>
+     <label>Hasta<input id="pbxTo" type="date"></label>
+    </div>
+    <p id="pbxStatus" class="cc-sup-status" role="status">Sincronización automática pendiente.</p>
+    <div id="pbxMetricRows" class="cc-sup-metrics"></div>
+    <h3>Resultados por extensión</h3>
+    <div class="table-wrap"><table><thead><tr><th>Extensión</th><th>Llamadas registradas</th><th>Contestadas</th></tr></thead><tbody id="pbxExtRows"></tbody></table></div>
+    <h3>Últimos registros del período</h3>
+    <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Teléfono (parcial)</th><th>Extensión</th><th>Dirección</th><th>Resultado</th><th>Duración</th></tr></thead><tbody id="pbxRecentRows"></tbody></table></div>
+   </div>
+   <div class="card">
+    <h2>Importar historial CDR</h2>
+    <p class="muted">Exporta el historial de llamadas de Comuniquémonos en Excel o CSV y relaciónalo con los campos de MIRED360. Máximo 1.000 llamadas y 8 MB por archivo. Debe contener fecha, teléfono, duración y resultado de atención.</p>
+    <form id="pbxForm" class="form-grid">
+     <label>Sucursal de destino<select id="pbxBranch" required></select></label>
+     <label>Archivo de registros<input id="pbxFile" type="file" required accept=".xlsx,.xls,.csv,.tsv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain"></label>
+     <div id="pbxMapping" class="cc-pbx-mapping wide hidden">
+      <h3>Relacionar columnas del archivo</h3>
+      <p>Indica dónde están fecha, teléfono, duración y resultado de llamada. Las fechas sin zona horaria se interpretan en hora de Colombia.</p>
+      <div class="cc-map-grid">
+       <label>Hoja<select id="pbxSheet"></select></label>
+       <label>Fila de encabezados<select id="pbxHeader"></select></label>
+       <label>Fecha y hora<select id="pbxTime"></select></label>
+       <label>Origen o destino telefónico<select id="pbxNumber"></select></label>
+       <label>Duración (segundos o HH:MM:SS)<select id="pbxDuration"></select></label>
+       <label>Resultado (ANSWERED, BUSY, etc.)<select id="pbxState"></select></label>
+       <label>Extensión (opcional)<select id="pbxExtension"></select></label>
+       <label>Dirección (opcional)<select id="pbxDirection"></select></label>
+       <label>Identificador de llamada (opcional)<select id="pbxExternal"></select></label>
+       <label>Si no tiene dirección, utilizar<select id="pbxDefaultDirection"><option value="saliente">Saliente</option><option value="entrante">Entrante</option></select></label>
+      </div>
+      <p id="pbxPreviewStatus" class="cc-pbx-preview-info" role="status"></p>
+      <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Teléfono parcial</th><th>Extensión</th><th>Dirección</th><th>Duración</th><th>Resultado</th></tr></thead><tbody id="pbxPreviewRows"></tbody></table></div>
+     </div>
+     <label class="check-line wide"><input id="pbxAuthorize" type="checkbox" required><span>Confirmo que los registros telefónicos pertenecen a esta empresa, que tengo autorización para tratarlos y que puedo conservarlos en MIRED360.</span></label>
+     <div class="wide"><button type="submit" class="btn primary" id="pbxImport" disabled>Importar registros</button><span id="pbxImportStatus" class="cc-import-status" role="status"></span></div>
+    </form>
+   </div>
   </section>
   <section id="view-supervision" class="view">
    <div class="page-head">
