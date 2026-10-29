@@ -10,6 +10,7 @@ let orgId=null,request=0,files=null,items=[],csvRows=null,report=null,branchIds=
 function manager(){return ['propietario','administrador'].includes(core.currentRole())}
 function active(){return !!window.MiredSaasOps?.active('llamadas')}
 function visible(){return manager()&&active()&&core.org}
+function nextLocalDay(iso){const d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+1);return d.toISOString().slice(0,10)}
 function isoLocalToday(){
  const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Bogota',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
  return p.year+'-'+p.month+'-'+p.day;
@@ -188,7 +189,7 @@ async function refresh(){
    db.rpc('saas_cc_resumen_cdr',{p_org:org,p_desde:from,p_hasta:to}),
    db.from('saas_cc_cdr').select('inicio,telefono,extension,direccion,estado,duracion_segundos,contestada')
     .eq('organizacion_id',org).gte('inicio',from+'T00:00:00-05:00')
-    .lt('inicio',to+'T23:59:59-05:00')
+    .lt('inicio',nextLocalDay(to)+'T00:00:00-05:00')
     .order('inicio',{ascending:false}).limit(100)
   ]);
   if(req!==request||core.org?.id!==org)return;
@@ -230,6 +231,11 @@ function events(){
  for(const id of ['pbxTime','pbxNumber','pbxDuration','pbxExtension','pbxState','pbxDirection','pbxExternal','pbxDefaultDirection'])$(id).addEventListener('change',preview);
  $('pbxForm').addEventListener('submit',importRecords);
  $('pbxLoad').addEventListener('click',refresh);
+ $('pbxCopyRequest').addEventListener('click',async ()=>{
+  const message="Solicito soporte técnico para integrar mi central telefónica IP de Comuniquémonos con MIRED360 CRM Empresas.\nRequiero documentación de la API disponible para mi central o PBX, autenticación, opción de iniciar llamadas por extensión, consulta de registros CDR con paginación, webhooks de eventos y validación de firmas, además de un entorno de pruebas.\nPor favor, confirmar qué funcionalidades están incluidas en mi plan y qué requiere habilitación o costo adicional.\nNo estoy enviando contraseñas ni tokens mediante este mensaje.";
+  try{await navigator.clipboard.writeText(message);core.flash('Solicitud técnica copiada. Compártela con el soporte de Comuniquémonos.')}
+  catch(e){core.flash('No se pudo copiar automáticamente. Solicita a soporte: API, CDR, eventos webhook y acceso a pruebas.',true)}
+ });
  document.addEventListener('click',e=>{
   if(e.target.closest('[data-page="telefonia"]')&&visible()&&orgId===core.org?.id)refresh();
  });
