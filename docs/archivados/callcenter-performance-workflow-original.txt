@@ -1,0 +1,189 @@
+name: Call Center performance dashboard
+on:
+  push:
+    paths:
+      - '.github/workflows/callcenter-performance.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add call center performance controls
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # ---------- BASES DE LLAMADAS ----------
+          p=Path('bases-llamadas.html')
+          s=p.read_text(encoding='utf-8')
+
+          if '.perf-grid{' not in s:
+              s=s.replace('.small{font-size:11px;color:var(--m)}', '''.small{font-size:11px;color:var(--m)}
+.perf-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.perf-card{border:1px solid var(--l);border-radius:15px;padding:13px;background:#fff}.perf-card .light{font-size:11px;color:var(--m)}.perf-card .big{font-size:25px;font-weight:900;margin:5px 0}.perf-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px}.perf-green{background:#eaf8f1;border-color:#a7dfc5}.perf-yellow{background:#fff7e4;border-color:#f2d38b}.perf-red{background:#fff0f0;border-color:#f0b1b1}.perf-gray{background:#f2f5f8;border-color:#d6dee7}.dot-green{background:#16a36a}.dot-yellow{background:#f59e0b}.dot-red{background:#e5484d}.dot-gray{background:#91a0b3}.perf-admin{margin-top:9px;display:grid;gap:6px}.perf-admin select,.perf-admin input{padding:7px;font-size:12px}''')
+              s=s.replace('@media(max-width:950px){', '@media(max-width:1100px){.perf-grid{grid-template-columns:repeat(2,1fr)}}\n@media(max-width:950px){')
+
+          notice='''  <div class="card notice">Formatos admitidos: <b>XLSX, XLS, CSV, ODS, TSV, TXT, JSON y VCF</b>. El sistema intenta detectar automáticamente nombre, teléfono, ciudad, barrio, cédula/NIT, correo y dirección. Las columnas adicionales se conservan como datos extra.</div>'''
+          team='''  <div class="card notice">Formatos admitidos: <b>XLSX, XLS, CSV, ODS, TSV, TXT, JSON y VCF</b>. El sistema intenta detectar automáticamente nombre, teléfono, ciudad, barrio, cédula/NIT, correo y dirección. Las columnas adicionales se conservan como datos extra.</div>
+
+  <div class="card" id="callCenterTeamCard">
+    <div class="section" style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px"><div><h2 style="margin:0">🚦 Rendimiento Call Center</h2><div class="small">Verde: va al ritmo de meta · Amarillo: avance medio · Rojo: necesita impulso</div></div><button class="btn ghost" onclick="loadCallCenterTeam()">Actualizar</button></div>
+    <div class="perf-grid" id="callCenterTeam"><div class="empty">Cargando extensiones...</div></div>
+  </div>'''
+          if 'id="callCenterTeamCard"' not in s:
+              s=s.replace(notice,team)
+
+          s=s.replace('let user=null,bases=[],activeBase=null,contacts=[];', 'let user=null,bases=[],activeBase=null,contacts=[],currentProfile=null,callcenterExts=[],advisorProfiles=[];')
+
+          old_init="""async function init(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session?.user){location.href='index.html';return}
+  user=session.user;await loadBases();
+}"""
+          new_init="""async function init(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session?.user){location.href='index.html';return}
+  user=session.user;
+  const {data:profile}=await sb.from('perfiles').select('user_id,nombre,email,rol').eq('user_id',user.id).maybeSingle();
+  currentProfile=profile||null;
+  await loadBases();
+  await loadCallCenterTeam();
+}"""
+          s=s.replace(old_init,new_init)
+
+          # make advisor name display-only because assignment is done by extension cards
+          s=s.replace('<label>Asesor responsable<input id="advisorName" placeholder="Nombre del asesor" onchange="saveAdvisorName()"></label>', '<label>Asesor responsable<input id="advisorName" placeholder="Sin asesor asignado" readonly></label>')
+
+          old_save="""async function saveBaseExtension(){
+  if(!activeBase)return;const extension=$('extensionSelect').value;
+  const {error}=await sb.from('bases_llamadas').update({extension,actualizado_en:new Date().toISOString()}).eq('id',activeBase.id);
+  if(error)return alert('No se pudo cambiar la extensión. '+error.message);
+  activeBase.extension=extension;const b=bases.find(x=>x.id===activeBase.id);if(b)b.extension=extension;
+  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extensionShort(extension)}`;
+}"""
+          new_save="""async function saveBaseExtension(){
+  if(!activeBase)return;const extension=$('extensionSelect').value;
+  const ext=callcenterExts.find(x=>x.extension===extension)||null;
+  const patch={extension,asesor_user_id:ext?.asesor_user_id||null,asesor_nombre:ext?.asesor_nombre||null,actualizado_en:new Date().toISOString()};
+  const {error}=await sb.from('bases_llamadas').update(patch).eq('id',activeBase.id);
+  if(error)return alert('No se pudo cambiar la extensión. '+error.message);
+  Object.assign(activeBase,patch);const b=bases.find(x=>x.id===activeBase.id);if(b)Object.assign(b,patch);
+  $('advisorName').value=activeBase.asesor_nombre||'';
+  $('baseStatus').textContent=`${activeBase.nombre} · ${contacts.length} registros · Extensión ${extensionShort(extension)}${activeBase.asesor_nombre?' · Asesor: '+activeBase.asesor_nombre:''}`;
+  await loadCallCenterTeam();
+}"""
+          s=s.replace(old_save,new_save)
+
+          # record sale timestamp when status is Venta
+          old_status="""const {error}=await sb.from('contactos_base_llamadas').update({estado,proximo_contacto:proximo,actualizado_en:new Date().toISOString()}).eq('id',id);
+  if(error){alert('No se pudo guardar el estado. '+error.message);return}
+  c.estado=estado;c.proximo_contacto=proximo;renderContacts();"""
+          new_status="""const fecha_venta=estado==='Venta'?(c.fecha_venta||new Date().toISOString()):null;
+  const {error}=await sb.from('contactos_base_llamadas').update({estado,proximo_contacto:proximo,fecha_venta,actualizado_en:new Date().toISOString()}).eq('id',id);
+  if(error){alert('No se pudo guardar el estado. '+error.message);return}
+  c.estado=estado;c.proximo_contacto=proximo;c.fecha_venta=fecha_venta;renderContacts();await loadCallCenterTeam();"""
+          s=s.replace(old_status,new_status)
+
+          # create bases already attached to the advisor assigned to selected extension
+          old_create="""const {data:base,error}=await sb.from('bases_llamadas').insert({user_id:user.id,nombre:name,archivo_origen:source||null,extension,total_registros:records.length}).select('*').single();if(error)throw error;"""
+          new_create="""const ext=callcenterExts.find(x=>x.extension===extension)||null;
+  const {data:base,error}=await sb.from('bases_llamadas').insert({user_id:user.id,nombre:name,archivo_origen:source||null,extension,asesor_user_id:ext?.asesor_user_id||null,asesor_nombre:ext?.asesor_nombre||null,total_registros:records.length}).select('*').single();if(error)throw error;"""
+          s=s.replace(old_create,new_create)
+
+          functions=r'''
+function performanceState(sales,meta,assigned=true){
+  if(!assigned)return{key:'gray',label:'Sin asesor'};
+  const now=new Date(),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const expected=Math.max(1,meta*(now.getDate()/days));
+  const ratio=sales/expected;
+  if(sales>=meta||ratio>=1)return{key:'green',label:'Va cumpliendo'};
+  if(ratio>=0.60)return{key:'yellow',label:'En progreso'};
+  return{key:'red',label:'Necesita impulso'};
+}
+function monthStartIso(){const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1,0,0,0).toISOString()}
+async function loadCallCenterTeam(){
+  const {data:exts,error}=await sb.from('callcenter_extensiones').select('*').order('extension');
+  if(error){$('callCenterTeam').innerHTML='<div class="empty">No se pudo cargar el rendimiento: '+esc(error.message)+'</div>';return}
+  callcenterExts=exts||[];
+  const isCoord=['coordinador','admin'].includes(String(currentProfile?.rol||'').toLowerCase());
+  if(isCoord){const {data}=await sb.from('perfiles').select('user_id,nombre,email,rol').eq('rol','asesor').order('nombre');advisorProfiles=data||[]}
+  const visibleBases=bases||[],baseMap=new Map(visibleBases.map(b=>[b.id,b.extension]));
+  let allContacts=[];
+  if(visibleBases.length){const {data}=await sb.from('contactos_base_llamadas').select('base_id,estado,fecha_venta').in('base_id',visibleBases.map(b=>b.id));allContacts=data||[]}
+  const start=monthStartIso();
+  const html=callcenterExts.map(ext=>{
+    const sales=allContacts.filter(c=>baseMap.get(c.base_id)===ext.extension&&c.estado==='Venta'&&c.fecha_venta&&c.fecha_venta>=start).length;
+    const meta=Number(ext.meta_mensual||15),st=performanceState(sales,meta,!!ext.asesor_user_id);
+    const options='<option value="">Sin asesor</option>'+advisorProfiles.map(a=>`<option value="${a.user_id}" ${a.user_id===ext.asesor_user_id?'selected':''}>${esc(a.nombre||a.email)}</option>`).join('');
+    const admin=isCoord?`<div class="perf-admin"><select id="advisor-${ext.extension}">${options}</select><input id="meta-${ext.extension}" type="number" min="1" max="500" value="${meta}" aria-label="Meta mensual"><button class="btn ghost" onclick="saveExtensionAssignment('${ext.extension}')">Guardar asignación</button></div>`:'';
+    return `<div class="perf-card perf-${st.key}"><div><span class="perf-dot dot-${st.key}"></span><b>Extensión ${extensionShort(ext.extension)}</b></div><div class="light">${esc(ext.asesor_nombre||'Sin asesor asignado')}</div><div class="big">${sales} <span class="light">ventas</span></div><div><b>${st.label}</b></div><div class="light">Meta mensual: ${meta}</div>${admin}</div>`;
+  }).join('');
+  $('callCenterTeam').innerHTML=html||'<div class="empty">No hay extensiones asignadas.</div>';
+}
+async function saveExtensionAssignment(extension){
+  const sel=$('advisor-'+extension),metaEl=$('meta-'+extension);if(!sel||!metaEl)return;
+  const userId=sel.value||null,meta=Math.max(1,Number(metaEl.value||15));
+  const advisor=advisorProfiles.find(a=>a.user_id===userId)||null;
+  const patch={asesor_user_id:userId,asesor_nombre:advisor?.nombre||null,meta_mensual:meta,actualizado_en:new Date().toISOString()};
+  const {error}=await sb.from('callcenter_extensiones').update(patch).eq('extension',extension);if(error)return alert('No se pudo guardar la asignación. '+error.message);
+  const {error:baseError}=await sb.from('bases_llamadas').update({asesor_user_id:userId,asesor_nombre:advisor?.nombre||null,actualizado_en:new Date().toISOString()}).eq('extension',extension);if(baseError)console.warn(baseError);
+  await loadBases();await loadCallCenterTeam();alert(`Extensión ${extensionShort(extension)} actualizada correctamente.`);
+}
+'''
+          if 'function performanceState(' not in s:
+              s=s.replace('\ninit();\n</script>', '\n'+functions+'\ninit();\n</script>')
+
+          p.write_text(s,encoding='utf-8')
+
+          # ---------- CRM PRINCIPAL ----------
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old="""  await loadLeads();
+  await loadMessages(false);
+  await loadCommissionClaims();
+  startMessageRealtime();"""
+          new="""  await loadLeads();
+  await loadMessages(false);
+  await loadCommissionClaims();
+  await loadCallCenterDashboard();
+  startMessageRealtime();"""
+          s=s.replace(old,new)
+
+          dashboard_script=r'''
+<script>
+function ccShort(v){return String(v||'').slice(-3)}
+function ccMonthStart(){const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1,0,0,0).toISOString()}
+function ccState(sales,meta,assigned){
+  if(!assigned)return{key:'gray',label:'Sin asesor'};
+  const d=new Date(),days=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(),expected=Math.max(1,meta*(d.getDate()/days)),ratio=sales/expected;
+  if(sales>=meta||ratio>=1)return{key:'green',label:'Va cumpliendo'};
+  if(ratio>=0.60)return{key:'yellow',label:'En progreso'};
+  return{key:'red',label:'Necesita impulso'};
+}
+function ensureCcStyles(){if(document.getElementById('ccPerfStyles'))return;const st=document.createElement('style');st.id='ccPerfStyles';st.textContent=`.ccperf{margin-bottom:16px}.ccgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.ccbox{border:1px solid var(--l);border-radius:15px;padding:13px}.ccbox.green{background:#eaf8f1;border-color:#a7dfc5}.ccbox.yellow{background:#fff7e4;border-color:#f2d38b}.ccbox.red{background:#fff0f0;border-color:#f0b1b1}.ccbox.gray{background:#f2f5f8;border-color:#d6dee7}.ccdot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}.ccdot.green{background:#16a36a}.ccdot.yellow{background:#f59e0b}.ccdot.red{background:#e5484d}.ccdot.gray{background:#91a0b3}.ccsales{font-size:27px;font-weight:900;margin:6px 0}.ccsmall{font-size:11px;color:var(--m)}@media(max-width:1100px){.ccgrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.ccgrid{grid-template-columns:1fr}}`;document.head.appendChild(st)}
+async function loadCallCenterDashboard(){
+  if(!currentUser)return;ensureCcStyles();
+  const dash=document.getElementById('dashboard');if(!dash)return;
+  let host=document.getElementById('callCenterDashboardCard');if(!host){host=document.createElement('div');host.id='callCenterDashboardCard';host.className='card ccperf';const k=dash.querySelector('.kpis');dash.insertBefore(host,k)}
+  const {data:exts,error}=await supabaseClient.from('callcenter_extensiones').select('*').order('extension');
+  if(error||!exts?.length){host.classList.add('hidden');return}host.classList.remove('hidden');
+  const {data:bases}=await supabaseClient.from('bases_llamadas').select('id,extension,asesor_user_id');
+  const baseRows=bases||[],baseMap=new Map(baseRows.map(b=>[b.id,b.extension]));let contacts=[];
+  if(baseRows.length){const {data}=await supabaseClient.from('contactos_base_llamadas').select('base_id,estado,fecha_venta').in('base_id',baseRows.map(b=>b.id));contacts=data||[]}
+  const start=ccMonthStart(),own=exts.length===1&&exts[0].asesor_user_id===currentUser.id;
+  host.innerHTML=`<div class="section"><div><h2>${own?'🚦 Mi rendimiento Call Center':'🚦 Rendimiento Call Center'}</h2><div class="ccsmall">Ventas del mes frente al ritmo necesario para cumplir la meta.</div></div><button class="btn ghost" onclick="loadCallCenterDashboard()">Actualizar</button></div><div class="ccgrid">${exts.map(ext=>{const sales=contacts.filter(c=>baseMap.get(c.base_id)===ext.extension&&c.estado==='Venta'&&c.fecha_venta&&c.fecha_venta>=start).length,meta=Number(ext.meta_mensual||15),state=ccState(sales,meta,!!ext.asesor_user_id);return `<div class="ccbox ${state.key}"><div><span class="ccdot ${state.key}"></span><b>Extensión ${ccShort(ext.extension)}</b></div><div class="ccsmall">${escapeHtml(ext.asesor_nombre||'Sin asesor asignado')}</div><div class="ccsales">${sales} <span class="ccsmall">ventas</span></div><div><b>${state.label}</b></div><div class="ccsmall">Meta mensual: ${meta}</div></div>`}).join('')}</div>`;
+}
+</script>
+'''
+          if 'function loadCallCenterDashboard()' not in s:
+              s=s.replace('</body>',dashboard_script+'\n</body>')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bases-llamadas.html index.html
+          git diff --cached --quiet || git commit -m "Agregar semáforo de ventas por extensión"
+          git push
