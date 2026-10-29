@@ -89,6 +89,7 @@ function render(){
   return '<tr><td>'+dateFmt(c.creado_en)+'</td><td>'+esc(l?.nombre||'Prospecto')+'</td><td>'+esc(memberName(c.usuario_id))+'</td><td>'+esc(c.resultado)+'</td><td>'+dateFmt(c.siguiente_contacto)+'</td><td>'+esc(c.detalle)+'</td></tr>';
  }).join('')||empty(6,'Todavía no hay llamadas registradas.');
 }
+function reset(){branches=[];members=[];campaigns=[];calls=[];modules=[];render()}
 async function refreshAll(){await load()}
 async function addBranch(e){
  e.preventDefault();if(!checkWrite('sucursales')||!manage())return;
@@ -138,8 +139,8 @@ async function addCall(e){
   if(error)throw error;
   $('callForm').reset();await refreshAll();
   if(data.siguiente_contacto){
-   const {error:followErr}=await db.from('saas_prospectos').update({proximo_seguimiento:data.siguiente_contacto,actualizado_en:new Date().toISOString()}).eq('organizacion_id',org().id).eq('id',lead.id);
-   if(followErr)core.flash('Llamada guardada, pero no se actualizó el seguimiento del prospecto: '+followErr.message,true);
+   const {data:updated,error:followErr}=await db.from('saas_prospectos').update({proximo_seguimiento:data.siguiente_contacto,actualizado_en:new Date().toISOString()}).eq('organizacion_id',org().id).eq('id',lead.id).select('id').maybeSingle();
+   if(followErr||!updated)core.flash('Llamada guardada; el seguimiento del prospecto requiere permiso de edición.',true);
    else core.flash('Llamada y próximo seguimiento registrados.');
   }else core.flash('Llamada registrada en el historial.');
  }catch(err){core.flash(err.message,true)}
@@ -160,7 +161,7 @@ function events(){
   if(t)assignBranch(t.dataset.assignUser,t.value);
  });
 }
-window.MiredSaasOps={load,render,prepareLead,branchName,memberName,active};
+window.MiredSaasOps={load,reset,render,prepareLead,branchName,memberName,active};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',events);
 else events();
 })();
