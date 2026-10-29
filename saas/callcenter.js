@@ -262,9 +262,11 @@ function mapCsv(rows){
  if(name<0||phone<0)throw Error('El archivo debe tener columnas «nombre» y «telefono» o «celular».');
  const result=[],seen=new Set();let invalid=0,dupes=0;
  for(const row of rows.slice(1)){
-  const n=String(row[name]||'').trim(),tel=String(row[phone]||'').trim().replace(/[^\d+]/g,'');
-  const key=tel.replace(/\D/g,'');
-  if(n.length<2||tel.length<7||tel.length>32||key.length<7){invalid++;continue}
+  const n=String(row[name]||'').trim(),rawTel=String(row[phone]||'').trim().replace(/[^\d+]/g,'');
+  const digits=rawTel.replace(/\D/g,'');
+  const key=digits.length===12&&digits.startsWith('57')&&digits[2]==='3'?digits.slice(2):digits;
+  const tel=key;
+  if(n.length<2||key.length<7||key.length>18){invalid++;continue}
   if(seen.has(key)){dupes++;continue}
   seen.add(key);result.push({nombre:n.slice(0,150),telefono:tel,ciudad:city>=0?String(row[city]||'').slice(0,110):'',observaciones:notes>=0?String(row[notes]||'').slice(0,1000):''});
  }
