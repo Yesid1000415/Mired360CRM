@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CRM MIRED360SERVICIOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -11,7 +14,99 @@
 <script src="whatsapp-personal.js?v=20261026-322"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 <style>
-:root{--n:#071a33;--n2:#0b2d52;--c:#00b8ff;--b:#0f7cff;--bg:#f5f8fc;--card:#fff;--t:#132238;--m:#708199;--l:#dce6f1;--ok:#16a36a;--w:#f59e0b;--d:#e5484d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}.hidden{display:none!important}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}aside{background:linear-gradient(180deg,var(--n),#061426);color:white;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.logo{width:44px;height:44px;border:2px solid var(--c);border-radius:14px;display:grid;place-items:center;font-weight:900}.brand span{display:block;font-size:11px;letter-spacing:2px;color:#7fdfff}nav button{width:100%;border:0;background:transparent;color:#cbd9e8;text-align:left;padding:12px;border-radius:12px;margin:3px 0;cursor:pointer}nav button.active,nav button:hover{background:rgba(0,184,255,.15);color:#fff}main{padding:22px;max-width:1450px;width:100%;margin:auto}header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1{margin:0;font-size:27px}header p{margin:5px 0 0;color:var(--m)}.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff}.ghost{background:#fff;border:1px solid var(--l)}.danger-btn{background:#fff1f2;color:#b4232d;border:1px solid #fecdd3}.grid{display:grid;gap:15px}.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:16px}.card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:17px;box-shadow:0 10px 30px rgba(4,35,66,.06)}.kpi small{color:var(--m)}.kpi strong{display:block;font-size:29px;margin-top:8px}.two{grid-template-columns:1.3fr .7fr}.section{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section h2{margin:0;font-size:18px}.pipeline{display:flex;gap:8px;overflow:auto}.stage{min-width:160px;background:#f7fbff;border:1px solid var(--l);border-radius:13px;padding:12px}.stage strong{display:block;font-size:24px;margin:7px 0}.table-wrap{overflow:auto;border:1px solid var(--l);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:11px;border-bottom:1px solid var(--l);font-size:13px;text-align:left}th{background:#f2f7fc}.badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:#eef6ff;font-size:12px;font-weight:700}.ok{background:#eaf8f1;color:#08774b}.warn{background:#fff5df;color:#996000}.danger{background:#feecec;color:#b4232d}.whats{display:inline-block;text-decoration:none;background:#e9fbf2;color:#087a49;border:1px solid #bdebd5;padding:7px 10px;border-radius:10px;font-weight:700}.callbtn{display:inline-block;text-decoration:none;background:#eef6ff;color:#0756a6;border:1px solid #bdd8f7;padding:7px 10px;border-radius:10px;font-weight:700;cursor:pointer}.view{display:none}.view.active{display:block}.empty{padding:25px;text-align:center;color:var(--m)}.modal{position:fixed;inset:0;background:rgba(1,15,29,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}.modal.open{display:flex}.modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:20px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}label{display:grid;gap:6px;font-size:12px;color:#52647a;font-weight:700}input,select,textarea{padding:11px;border:1px solid #cfdceb;border-radius:11px;width:100%}textarea{min-height:75px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.toolbar input{max-width:320px}.toolbar select{max-width:220px}.bulkbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:12px;border:1px solid #c6eaff;background:#f3fbff;border-radius:13px}.bulkbar .btn:disabled{opacity:.5;cursor:not-allowed}.bulk-status{font-size:12px;color:#52647a;font-weight:700}.checkcell{width:42px;text-align:center}.checkcell input{width:18px;height:18px;cursor:pointer}.notice{padding:12px;background:#eef8ff;border:1px solid #c6eaff;border-radius:12px;color:#27577a;font-size:13px}.statusbar{font-size:12px;color:#d2e9ff;margin-top:16px;line-height:1.5}.login-page{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top right,#0f7cff33,transparent 35%),linear-gradient(135deg,#061426,#0b2d52)}.login-card{width:min(440px,100%);background:white;border-radius:22px;padding:28px;box-shadow:0 25px 70px #0005}.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}.login-card h1{font-size:24px}.login-card p{color:var(--m)}.login-card label{margin:12px 0}.login-error{min-height:20px;color:#b4232d;font-size:13px;margin-top:10px}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a36a;margin-right:6px}.sync-dot.off{background:#e5484d}.loader{opacity:.65;pointer-events:none}@media(max-width:950px){.app{grid-template-columns:1fr}aside{height:auto;position:static}nav{display:flex;overflow:auto}nav button{width:auto;white-space:nowrap}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}main{padding:14px}}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.kpis{grid-template-columns:1fr 1fr}}
+:root{
+  --n:#071a33;
+  --n2:#0b2d52;
+  --c:#00b8ff;
+  --b:#0866df;
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --t:#0f172a;
+  --m:#64748b;
+  --l:#e2e8f0;
+  --ok:#10b981;
+  --w:#f59e0b;
+  --d:#e5484d;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit}
+.hidden{display:none!important}
+.app{min-height:100vh;display:grid;grid-template-columns:265px 1fr}
+aside{background:linear-gradient(180deg,var(--n),#051120);color:white;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid rgba(255,255,255,.07)}
+.brand{display:flex;gap:11px;align-items:center;margin-bottom:20px;padding:0 6px}
+.logo{width:42px;height:42px;border:2px solid var(--c);border-radius:12px;display:grid;place-items:center;font-weight:900;background:rgba(0,184,255,.1);color:#fff}
+.brand span{display:block;font-size:10px;letter-spacing:1.8px;color:#7fdfff;margin-top:2px;font-weight:700}
+.nav-group{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#6482a6;font-weight:800;margin:14px 10px 6px}
+nav button{width:100%;border:0;background:transparent;color:#cbd9e8;text-align:left;padding:10px 12px;border-radius:10px;margin:2px 0;cursor:pointer;font-size:13.5px;font-weight:500;transition:.18s;display:flex;align-items:center;justify-content:space-between}
+nav button.active,nav button:hover{background:rgba(0,184,255,.16);color:#fff;font-weight:600}
+main{padding:26px;max-width:1480px;width:100%;margin:auto}
+header{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:20px}
+h1{margin:0;font-size:26px;letter-spacing:-.6px;font-weight:800}
+header p{margin:4px 0 0;color:var(--m);font-size:14px}
+.btn{border:0;border-radius:11px;padding:10px 15px;font-weight:700;font-size:13.5px;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{transform:translateY(-1px)}
+.primary{background:linear-gradient(135deg,var(--b),var(--c));color:#fff;box-shadow:0 6px 16px rgba(8,102,223,.22)}
+.ghost{background:#fff;border:1px solid var(--l);color:var(--t)}
+.ghost:hover{background:#f8fafc;border-color:#cbd5e1}
+.danger-btn{background:#fff1f2;color:#b4232d;border:1px solid #fecdd3}
+.grid{display:grid;gap:16px}
+.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--l);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+.kpi{position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--b)}
+.kpi small{color:var(--m);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+.kpi strong{display:block;font-size:30px;margin-top:6px;font-weight:800;letter-spacing:-.8px}
+.two{grid-template-columns:1.35fr .65fr}
+.section{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section h2{margin:0;font-size:18px;font-weight:800;letter-spacing:-.3px}
+.pipeline{display:flex;gap:10px;overflow:auto;padding-bottom:4px}
+.stage{min-width:160px;background:#f8fbff;border:1px solid var(--l);border-radius:14px;padding:13px;transition:.18s}
+.stage:hover{border-color:#93c5fd;background:#f0f7ff}
+.stage strong{display:block;font-size:24px;margin:6px 0;font-weight:800}
+.table-wrap{overflow:auto;border:1px solid var(--l);border-radius:14px;max-height:620px}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{padding:11px 12px;border-bottom:1px solid var(--l);font-size:13px;text-align:left;vertical-align:middle}
+th{background:#f8fafc;font-weight:700;color:#475569;position:sticky;top:0;z-index:2;border-bottom:2px solid var(--l)}
+tbody tr:hover{background:#f8fbff}
+.badge{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:#eef6ff;color:#1e40af;font-size:11.5px;font-weight:700}
+.ok{background:#dcfce7;color:#15803d}
+.warn{background:#fef3c7;color:#b45309}
+.danger{background:#fee2e2;color:#b91c1c}
+.whats{display:inline-flex;align-items:center;gap:4px;text-decoration:none;background:#e9fbf2;color:#087a49;border:1px solid #bdebd5;padding:6px 10px;border-radius:9px;font-weight:700;font-size:12px}
+.callbtn{display:inline-flex;align-items:center;gap:4px;text-decoration:none;background:#eef6ff;color:#0756a6;border:1px solid #bdd8f7;padding:6px 10px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer}
+.view{display:none}
+.view.active{display:block}
+.empty{padding:28px;text-align:center;color:var(--m);font-size:13.5px}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:18px;z-index:40}
+.modal.open{display:flex}
+.modal-box{width:min(780px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:22px;padding:24px;box-shadow:0 25px 60px rgba(0,0,0,.25)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.full{grid-column:1/-1}
+label{display:grid;gap:6px;font-size:12px;color:#475569;font-weight:700}
+input,select,textarea{padding:11px 12px;border:1px solid #cbd5e1;border-radius:11px;width:100%;background:#f8fafc;transition:.15s}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--b);background:#fff;border-color:transparent}
+textarea{min-height:78px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input{max-width:340px}
+.toolbar select{max-width:220px}
+.bulkbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:12px;border:1px solid #c6eaff;background:#f3fbff;border-radius:13px}
+.bulkbar .btn:disabled{opacity:.5;cursor:not-allowed}
+.bulk-status{font-size:12px;color:#52647a;font-weight:700}
+.checkcell{width:42px;text-align:center}
+.checkcell input{width:18px;height:18px;cursor:pointer}
+.notice{padding:13px 15px;background:#eef8ff;border:1px solid #c6eaff;border-radius:13px;color:#1e40af;font-size:13px;line-height:1.5}
+.statusbar{font-size:12px;color:#94a3b8;margin-top:18px;padding:12px;background:rgba(255,255,255,.04);border-radius:12px;line-height:1.5}
+.login-page{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top right,#0f7cff33,transparent 35%),linear-gradient(135deg,#061426,#0b2d52)}
+.login-card{width:min(440px,100%);background:white;border-radius:22px;padding:30px;box-shadow:0 25px 70px #0005}
+.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.login-card h1{font-size:24px}
+.login-card p{color:var(--m);font-size:14px}
+.login-card label{margin:12px 0}
+.login-error{min-height:20px;color:#b4232d;font-size:13px;margin-top:10px;font-weight:600}
+.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:6px;box-shadow:0 0 8px #10b981}
+.sync-dot.off{background:#e5484d;box-shadow:none}
+.loader{opacity:.65;pointer-events:none}
 
 .chat-layout{display:grid;grid-template-columns:320px 1fr;gap:14px;min-height:620px}
 .chat-list{border:1px solid var(--l);border-radius:16px;background:#fff;overflow:hidden}
@@ -22,10 +117,15 @@
 .chat-contact:hover,.chat-contact.active{background:#eef8ff}
 .chat-contact b,.chat-contact small,.chat-contact span{display:block}
 .chat-contact small{color:var(--m);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-contact span{font-size:11px;color:var(--m);margin-top:4px}.chat-contact.unread{background:#f0f8ff;border-left:4px solid var(--b)}.chat-contact.unread b{font-weight:900}.unread-dot{float:right;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--b);color:#fff;display:inline-grid!important;place-items:center;font-size:11px!important;margin:0!important}.wa-nav-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:#e5484d;color:white;font-size:11px;font-weight:800}
+.chat-contact span{font-size:11px;color:var(--m);margin-top:4px}
+.chat-contact.unread{background:#f0f8ff;border-left:4px solid var(--b)}
+.chat-contact.unread b{font-weight:900}
+.unread-dot{float:right;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--b);color:#fff;display:inline-grid!important;place-items:center;font-size:11px!important;margin:0!important}
+.wa-nav-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:#e5484d;color:white;font-size:11px;font-weight:800}
 .chat-panel{border:1px solid var(--l);border-radius:16px;background:#edf3f7;display:flex;flex-direction:column;min-width:0}
 .chat-head{padding:14px 16px;background:#fff;border-bottom:1px solid var(--l);border-radius:16px 16px 0 0}
-.chat-head b,.chat-head small{display:block}.chat-head small{color:var(--m);margin-top:3px}
+.chat-head b,.chat-head small{display:block}
+.chat-head small{color:var(--m);margin-top:3px}
 .chat-messages{flex:1;min-height:430px;max-height:520px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:9px}
 .bubble{max-width:78%;padding:10px 12px;border-radius:14px;background:#fff;box-shadow:0 1px 2px #0001;white-space:pre-wrap;overflow-wrap:anywhere}
 .bubble.in{align-self:flex-start;border-top-left-radius:4px}
@@ -34,27 +134,55 @@
 .chat-compose{padding:12px;background:#fff;border-top:1px solid var(--l);border-radius:0 0 16px 16px;display:flex;flex-wrap:wrap;gap:9px}
 .chat-compose textarea{min-height:46px;max-height:120px;resize:vertical;flex:1 1 220px}
 .chat-compose button{align-self:flex-end}
-.chat-compose .attach-btn{white-space:nowrap}.chat-file-status{padding:0 12px 10px;background:#fff;color:var(--m);font-size:12px}
+.chat-compose .attach-btn{white-space:nowrap}
+.chat-file-status{padding:0 12px 10px;background:#fff;color:var(--m);font-size:12px}
 .chat-empty{padding:24px;color:var(--m);text-align:center}
-@media(max-width:850px){.chat-layout{grid-template-columns:1fr}.chat-contacts{max-height:260px}.chat-messages{min-height:360px}}
 
+.attention-item{padding:11px 0;border-top:1px solid var(--l);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.attention-info{min-width:0}
+.attention-actions{display:flex;gap:7px;flex-wrap:wrap}
+.attention-more{padding-top:12px;text-align:center}
+
+@media(max-width:950px){
+  .app{grid-template-columns:1fr}
+  aside{height:auto;position:static}
+  .nav-group{display:none}
+  nav{display:flex;overflow:auto;gap:4px}
+  nav button{width:auto;white-space:nowrap}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .two{grid-template-columns:1fr}
+  main{padding:14px}
+}
+@media(max-width:850px){
+  .chat-layout{grid-template-columns:1fr}
+  .chat-contacts{max-height:260px}
+  .chat-messages{min-height:360px}
+}
 @media(max-width:700px){
-  #attentionSummary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  #attentionSummary .stage{min-width:0;padding:12px}
-  .attention-item{display:block!important}
-  .attention-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
-  .attention-actions a,.attention-actions button{width:100%;min-width:0;text-align:center;padding:9px 5px;font-size:12px;white-space:nowrap}
-}</style>
+  #attentionSummary{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #attentionSummary .stage{min-width:0!important;padding:10px!important}
+  .attention-item{display:block!important;padding:10px 0!important}
+  .attention-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;width:100%!important;margin-top:8px}
+  .attention-actions a,.attention-actions button{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-width:0!important;padding:8px 3px!important;font-size:11px!important;line-height:1.15!important;white-space:nowrap!important;margin:0!important}
+  .attention-more .btn{width:100%!important}
+}
+@media(max-width:600px){
+  header{align-items:flex-start;flex-direction:column}
+  .form-grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  .kpis{grid-template-columns:1fr 1fr}
+}
+</style>
 <link rel="stylesheet" href="mired360-corporativo.css?v=20261029-2">
 </head>
 <body>
 <div id="loginPage" class="login-page">
   <div class="login-card">
-    <div class="login-brand"><div class="logo">M</div><div><h1>MIRED<span style="color:#0f7cff">360</span> CRM</h1><small>Acceso seguro con Supabase</small></div></div>
-    <p>Ingresa con el correo y la contraseña del usuario creado en Supabase.</p>
+    <div class="login-brand"><div class="logo" style="background:#071a33">M</div><div><h1>MIRED<span style="color:#0866df">360</span> CRM</h1><small style="color:var(--m)">Acceso corporativo con Supabase</small></div></div>
+    <p>Ingresa con tu correo y contraseña autorizados.</p>
     <label>Correo electrónico<input id="loginEmail" type="email" autocomplete="username" placeholder="correo@ejemplo.com"></label>
     <label>Contraseña<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Tu contraseña"></label>
-    <button class="btn primary" style="width:100%" id="loginBtn">Ingresar</button>
+    <button class="btn primary" style="width:100%;justify-content:center;margin-top:6px" id="loginBtn">Ingresar al CRM</button>
     <div id="loginError" class="login-error"></div>
   </div>
 </div>
@@ -62,30 +190,131 @@
 <div id="crmApp" class="app hidden">
 <aside>
   <div class="brand"><div class="logo">M</div><div><b>MIRED<span style="color:#00b8ff">360</span></b><span>SERVICIOS · CRM</span></div></div>
-  <nav><button class="active" data-view="dashboard">📊 Dashboard</button><button data-view="prospectos">👥 Prospectos</button><button type="button" data-link="bases-llamadas.html">📞 Bases de llamadas</button><button type="button" data-link="rendimiento.html">🚦 Rendimiento Call Center</button><button type="button" data-link="negocios.html">🏪 Negocios Pymes</button><button type="button" data-link="coordinador-asesor.html">🤝 Coordinador Asesor</button><button data-view="conversaciones">💬 WhatsApp <span id="waNavBadge" class="wa-nav-badge hidden">0</span></button><button type="button" data-link="solicitudes-mired360-ia.html">🤖 Solicitudes IA</button><button data-view="seguimientos">📅 Seguimientos</button><button data-view="ventas">💰 Ventas</button><button type="button" data-link="etb.html">📋 Solicitudes ETB</button><button data-view="autorizaciones">✍️ Autorizaciones</button><button data-view="comisiones">💵 Cobro comisiones</button><button type="button" data-link="red-comercial.html">🌎 Red comercial</button><button data-view="usuarios">🔐 Crear asesores</button><button type="button" data-link="callcenter-usuarios.html">👥 Asesores Call Center</button><button type="button" data-link="academia-callcenter.html">🎓 Academia Call Center</button><button type="button" data-link="reclutamiento.html">🎯 Reclutamiento</button><button type="button" id="navReferidosAdmin" class="hidden" data-link="https://mired360servicios.com/admin-referidos.html">🤝 Control de Referidos</button><button data-view="publicidad">📣 Publicidad</button><button data-view="config">⚙️ Configuración</button></nav>
-  <div class="statusbar"><span id="syncDot" class="sync-dot"></span><span id="syncText">Conectado a Supabase</span><br><span id="userLabel"></span></div>
+  <nav>
+    <div class="nav-group">Principal</div>
+    <button class="active" data-view="dashboard"><span>📊 Dashboard</span></button>
+    <button data-view="prospectos"><span>👥 Prospectos</span></button>
+    <button data-view="seguimientos"><span>📅 Seguimientos</span></button>
+    <button data-view="ventas"><span>💰 Ventas</span></button>
+    <button data-view="conversaciones"><span>💬 WhatsApp</span><span id="waNavBadge" class="wa-nav-badge hidden">0</span></button>
+
+    <div class="nav-group">Operación y Canales</div>
+    <button type="button" data-link="bases-llamadas.html"><span>📞 Bases de llamadas</span></button>
+    <button type="button" data-link="rendimiento.html"><span>🚦 Rendimiento Call Center</span></button>
+    <button type="button" data-link="negocios.html"><span>🏪 Negocios Pymes</span></button>
+    <button type="button" data-link="solicitudes-mired360-ia.html"><span>🤖 Solicitudes IA</span></button>
+    <button type="button" data-link="etb.html"><span>📋 Solicitudes ETB</span></button>
+
+    <div class="nav-group">Auditoría y Finanzas</div>
+    <button data-view="autorizaciones"><span>✍️ Autorizaciones</span></button>
+    <button data-view="comisiones"><span>💵 Cobro comisiones</span></button>
+    <button data-view="publicidad"><span>📣 Publicidad</span></button>
+
+    <div class="nav-group">Equipo y Red</div>
+    <button type="button" data-link="coordinador-asesor.html"><span>🤝 Coordinador Asesor</span></button>
+    <button type="button" data-link="red-comercial.html"><span>🌎 Red comercial</span></button>
+    <button data-view="usuarios"><span>🔐 Crear asesores</span></button>
+    <button type="button" data-link="callcenter-usuarios.html"><span>👥 Asesores Call Center</span></button>
+    <button type="button" data-link="academia-callcenter.html"><span>🎓 Academia Call Center</span></button>
+    <button type="button" data-link="reclutamiento.html"><span>🎯 Reclutamiento</span></button>
+    <button type="button" id="navReferidosAdmin" class="hidden" data-link="https://mired360servicios.com/admin-referidos.html"><span>🤝 Control de Referidos</span></button>
+    <button data-view="config"><span>⚙️ Configuración</span></button>
+  </nav>
+  <div class="statusbar"><span id="syncDot" class="sync-dot"></span><span id="syncText">Conectado a Supabase</span><br><strong id="userLabel" style="color:#fff"></strong></div>
 </aside>
+
 <main>
-<section class="view active" id="dashboard"><header><div><h1>Panel comercial</h1><p>Controle prospectos, seguimientos, ventas e instalaciones.</p></div><div><button class="btn ghost" id="exportBtn">Exportar CSV</button> <button class="btn ghost" type="button" onclick="exportExcelPro()">📊 Exportar Excel Pro (.xlsx)</button> <button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button></div></header><div class="grid kpis"><div class="card kpi"><small>Prospectos</small><strong id="kPros">0</strong></div><div class="card kpi"><small>Seguimientos hoy</small><strong id="kFollow">0</strong></div><div class="card kpi"><small>Ventas</small><strong id="kSales">0</strong></div><div class="card kpi"><small>Instalados</small><strong id="kInstalled">0</strong></div></div><div class="card" style="margin-bottom:15px">
-  <div class="section"><div><h2 style="margin-bottom:4px">🎛️ Centro de Control MIRED360</h2><small style="color:var(--m)">Una sola entrada para dirigir el negocio. Los sistemas siguen trabajando por detrás.</small></div><span class="badge ok">ACTIVO</span></div>
-  <div class="pipeline" style="margin-bottom:12px">
-    <div class="stage" role="button" tabindex="0" onclick="window.open('https://app.metricool.com/','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>📣 Redes</small><strong style="font-size:16px">Facebook activo ↗</strong><small>Publicaciones programadas en Metricool</small></div>
-    <div class="stage" role="button" tabindex="0" onclick="window.open('https://analytics.google.com/','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>🌐 Web</small><strong style="font-size:16px">GA4 activo ↗</strong><small>Tráfico y clics a WhatsApp medidos</small></div>
-    <div class="stage" role="button" tabindex="0" onclick="showView('prospectos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>👥 Comercial</small><strong id="controlCrmMain" style="font-size:16px">CRM activo →</strong><small id="controlCrmDetail">Calculando actividad...</small></div>
-    <div class="stage" role="button" tabindex="0" onclick="window.open('https://mired360servicios.com/admin-referidos.html','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>🤝 Crecimiento</small><strong style="font-size:16px">Referidos activo ↗</strong><small>Registro y seguimiento independiente</small></div>
+<section class="view active" id="dashboard">
+  <header>
+    <div><h1>Panel comercial</h1><p>Controle prospectos, seguimientos, ventas e instalaciones en tiempo real.</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" onclick="loadLeads()">↻ Sincronizar</button>
+      <button class="btn ghost" id="exportBtn">Exportar CSV</button>
+      <button class="btn ghost" type="button" onclick="exportExcelPro()">📊 Exportar Excel Pro (.xlsx)</button>
+      <button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button>
+    </div>
+  </header>
+
+  <div class="grid kpis">
+    <div class="card kpi"><small>Prospectos totales</small><strong id="kPros">0</strong></div>
+    <div class="card kpi"><small>Seguimientos hoy</small><strong id="kFollow">0</strong></div>
+    <div class="card kpi"><small>Ventas cerradas</small><strong id="kSales">0</strong></div>
+    <div class="card kpi"><small>Servicios instalados</small><strong id="kInstalled">0</strong></div>
   </div>
-  <div class="attention-actions" style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn primary" onclick="showView('seguimientos')">⚡ Atender pendientes</button>
-    <button class="btn ghost" onclick="showView('prospectos')">👥 Ver prospectos</button>
-    <button class="btn ghost" onclick="showView('ventas')">💰 Ver ventas</button>
-    <a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="https://app.metricool.com/">📣 Redes</a>
-    <a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="https://analytics.google.com/">📊 Analítica</a>
-    <a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="https://mired360servicios.com/admin-referidos.html">🤝 Referidos</a>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="section">
+      <div><h2 style="margin-bottom:4px">🎛️ Centro de Control MIRED360</h2><small style="color:var(--m)">Una sola entrada para dirigir el negocio. Los sistemas siguen trabajando por detrás.</small></div>
+      <span class="badge ok">ACTIVO</span>
+    </div>
+    <div class="pipeline" style="margin-bottom:12px">
+      <div class="stage" role="button" tabindex="0" onclick="window.open('https://app.metricool.com/','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>📣 Redes</small><strong style="font-size:16px">Facebook activo ↗</strong><small>Publicaciones programadas en Metricool</small></div>
+      <div class="stage" role="button" tabindex="0" onclick="window.open('https://analytics.google.com/','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>🌐 Web</small><strong style="font-size:16px">GA4 activo ↗</strong><small>Tráfico y clics a WhatsApp medidos</small></div>
+      <div class="stage" role="button" tabindex="0" onclick="showView('prospectos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>👥 Comercial</small><strong id="controlCrmMain" style="font-size:16px">CRM activo →</strong><small id="controlCrmDetail">Calculando actividad...</small></div>
+      <div class="stage" role="button" tabindex="0" onclick="window.open('https://mired360servicios.com/admin-referidos.html','_blank')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="cursor:pointer"><small>🤝 Crecimiento</small><strong style="font-size:16px">Referidos activo ↗</strong><small>Registro y seguimiento independiente</small></div>
+    </div>
+    <div class="attention-actions" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn primary" onclick="showView('seguimientos')">⚡ Atender pendientes</button>
+      <button class="btn ghost" onclick="showView('prospectos')">👥 Ver prospectos</button>
+      <button class="btn ghost" onclick="showView('ventas')">💰 Ver ventas</button>
+      <a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="https://app.metricool.com/">📣 Redes</a>
+      <a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="https://analytics.google.com/">📊 Analítica</a>
+      <a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="https://mired360servicios.com/admin-referidos.html">🤝 Referidos</a>
+    </div>
   </div>
-</div>
-<div class="card" style="margin-bottom:15px"><div class="section"><div><h2 style="margin-bottom:4px">⚡ Qué atender ahora</h2><small style="color:var(--m)">Prioridad automática según la fecha de seguimiento. No envía mensajes por sí sola.</small></div><button class="btn ghost" onclick="showView('seguimientos')">Ver seguimientos</button></div><div class="pipeline" id="attentionSummary"></div><div id="attentionBox" style="margin-top:12px"></div></div>
-<div class="card" style="margin-bottom:15px"><div class="section"><h2>Embudo comercial</h2></div><div class="pipeline" id="pipeline"></div></div><div class="grid two"><div class="card"><div class="section"><h2>Prospectos recientes</h2><button class="btn ghost" onclick="showView('prospectos')">Ver todos</button></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Ciudad</th><th>Origen</th><th>Estado</th><th>WhatsApp</th></tr></thead><tbody id="recentRows"></tbody></table></div></div><div class="card"><div class="section"><h2>Seguimientos próximos</h2></div><div id="followBox"></div></div></div></section>
-<section class="view" id="prospectos"><header><div><h1>Prospectos</h1><p>Base central de clientes potenciales.</p></div><button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button></header><div class="card"><div class="toolbar"><input id="searchLead" placeholder="Buscar nombre, teléfono, ciudad..."><select id="filterStatus"><option value="">Todos los estados</option></select></div><div class="bulkbar hidden"><button class="btn primary" id="bulkWhatsBtn" onclick="sendSelectedWhatsApp()" disabled>📣 Enviar WhatsApp (0)</button><button class="btn ghost" id="clearSelectionBtn" onclick="clearLeadSelection()" disabled>Limpiar selección</button><span class="bulk-status" id="bulkStatus">Seleccione los prospectos autorizados para recibir la plantilla aprobada.</span></div><div class="table-wrap"><table><thead><tr><th class="checkcell"><input type="checkbox" id="selectVisibleLeads" title="Seleccionar visibles"></th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Ciudad/Barrio</th><th>Origen</th><th>Producto</th><th>Estado</th><th>Seguimiento</th><th>WhatsApp</th><th>Llamada</th><th></th></tr></thead><tbody id="leadRows"></tbody></table></div></div></section>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="section">
+      <div><h2 style="margin-bottom:4px">⚡ Qué atender ahora</h2><small style="color:var(--m)">Prioridad automática según la fecha de seguimiento. No envía mensajes por sí sola.</small></div>
+      <button class="btn ghost" onclick="showView('seguimientos')">Ver seguimientos</button>
+    </div>
+    <div class="pipeline" id="attentionSummary"></div>
+    <div id="attentionBox" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="section"><h2>Embudo comercial</h2></div>
+    <div class="pipeline" id="pipeline"></div>
+  </div>
+
+  <div class="grid two">
+    <div class="card">
+      <div class="section"><h2>Prospectos recientes</h2><button class="btn ghost" onclick="showView('prospectos')">Ver todos</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Ciudad</th><th>Origen</th><th>Estado</th><th>WhatsApp</th></tr></thead><tbody id="recentRows"></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="section"><h2>Seguimientos próximos</h2></div>
+      <div id="followBox"></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="prospectos">
+  <header>
+    <div><h1>Prospectos</h1><p>Base central de clientes potenciales sincronizada con Supabase.</p></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn ghost" onclick="loadLeads()">↻ Actualizar</button>
+      <button class="btn primary" onclick="openLead()">+ Nuevo prospecto</button>
+    </div>
+  </header>
+  <div class="card">
+    <div class="toolbar">
+      <input id="searchLead" placeholder="Buscar nombre, teléfono, ciudad, barrio o producto...">
+      <select id="filterStatus"><option value="">Todos los estados</option></select>
+    </div>
+    <div class="bulkbar hidden">
+      <button class="btn primary" id="bulkWhatsBtn" onclick="sendSelectedWhatsApp()" disabled>📣 Enviar WhatsApp (0)</button>
+      <button class="btn ghost" id="clearSelectionBtn" onclick="clearLeadSelection()" disabled>Limpiar selección</button>
+      <span class="bulk-status" id="bulkStatus">Seleccione los prospectos autorizados para recibir la plantilla aprobada.</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th class="checkcell"><input type="checkbox" id="selectVisibleLeads" title="Seleccionar visibles"></th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Ciudad/Barrio</th><th>Origen</th><th>Producto</th><th>Estado</th><th>Seguimiento</th><th>WhatsApp</th><th>Llamada</th><th>Acciones</th></tr></thead>
+        <tbody id="leadRows"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
 <section class="view" id="conversaciones">
 <header>
@@ -94,9 +323,7 @@
     <p>Remite los datos del cliente al equipo comercial para continuar la asesoría.</p>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <a class="btn primary" href="whatsapp-asesor.html?v=20261026-322">💬 Continuar por WhatsApp</a>
-    
-    
+    <a class="btn primary" style="text-decoration:none" href="whatsapp-asesor.html?v=20261026-322">💬 Continuar por WhatsApp</a>
     <input id="waExcelFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleWhatsAppExcelInput(event)">
     <button class="btn ghost" onclick="loadMessages(true)">↻ Actualizar</button>
   </div>
@@ -156,17 +383,17 @@
 </div>
 </section>
 
-<section class="view" id="seguimientos"><header><div><h1>Seguimientos</h1><p>Lo que debe atender hoy y después.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estado</th><th>Nota</th><th>WhatsApp</th><th>Llamada</th></tr></thead><tbody id="followRows"></tbody></table></div></div></section>
-<section class="view" id="ventas"><header><div><h1>Ventas</h1><p>Negocios cerrados e instalaciones.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Plan</th><th>Valor</th><th>Estado</th><th>Instalación</th><th>Comisión</th></tr></thead><tbody id="salesRows"></tbody></table></div></div></section>
-<section class="view" id="autorizaciones"><header><div><h1>Autorizaciones</h1><p>Constancias firmadas y control de auditoría de ventas.</p></div><div><a class="btn primary" href="autorizacion.html" target="_blank" style="text-decoration:none">+ Nueva autorización</a> <button class="btn ghost" onclick="loadAuthorizations()">↻ Actualizar</button></div></header><div class="card"><div class="toolbar"><input id="authSearch" placeholder="Buscar cliente, cédula, teléfono, asesor o constancia..." oninput="renderAuthorizations()"><select id="authStatus" onchange="renderAuthorizations()"><option value="">Todos los estados</option><option>Pendiente</option><option>Pasó auditoría</option><option>No pasó auditoría</option></select></div><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Constancia</th><th>Cliente</th><th>Teléfono</th><th>Plan</th><th>Valor</th><th>Asesor</th><th>Auditoría</th><th>Acciones</th></tr></thead><tbody id="authRows"><tr><td colspan="11" class="empty">Cargando autorizaciones...</td></tr></tbody></table></div></div></section>
+<section class="view" id="seguimientos"><header><div><h1>Seguimientos</h1><p>Lo que debe atender hoy y después.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estado</th><th>Nota</th><th>WhatsApp</th><th>Llamada</th><th>Acción</th></tr></thead><tbody id="followRows"></tbody></table></div></div></section>
+<section class="view" id="ventas"><header><div><h1>Ventas</h1><p>Negocios cerrados e instalaciones.</p></div></header><div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Plan</th><th>Valor</th><th>Estado</th><th>Instalación</th><th>Comisión</th><th>Estado Comisión</th></tr></thead><tbody id="salesRows"></tbody></table></div></div></section>
+<section class="view" id="autorizaciones"><header><div><h1>Autorizaciones</h1><p>Constancias firmadas y control de auditoría de ventas.</p></div><div><a class="btn primary" href="autorizacion.html" target="_blank" style="text-decoration:none">+ Nueva autorización</a> <button class="btn ghost" onclick="loadAuthorizations()">↻ Actualizar</button></div></header><div class="card"><div class="toolbar"><input id="authSearch" placeholder="Buscar cliente, cédula, teléfono, asesor o constancia..." oninput="renderAuthorizations()"><select id="authStatus" onchange="renderAuthorizations()"><option value="">Todos los estados</option><option>Pendiente</option><option>Pasó auditoría</option><option>No pasó auditoría</option></select></div><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Constancia</th><th>Cliente</th><th>Teléfono</th><th>Plan</th><th>Valor</th><th>Asesor</th><th>Auditoría</th><th>Acciones</th></tr></thead><tbody id="authRows"><tr><td colspan="9" class="empty">Cargando autorizaciones...</td></tr></tbody></table></div></div></section>
 <section class="view" id="comisiones"><header><div><h1>Cobro de comisiones</h1><p>Revise, apruebe, descargue y administre las solicitudes enviadas por los asesores.</p></div><div><button class="btn ghost" onclick="exportCommissionClaims()">Exportar CSV</button> <button class="btn ghost" onclick="loadCommissionClaims()">↻ Actualizar</button></div></header><div class="grid kpis"><div class="card kpi"><small>Solicitudes</small><strong id="cTotal">0</strong></div><div class="card kpi"><small>Servicios</small><strong id="cServices">0</strong></div><div class="card kpi"><small>Pendientes</small><strong id="cPending">0</strong></div><div class="card kpi"><small>Pagadas</small><strong id="cPaid">0</strong></div></div><div class="card"><p class="notice" style="margin-top:0">Los asesores no pueden modificar ni borrar registros. Los controles administrativos de esta sección son exclusivos para coordinación.</p><div class="toolbar"><input id="commissionSearch" placeholder="Buscar solicitud, asesor, cédula, Nequi, orden o cuenta..." oninput="renderCommissionClaims()"><select id="commissionStatus" onchange="renderCommissionClaims()"><option value="">Todos los estados</option><option>Pendiente</option><option>Aprobado</option><option>Pagado</option><option>Rechazado</option></select></div><div class="table-wrap"><table><thead><tr><th>Solicitud</th><th>Fecha</th><th>Asesor</th><th>Cédula</th><th>Nequi</th><th>Servicios</th><th>Coordinador</th><th>Estado</th><th>Observación</th><th>Acciones</th></tr></thead><tbody id="commissionRows"><tr><td colspan="10" class="empty">Cargando solicitudes...</td></tr></tbody></table></div></div></section>
 <section class="view" id="usuarios"><header><div><h1>Usuarios de asesores</h1><p>Cree accesos individuales para autorizaciones y cobro de comisiones.</p></div><button class="btn ghost" onclick="loadAdvisorUsers()">↻ Actualizar</button></header><div class="grid two"><div class="card"><h2>Crear nuevo usuario</h2><p class="notice">El usuario quedará confirmado automáticamente con rol <b>asesor</b>. Comparta la contraseña temporal de manera privada.</p><div class="form-grid" style="margin-top:14px"><label class="full">Nombre y apellidos<input id="advisorUserName" autocomplete="name"></label><label class="full">Correo electrónico<input id="advisorUserEmail" type="email" autocomplete="off"></label><label>Contraseña temporal<input id="advisorUserPassword" type="text" autocomplete="off" minlength="8"></label><label>&nbsp;<button class="btn ghost" type="button" onclick="generateAdvisorPassword()">Generar contraseña</button></label><div class="full"><button class="btn primary" id="createAdvisorBtn" onclick="createAdvisorUser()">Crear usuario de asesor</button></div><div class="full login-error" id="advisorUserMessage"></div></div></div><div class="card"><h2>Seguridad del acceso</h2><div class="notice">Cada asesor utiliza un solo usuario para autorizaciones y comisiones. Solo verá sus propios registros. Desde el Portal de Asesores podrá cambiar o recuperar su contraseña.</div><p><b>Portal de Asesores</b></p><a class="btn ghost" href="asesores.html" target="_blank" style="text-decoration:none">Abrir portal</a></div></div><div class="card" style="margin-top:15px"><div class="section"><h2>Usuarios registrados</h2><span class="muted" id="advisorUsersCount"></span></div><div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Fecha de creación</th><th>Acción</th></tr></thead><tbody id="advisorUsersRows"><tr><td colspan="5" class="empty">Cargando usuarios...</td></tr></tbody></table></div></div></section>
-<section class="view" id="publicidad"><div class="card"><h2>📞 Control de llamadas de la web</h2><p><b>Call Center:</b> 3330334001 · <b>WhatsApp:</b> 3229432085</p><p>En Google Analytics consulta el evento <code>lead_call_click</code> para conocer los clics en llamar. Los clics no equivalen a llamadas contestadas: contrástalos con los registros del Call Center y registra las ventas en el CRM.</p><p><a class="btn ghost" href="https://analytics.google.com/" target="_blank" rel="noopener">📊 Ver clics en Google Analytics</a> <a class="btn ghost" href="rendimiento.html">📞 Rendimiento Call Center</a></p><small>La sección Publicidad registra inversiones localmente en este navegador; aún no existe sincronización automática de llamadas con la central telefónica.</small></div><header><div><h1>Publicidad</h1><p>Registre inversión y mida resultados.</p></div></header><div class="grid two"><div class="card"><h2>Resumen</h2><p>Inversión: <b id="adSpend">$0</b></p><p>Ventas atribuidas: <b id="adSales">0</b></p></div><div class="card"><h2>Registrar campaña</h2><div class="form-grid"><label>Nombre<input id="adName"></label><label>Canal<select id="adChannel"><option>Facebook</option><option>Instagram</option><option>Google</option><option>Orgánico</option><option>Otro</option></select></label><label>Inversión<input id="adAmount" type="number"></label><label>Fecha<input id="adDate" type="date"></label><div class="full"><button class="btn primary" onclick="addAd()">Guardar campaña</button></div></div></div></div><div class="card" style="margin-top:15px"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Campaña</th><th>Canal</th><th>Inversión</th></tr></thead><tbody id="adRows"></tbody></table></div></div></section>
+<section class="view" id="publicidad"><div class="card" style="margin-bottom:16px"><h2>📞 Control de llamadas de la web</h2><p><b>Call Center:</b> 3330334001 · <b>WhatsApp:</b> 3229432085</p><p>En Google Analytics consulta el evento <code>lead_call_click</code> para conocer los clics en llamar. Los clics no equivalen a llamadas contestadas: contrástalos con los registros del Call Center y registra las ventas en el CRM.</p><p><a class="btn ghost" href="https://analytics.google.com/" target="_blank" rel="noopener">📊 Ver clics en Google Analytics</a> <a class="btn ghost" href="rendimiento.html">📞 Rendimiento Call Center</a></p><small>La sección Publicidad registra inversiones localmente en este navegador; aún no existe sincronización automática de llamadas con la central telefónica.</small></div><header><div><h1>Publicidad</h1><p>Registre inversión y mida resultados.</p></div></header><div class="grid two"><div class="card"><h2>Resumen</h2><p>Inversión: <b id="adSpend">$0</b></p><p>Ventas atribuidas: <b id="adSales">0</b></p></div><div class="card"><h2>Registrar campaña</h2><div class="form-grid"><label>Nombre<input id="adName"></label><label>Canal<select id="adChannel"><option>Facebook</option><option>Instagram</option><option>Google</option><option>Orgánico</option><option>Otro</option></select></label><label>Inversión<input id="adAmount" type="number"></label><label>Fecha<input id="adDate" type="date"></label><div class="full"><button class="btn primary" onclick="addAd()">Guardar campaña</button></div></div></div></div><div class="card" style="margin-top:15px"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Campaña</th><th>Canal</th><th>Inversión</th></tr></thead><tbody id="adRows"></tbody></table></div></div></section>
 <section class="view" id="config"><header><div><h1>Configuración</h1><p>Cuenta, sincronización y respaldo.</p></div></header><div class="grid two"><div class="card"><label>Nombre comercial<input id="businessName" value="MIRED360SERVICIOS"></label><br><label>WhatsApp de contacto público<input id="businessPhone" value="573229432085"></label><br><button class="btn primary" onclick="saveSettings()">Guardar</button><br><br><button class="btn ghost" onclick="migrateLocalLeads()">Migrar prospectos locales a Supabase</button><br><br><button class="btn danger-btn" onclick="logoutCRM()">Cerrar sesión</button></div><div class="card"><div class="notice"><b>WhatsApp oficial:</b> 3229432085.<br><b>Medición:</b> los clics se registran en GA4 y los formularios siguen guardando prospectos en el CRM.<br><b>Prospectos:</b> se guardan en Supabase. La sección Publicidad y la configuración general siguen guardándose localmente en este navegador por ahora.</div></div></div></section>
 </main>
 </div>
 
-<div class="modal" id="leadModal"><div class="modal-box"><div class="section"><h2 id="modalTitle">Nuevo prospecto</h2><button class="btn ghost" onclick="closeLead()">✕</button></div><div class="form-grid"><input type="hidden" id="leadId"><label>Nombre<input id="name"></label><label>Teléfono<input id="phone"></label><label>Ciudad<input id="city"></label><label>Barrio<input id="barrio"></label><label class="full">Dirección<input id="address"></label><label>Origen<select id="origin"><option>Facebook Ads</option><option>Instagram Ads</option><option>WhatsApp</option><option>Orgánico</option><option>Referido</option><option>Google Ads</option><option>Otro</option></select></label><label>Campaña<input id="campaign"></label><label>Producto<select id="product"><option>Internet Hogar</option><option>Internet Negocios</option><option>Datáfono</option><option>Streaming</option><option>Herramientas digitales</option><option>Otro</option></select></label><label>Operador<input id="operator"></label><label>Plan<input id="plan"></label><label>Valor mensual<input id="value" type="number"></label><label>Estado<select id="status"></select></label><label>Próximo seguimiento<input id="nextFollow" type="date"></label><label>Fecha instalación<input id="installDate" type="date"></label><label>Comisión<input id="commission" type="number"></label><label>Estado comisión<select id="estadoComision"><option value="pendiente">Pendiente</option><option value="pagada">Pagada</option></select></label><label class="full">Notas<textarea id="notes"></textarea></label><div class="full"><button class="btn ghost" onclick="closeLead()">Cancelar</button> <button class="btn primary" id="saveLeadBtn" onclick="saveLead()">Guardar prospecto</button></div></div></div></div>
+<div class="modal" id="leadModal"><div class="modal-box"><div class="section"><h2 id="modalTitle">Nuevo prospecto</h2><button class="btn ghost" onclick="closeLead()">✕</button></div><div class="form-grid"><input type="hidden" id="leadId"><label>Nombre<input id="name"></label><label>Teléfono<input id="phone"></label><label>Ciudad<input id="city"></label><label>Barrio<input id="barrio"></label><label class="full">Dirección<input id="address"></label><label>Origen<select id="origin"><option>Facebook Ads</option><option>Instagram Ads</option><option>WhatsApp</option><option>Página Web</option><option>Orgánico</option><option>Referido</option><option>Google Ads</option><option>Otro</option></select></label><label>Campaña<input id="campaign"></label><label>Producto<select id="product"><option>Internet Hogar</option><option>Internet Negocios</option><option>Datáfono</option><option>Software Negocios IA</option><option>Software Barberías</option><option>Streaming</option><option>Herramientas digitales</option><option>Otro</option></select></label><label>Operador<input id="operator"></label><label>Plan<input id="plan"></label><label>Valor mensual<input id="value" type="number"></label><label>Estado<select id="status"></select></label><label>Próximo seguimiento<input id="nextFollow" type="date"></label><label>Fecha instalación<input id="installDate" type="date"></label><label>Comisión<input id="commission" type="number"></label><label>Estado comisión<select id="estadoComision"><option value="pendiente">Pendiente</option><option value="pagada">Pagada</option></select></label><label class="full">Notas<textarea id="notes"></textarea></label><div class="full" style="display:flex;justify-content:flex-end;gap:8px"><button class="btn ghost" onclick="closeLead()">Cancelar</button> <button class="btn primary" id="saveLeadBtn" onclick="saveLead()">Guardar prospecto</button></div></div></div></div>
 
 <script>
 const SUPABASE_URL='https://lpiusomsuswdcraoozdn.supabase.co';
@@ -206,7 +433,7 @@ function dbToLead(r){
     origin:r.origen||'Facebook Ads', campaign:r.campana||'', product:r.producto||'Internet Hogar', operator:r.operador||'',
     plan:r.plan||'', value:Number(r.valor_mensual||0), status:r.estado||'Nuevo contacto',
     nextFollow:(r.proximo_seguimiento||'').slice(0,10), installDate:(r.fecha_instalacion||'').slice(0,10),
-    commission:Number(r.comision||0), notes:r.notas||''
+    commission:Number(r.comision||0), estadoComision:r.estado_comision||'pendiente', notes:r.notas||''
   };
 }
 
@@ -228,8 +455,7 @@ function leadToDb(o){
     proximo_seguimiento:o.nextFollow||null,
     fecha_instalacion:o.installDate||null,
     comision:o.commission||0,
-estado_comision:o.estadoComision||'pendiente',
-
+    estado_comision:o.estadoComision||'pendiente',
     notas:o.notes||null,
     actualizado_en:new Date().toISOString()
   };
@@ -242,7 +468,7 @@ async function loginCRM(){
   if(!email||!password){$('loginError').textContent='Escribe correo y contraseña.';return;}
   $('loginBtn').disabled=true;$('loginBtn').textContent='Ingresando...';
   const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
-  $('loginBtn').disabled=false;$('loginBtn').textContent='Ingresar';
+  $('loginBtn').disabled=false;$('loginBtn').textContent='Ingresar al CRM';
   if(error){$('loginError').textContent='No fue posible ingresar: '+error.message;return;}
   await enterCRM(data.user);
 }
@@ -269,7 +495,6 @@ async function enterCRM(user){
   await loadLeads();
   await loadMessages(false);
   await loadCommissionClaims();
-  // Historial anterior disponible para consulta; sin suscripción a mensajes API.
 }
 
 async function loadLeads(){
@@ -283,7 +508,7 @@ async function loadLeads(){
 
 function setSync(text,ok){$('syncText').textContent=text;$('syncDot').classList.toggle('off',!ok);}
 function wa(p,n){return MiredWhatsApp.url('573229432085',null,null,MiredWhatsApp.referralMessage(p,n,currentAdvisorName))||'#';}
-function badge(s){let c=s==='Instalado'?'ok':s==='No interesado'?'danger':(s==='Seguimiento'||s==='Pendiente instalación'?'warn':'');return`<span class="badge ${c}">${s}</span>`;}
+function badge(s){let c=s==='Instalado'?'ok':s==='No interesado'?'danger':(s==='Seguimiento'||s==='Pendiente instalación'?'warn':'');return`<span class="badge ${c}">${escapeHtml(s)}</span>`;}
 function showView(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
@@ -297,7 +522,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.l
 async function loadAuthorizations(){
   if(!currentUser)return;
   const {data,error}=await supabaseClient.from('autorizaciones').select('*').order('fecha',{ascending:false});
-  if(error){$('authRows').innerHTML='<tr><td colspan="11" class="empty">No se pudieron cargar las autorizaciones: '+escapeHtml(error.message)+'</td></tr>';return}
+  if(error){$('authRows').innerHTML='<tr><td colspan="9" class="empty">No se pudieron cargar las autorizaciones: '+escapeHtml(error.message)+'</td></tr>';return}
   authorizations=data||[];renderAuthorizations();
 }
 
@@ -363,20 +588,7 @@ async function updateAuditStatus(numero,estado,select){
 function authDocument(x,autoPrint=false){
  const safe=v=>escapeHtml(String(v??''));
  const row=(a,b)=>'<tr><th>'+a+'</th><td>'+safe(b||'No especificado')+'</td></tr>';
- return `<!doctype html><html><head><meta charset="utf-8"><title>Constancia ${safe(x.numero_constancia)}</title><style>body{font-family:Arial,sans-serif;color:#17263a;margin:0;background:#f4f7fb}.page{max-width:820px;margin:24px auto;background:#fff;padding:34px;border:1px solid #d8e2ee}.head{border-bottom:3px solid #0f7cff;padding-bottom:15px;margin-bottom:20px}.head h1{margin:0;color:#082b52;font-size:24px}.head p{margin:6px 0 0;color:#64748b}h2{font-size:16px;color:#082b52;margin-top:24px}table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid #e3eaf2;text-align:left;vertical-align:top;font-size:13px}th{width:32%;background:#f8fbff}.notice{padding:13px;border:1px solid #c8e4ff;background:#eef7ff;border-radius:10px;font-size:13px;line-height:1.45}.sig{max-width:520px;max-height:180px;border:1px solid #d8e2ee;margin-top:8px}.actions{margin:20px auto;max-width:820px}.actions button{padding:12px 16px;border:0;border-radius:10px;background:#0f7cff;color:#fff;font-weight:700}.foot{font-size:11px;color:#64748b;margin-top:20px}@media print{body{background:#fff}.page{border:0;margin:0;max-width:none}.actions{display:none}}
-.attention-item{padding:11px 0;border-top:1px solid var(--l)}
-.attention-info{min-width:0}
-.attention-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
-.attention-more{padding-top:12px;text-align:center}
-@media(max-width:700px){
- #attentionSummary{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
- #attentionSummary .stage{min-width:0!important;padding:10px!important}
- .attention-item{padding:10px 0!important}
- .attention-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;width:100%!important}
- .attention-actions a,.attention-actions button{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-width:0!important;padding:8px 3px!important;font-size:11px!important;line-height:1.15!important;white-space:nowrap!important;margin:0!important}
- .attention-more .btn{width:100%!important}
-}
-</style></head><body><div class="actions"><button onclick="window.print()">Descargar / Guardar PDF</button></div><div class="page"><div class="head"><h1>Constancia de información y autorización</h1><p>Gestión comercial de servicios Claro · MIRED360SERVICIOS</p><p><b>Número:</b> ${safe(x.numero_constancia)}</p></div><h2>Datos del usuario</h2><table>${row('Fecha',x.fecha)}${row('Ciudad',x.ciudad)}${row('Nombre',x.nombre_cliente)}${row('Cédula',x.cedula)}${row('Teléfono',x.telefono)}${row('Correo',x.correo)}</table><h2>Servicio y condiciones comerciales</h2><table>${row('Tipo de servicio',x.tipo_servicio)}${row('Tecnología',x.tecnologia)}${row('Velocidad',x.velocidad)}${row('Descripción del plan',x.descripcion_plan)}${row('Beneficios incluidos',x.beneficios)}${row('Adicionales',x.adicionales)}${row('Valor comercial mensual',money(x.valor_comercial||0))}${row('Promoción',x.promocion)}${row('Valor promocional',x.valor_promocional!=null?money(x.valor_promocional):'No especificado')}${row('Duración de la promoción',x.duracion_promocion)}${row('Valor después de promoción',x.valor_despues_promocion!=null?money(x.valor_despues_promocion):'No especificado')}${row('Observaciones',x.observaciones)}</table><h2>Autorización</h2><div class="notice">El usuario manifestó haber recibido información sobre el servicio y las condiciones comerciales registradas. <b>Respuesta de autorización: ${safe(x.autorizacion)}</b>. El usuario podrá recibir dentro de un plazo máximo de cinco (5) días una llamada de verificación o auditoría sobre la calidad de la atención y la información suministrada.</div><h2>Asesor y auditoría</h2><table>${row('Asesor',x.asesor)}${row('Código del asesor',x.codigo_asesor)}${row('Estado de auditoría',x.estado_auditoria)}${row('Fecha de auditoría',x.fecha_auditoria?new Date(x.fecha_auditoria).toLocaleString('es-CO'):'Pendiente')}${row('Observación de auditoría',x.observacion_auditoria)}</table><h2>Firma del usuario</h2>${x.firma?'<img class="sig" src="'+x.firma+'">':'<p>Sin firma registrada.</p>'}<p class="foot">Esta constancia registra la información comercial suministrada durante la gestión de venta y no reemplaza los documentos, términos, condiciones o contratos que correspondan al operador del servicio.</p></div>${autoPrint?'<script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script>':''}</body></html>`;
+ return `<!doctype html><html><head><meta charset="utf-8"><title>Constancia ${safe(x.numero_constancia)}</title><style>body{font-family:Arial,sans-serif;color:#17263a;margin:0;background:#f4f7fb}.page{max-width:820px;margin:24px auto;background:#fff;padding:34px;border:1px solid #d8e2ee}.head{border-bottom:3px solid #0f7cff;padding-bottom:15px;margin-bottom:20px}.head h1{margin:0;color:#082b52;font-size:24px}.head p{margin:6px 0 0;color:#64748b}h2{font-size:16px;color:#082b52;margin-top:24px}table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid #e3eaf2;text-align:left;vertical-align:top;font-size:13px}th{width:32%;background:#f8fbff}.notice{padding:13px;border:1px solid #c8e4ff;background:#eef7ff;border-radius:10px;font-size:13px;line-height:1.45}.sig{max-width:520px;max-height:180px;border:1px solid #d8e2ee;margin-top:8px}.actions{margin:20px auto;max-width:820px}.actions button{padding:12px 16px;border:0;border-radius:10px;background:#0f7cff;color:#fff;font-weight:700}.foot{font-size:11px;color:#64748b;margin-top:20px}@media print{body{background:#fff}.page{border:0;margin:0;max-width:none}.actions{display:none}}</style></head><body><div class="actions"><button onclick="window.print()">Descargar / Guardar PDF</button></div><div class="page"><div class="head"><h1>Constancia de información y autorización</h1><p>Gestión comercial de servicios Claro · MIRED360SERVICIOS</p><p><b>Número:</b> ${safe(x.numero_constancia)}</p></div><h2>Datos del usuario</h2><table>${row('Fecha',x.fecha)}${row('Ciudad',x.ciudad)}${row('Nombre',x.nombre_cliente)}${row('Cédula',x.cedula)}${row('Teléfono',x.telefono)}${row('Correo',x.correo)}</table><h2>Servicio y condiciones comerciales</h2><table>${row('Tipo de servicio',x.tipo_servicio)}${row('Tecnología',x.tecnologia)}${row('Velocidad',x.velocidad)}${row('Descripción del plan',x.descripcion_plan)}${row('Beneficios incluidos',x.beneficios)}${row('Adicionales',x.adicionales)}${row('Valor comercial mensual',money(x.valor_comercial||0))}${row('Promoción',x.promocion)}${row('Valor promocional',x.valor_promocional!=null?money(x.valor_promocional):'No especificado')}${row('Duración de la promoción',x.duracion_promocion)}${row('Valor después de promoción',x.valor_despues_promocion!=null?money(x.valor_despues_promocion):'No especificado')}${row('Observaciones',x.observaciones)}</table><h2>Autorización</h2><div class="notice">El usuario manifestó haber recibido información sobre el servicio y las condiciones comerciales registradas. <b>Respuesta de autorización: ${safe(x.autorizacion)}</b>. El usuario podrá recibir dentro de un plazo máximo de cinco (5) días una llamada de verificación o auditoría sobre la calidad de la atención y la información suministrada.</div><h2>Asesor y auditoría</h2><table>${row('Asesor',x.asesor)}${row('Código del asesor',x.codigo_asesor)}${row('Estado de auditoría',x.estado_auditoria)}${row('Fecha de auditoría',x.fecha_auditoria?new Date(x.fecha_auditoria).toLocaleString('es-CO'):'Pendiente')}${row('Observación de auditoría',x.observacion_auditoria)}</table><h2>Firma del usuario</h2>${x.firma?'<img class="sig" src="'+x.firma+'">':'<p>Sin firma registrada.</p>'}<p class="foot">Esta constancia registra la información comercial suministrada durante la gestión de venta y no reemplaza los documentos, términos, condiciones o contratos que correspondan al operador del servicio.</p></div>${autoPrint?'<script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script>':''}</body></html>`;
 }
 function showAuthorization(id){
  const x=authorizations.find(a=>String(a.id)===String(id));if(!x)return;
@@ -392,13 +604,14 @@ function showSignature(id){
 }
 
 function openLead(id){
-  const x=id?leads.find(l=>l.id===id):null;
+  const x=id?leads.find(l=>String(l.id)===String(id)):null;
   $('modalTitle').textContent=x?'Editar prospecto':'Nuevo prospecto';
   $('leadId').value=x?.id||'';
   ['name','phone','city','barrio','address','campaign','operator','plan','value','nextFollow','installDate','commission','notes'].forEach(k=>$(k).value=x?.[k]||'');
   $('origin').value=x?.origin||'Facebook Ads';
   $('product').value=x?.product||'Internet Hogar';
   $('status').value=x?.status||'Nuevo contacto';
+  $('estadoComision').value=x?.estadoComision||'pendiente';
   $('leadModal').classList.add('open');
 }
 function closeLead(){$('leadModal').classList.remove('open');}
@@ -411,7 +624,7 @@ async function saveLead(){
     name:$('name').value.trim(),phone:$('phone').value.trim(),city:$('city').value.trim(),barrio:$('barrio').value.trim(),address:$('address').value.trim(),
     origin:$('origin').value,campaign:$('campaign').value.trim(),product:$('product').value,operator:$('operator').value.trim(),plan:$('plan').value.trim(),
     value:Number($('value').value||0),status:$('status').value,nextFollow:$('nextFollow').value,installDate:$('installDate').value,
-    commission:Number($('commission').value||0),notes:$('notes').value.trim()
+    commission:Number($('commission').value||0),estadoComision:$('estadoComision').value||'pendiente',notes:$('notes').value.trim()
   };
   if(!o.name||!o.phone){alert('Nombre y teléfono son obligatorios');return;}
   const btn=$('saveLeadBtn');btn.disabled=true;btn.textContent='Guardando...';setSync('Sincronizando...',true);
@@ -421,7 +634,6 @@ async function saveLead(){
   btn.disabled=false;btn.textContent='Guardar prospecto';
   if(result.error){setSync('Error de Supabase',false);alert('No se pudo guardar. '+result.error.message);return;}
   closeLead();await loadLeads();
-  // Enviar el catálogo solo al pasar manualmente a cobertura positiva.
   if(id&&previousLead&&previousLead.status!=='Cobertura positiva'&&o.status==='Cobertura positiva'){
     await sendCatalogAfterCoverage(o.phone);
   }
@@ -469,7 +681,7 @@ function renderAttention(){
   const urgent=items.filter(x=>x.a.label==='Vencido'||x.a.label==='Hoy');
   const noDate=items.filter(x=>x.a.label==='Sin fecha').slice(0,3);
   const visible=[...urgent,...noDate].slice(0,4);
-  const card=({l,a})=>`<div class="attention-item"><div class="attention-info"><b>${escapeHtml(l.name||'Sin nombre')}</b> · ${badge(l.status)}<br><small>${escapeHtml(l.city||'')} ${l.nextFollow?'· '+escapeHtml(l.nextFollow):'· Sin seguimiento'} · <b>${a.label}</b></small></div><div class="attention-actions"><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a><button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button><button class="btn ghost" onclick="manageToday('${l.id}')">Gestionar</button></div></div>`;
+  const card=({l,a})=>`<div class="attention-item"><div class="attention-info"><b>${escapeHtml(l.name||'Sin nombre')}</b> · ${badge(l.status)}<br><small style="color:var(--m)">${escapeHtml(l.city||'')} ${l.nextFollow?'· '+escapeHtml(l.nextFollow):'· Sin seguimiento'} · <b>${escapeHtml(a.label)}</b></small></div><div class="attention-actions"><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a><button class="callbtn" onclick="startPhoneCall('${escapeHtml(l.phone)}')">📞 Llamar</button><button class="btn ghost" onclick="manageToday('${l.id}')">Gestionar</button></div></div>`;
   box.innerHTML=visible.map(card).join('')||'<div class="empty">Todo al día. No hay prospectos pendientes de atención.</div>';
   if(items.length>visible.length)box.innerHTML+=`<div class="attention-more"><button class="btn ghost" onclick="showView('seguimientos')">Ver todos los pendientes (${items.length})</button></div>`;
 }
@@ -484,12 +696,12 @@ function render(){
   $('kFollow').textContent=leads.filter(l=>l.nextFollow===today()&&!['Instalado','No interesado'].includes(l.status)).length;
   $('kSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)).length;
   $('kInstalled').textContent=leads.filter(l=>l.status==='Instalado').length;
-  $('pipeline').innerHTML=STAGES.filter(s=>s!=='No interesado').map(s=>`<div class="stage"><b>${s}</b><strong>${leads.filter(l=>l.status===s).length}</strong><span>prospectos</span></div>`).join('');
-  $('recentRows').innerHTML=leads.slice(0,6).map(l=>`<tr><td><b>${l.name}</b><br>${l.phone}</td><td>${l.city||'-'}</td><td>${l.origin}</td><td>${badge(l.status)}</td><td><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Aún no hay prospectos.</td></tr>';
-  $('followBox')&&($('followBox').innerHTML=leads.filter(l=>l.nextFollow&&!['Instalado','No interesado'].includes(l.status)).sort((a,b)=>a.nextFollow.localeCompare(b.nextFollow)).map(l=>`<p>${l.nextFollow} · ${l.name} <small>${l.status}</small></p>`).join('')||'<div class="empty">No hay seguimientos</div>');
+  $('pipeline').innerHTML=STAGES.filter(s=>s!=='No interesado').map(s=>`<div class="stage"><b>${escapeHtml(s)}</b><strong>${leads.filter(l=>l.status===s).length}</strong><span>prospectos</span></div>`).join('');
+  $('recentRows').innerHTML=leads.slice(0,6).map(l=>`<tr><td><b>${escapeHtml(l.name)}</b><br><small style="color:var(--m)">${escapeHtml(l.phone)}</small></td><td>${escapeHtml(l.city||'-')}</td><td>${escapeHtml(l.origin)}</td><td>${badge(l.status)}</td><td><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Aún no hay prospectos.</td></tr>';
+  $('followBox')&&($('followBox').innerHTML=leads.filter(l=>l.nextFollow&&!['Instalado','No interesado'].includes(l.status)).sort((a,b)=>a.nextFollow.localeCompare(b.nextFollow)).slice(0,10).map(l=>`<div style="padding:8px 0;border-bottom:1px solid var(--l);display:flex;justify-content:space-between;align-items:center"><div><b>${escapeHtml(l.name)}</b><br><small style="color:var(--m)">${escapeHtml(l.nextFollow)}</small></div>${badge(l.status)}</div>`).join('')||'<div class="empty">No hay seguimientos</div>');
   renderLeadTable();
-  $('followRows').innerHTML=leads.filter(l=>l.nextFollow&&!['Instalado','No interesado'].includes(l.status)).sort((a,b)=>a.nextFollow.localeCompare(b.nextFollow)).map(l=>{const a=leadAttention(l);return `<tr><td>${l.nextFollow}${a&&a.label!=='Próximo'?`<br><b>${a.label}</b>`:''}</td><td>${l.name}</td><td>${l.phone}</td><td>${badge(l.status)}</td><td>${l.notes||'-'}</td><td><a class="whats" href="${wa(l.phone,l.name)}" target="_blank">Abrir</a></td><td><button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button></td></tr>`}).join('')||'<tr><td colspan="7" class="empty">No hay seguimientos.</td></tr>';
-  $('salesRows').innerHTML=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)).map(l=>`<tr><td>${l.name}</td><td>${l.plan||'-'}</td><td>${money(l.value)}</td><td>${badge(l.status)}</td><td>${l.installDate||'-'}</td><td>${money(l.commission)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">Aún no hay ventas.</td></tr>';
+  $('followRows').innerHTML=leads.filter(l=>l.nextFollow&&!['Instalado','No interesado'].includes(l.status)).sort((a,b)=>a.nextFollow.localeCompare(b.nextFollow)).map(l=>{const a=leadAttention(l);return `<tr><td>${escapeHtml(l.nextFollow)}${a&&a.label!=='Próximo'?`<br><b style="color:#b4232d">${escapeHtml(a.label)}</b>`:''}</td><td><b>${escapeHtml(l.name)}</b></td><td>${escapeHtml(l.phone)}</td><td>${badge(l.status)}</td><td>${escapeHtml(l.notes||'-')}</td><td><a class="whats" href="${wa(l.phone,l.name)}" target="_blank">Abrir</a></td><td><button class="callbtn" onclick="startPhoneCall('${escapeHtml(l.phone)}')">📞 Llamar</button></td><td><button class="btn ghost" onclick="openLead('${l.id}')">Gestionar</button></td></tr>`}).join('')||'<tr><td colspan="8" class="empty">No hay seguimientos.</td></tr>';
+  $('salesRows').innerHTML=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)).map(l=>`<tr><td><b>${escapeHtml(l.name)}</b></td><td>${escapeHtml(l.plan||'-')}</td><td>${money(l.value)}</td><td>${badge(l.status)}</td><td>${escapeHtml(l.installDate||'-')}</td><td>${money(l.commission)}</td><td><span class="badge ${l.estadoComision==='pagada'?'ok':'warn'}">${escapeHtml(l.estadoComision||'pendiente')}</span></td></tr>`).join('')||'<tr><td colspan="7" class="empty">Aún no hay ventas.</td></tr>';
   renderAds();
 }
 
@@ -511,7 +723,6 @@ function updateBulkControls(){
     master.indeterminate=marked>0&&marked<visible.length;
   }
 }
-
 
 function normalizeCallNumber(phone){let d=String(phone||'').replace(/\D/g,'');if(d.startsWith('57')&&d.length===12)return d;if(d.length===10)return '57'+d;return '';}
 async function startPhoneCall(phone){
@@ -759,14 +970,6 @@ function renderActiveChat(){
   input.disabled=false;btn.disabled=false;$('catalogBtn').disabled=false;$('attachBtn').disabled=false;$('imageBtn').disabled=false;$('audioFileBtn').disabled=false;$('recordBtn').disabled=false;
   setTimeout(()=>panel.scrollTop=panel.scrollHeight,0);
 }
-function chatWindowOpen(phone){
-  const p=normalizeWhatsNumber(phone);
-  const lastInbound=waMessages
-    .filter(m=>normalizeWhatsNumber(m.telefono)===p&&m.direccion!=='saliente')
-    .sort((a,b)=>new Date(b.creado_en)-new Date(a.creado_en))[0];
-  if(!lastInbound?.creado_en)return false;
-  return (Date.now()-new Date(lastInbound.creado_en).getTime()) < 24*60*60*1000;
-}
 
 async function downloadChatDocument(messageId,button){
   button.disabled=true;button.textContent='Descargando...';
@@ -820,26 +1023,10 @@ async function playChatAudio(messageId,button){
   }catch(e){alert('No se pudo escuchar el audio. '+String(e.message||e));button.disabled=false;button.textContent='▶ Escuchar';}
 }
 
-async function sendChatAudio(){
-  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
-}
-
-let chatRecorder=null,chatRecordStream=null,chatRecordChunks=[],chatRecordPhone='';
-async function toggleChatRecording(){
-  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
-}
-
-async function sendChatImage(){
-  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
-}
-
-async function sendChatFile(){
-  alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
-}
-
-async function sendApprovedTemplate(phone){
-  throw new Error('La API de WhatsApp está desactivada en el CRM.');
-}
+async function sendChatAudio(){alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');}
+async function toggleChatRecording(){alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');}
+async function sendChatImage(){alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');}
+async function sendChatFile(){alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');}
 
 function shareCatalogInChat(){
  if(!activeChatPhone){alert('Selecciona primero un cliente.');return;}
@@ -851,15 +1038,6 @@ function shareCatalogInChat(){
 }
 async function sendChatReply(){
   alert('Los envíos por API están desactivados. Continúa la atención en el WhatsApp comercial 3229432085.');
-}
-function startMessageRealtime(){
-  if(messageSubscription||!currentUser)return;
-  requestCrmNotifications();updateWhatsAppBadge();
-  messageSubscription=supabaseClient
-    .channel('mired360-whatsapp-mensajes')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'whatsapp_mensajes'},payload=>{const m=payload.new||{},key=String(m.id||m.wamid||m.message_id||m.creado_en+'-'+m.telefono);waMessages=[m,...waMessages.filter(x=>String(x.id||x.wamid||x.message_id||'')!==String(m.id||m.wamid||m.message_id||''))];if(m.direccion!=='saliente'&&!knownInboundIds.has(key)){knownInboundIds.add(key);notifyInboundMessage(m);}else{renderChatContacts();}if(activeChatPhone===normalizeWhatsNumber(m.telefono))renderActiveChat();setTimeout(()=>loadMessages(false),300);})
-    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'whatsapp_mensajes'},()=>loadMessages(false))
-    .subscribe();
 }
 
 function toggleLeadSelection(id,checked){
@@ -891,10 +1069,9 @@ async function sendSelectedWhatsApp(){
 
 function renderLeadTable(){
   const a=filteredLeads();
-  $('leadRows').innerHTML=a.map(l=>`<tr><td class="checkcell"><input type="checkbox" ${selectedLeadIds.has(String(l.id))?'checked':''} onchange="toggleLeadSelection('${l.id}',this.checked)" aria-label="Seleccionar ${String(l.name||'prospecto').replaceAll('"','&quot;')}"></td><td>${l.created||'-'}</td><td><b>${l.name}</b></td><td>${l.phone}</td><td>${[l.city,l.barrio].filter(Boolean).join(' / ')||'-'}</td><td>${l.origin}</td><td>${l.product}</td><td>${badge(l.status)}</td><td>${l.nextFollow||'-'}</td><td><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a></td><td><button class="callbtn" onclick="startPhoneCall('${l.phone}')">📞 Llamar</button></td><td><button class="btn ghost" onclick="openLead('${l.id}')">Editar</button> <button class="btn ghost" onclick="delLead('${l.id}')">✕</button></td></tr>`).join('')||'<tr><td colspan="12" class="empty">Sin resultados.</td></tr>';
+  $('leadRows').innerHTML=a.map(l=>`<tr><td class="checkcell"><input type="checkbox" ${selectedLeadIds.has(String(l.id))?'checked':''} onchange="toggleLeadSelection('${l.id}',this.checked)" aria-label="Seleccionar ${escapeHtml(l.name||'prospecto')}"></td><td>${escapeHtml(l.created||'-')}</td><td><b>${escapeHtml(l.name)}</b></td><td>${escapeHtml(l.phone)}</td><td>${escapeHtml([l.city,l.barrio].filter(Boolean).join(' / ')||'-')}</td><td>${escapeHtml(l.origin)}</td><td>${escapeHtml(l.product)}</td><td>${badge(l.status)}</td><td>${escapeHtml(l.nextFollow||'-')}</td><td><a class="whats" target="_blank" href="${wa(l.phone,l.name)}">WhatsApp</a></td><td><button class="callbtn" onclick="startPhoneCall('${escapeHtml(l.phone)}')">📞 Llamar</button></td><td style="white-space:nowrap"><button class="btn ghost" onclick="openLead('${l.id}')">Editar</button> <button class="btn ghost" style="color:#b4232d" onclick="delLead('${l.id}')">✕</button></td></tr>`).join('')||'<tr><td colspan="12" class="empty">Sin resultados.</td></tr>';
   updateBulkControls();
 }
-
 
 $('searchLead').oninput=renderLeadTable;
 $('filterStatus').onchange=renderLeadTable;
@@ -903,9 +1080,9 @@ $('replyText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e
 $('selectVisibleLeads').onchange=e=>toggleVisibleLeads(e.target.checked);
 document.querySelectorAll('nav button[data-link]').forEach(b=>b.addEventListener('click',e=>{e.stopImmediatePropagation();window.location.href=b.dataset.link;}));
 function addAd(){if(!$('adName').value.trim()||!$('adAmount').value)return alert('Ingrese nombre e inversión');ads.unshift({id:Date.now(),name:$('adName').value.trim(),channel:$('adChannel').value,amount:Number($('adAmount').value),date:$('adDate').value||today()});localStorage.setItem('mired360_ads_v1',JSON.stringify(ads));$('adName').value='';$('adAmount').value='';renderAds();}
-function renderAds(){$('adRows').innerHTML=ads.map(a=>`<tr><td>${a.date}</td><td>${a.name}</td><td>${a.channel}</td><td>${money(a.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No hay campañas.</td></tr>';$('adSpend').textContent=money(ads.reduce((s,a)=>s+a.amount,0));$('adSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)&&['Facebook Ads','Instagram Ads','Google Ads'].includes(l.origin)).length;}
+function renderAds(){$('adRows').innerHTML=ads.map(a=>`<tr><td>${escapeHtml(a.date)}</td><td>${escapeHtml(a.name)}</td><td>${escapeHtml(a.channel)}</td><td>${money(a.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No hay campañas.</td></tr>';$('adSpend').textContent=money(ads.reduce((s,a)=>s+a.amount,0));$('adSales').textContent=leads.filter(l=>['Venta','Pendiente instalación','Instalado'].includes(l.status)&&['Facebook Ads','Instagram Ads','Google Ads'].includes(l.origin)).length;}
 function saveSettings(){let phone=normalizeWhatsNumber($('businessPhone').value);$('businessPhone').value=phone;localStorage.setItem('mired360_settings_v1',JSON.stringify({businessName:$('businessName').value,businessPhone:phone}));alert('Configuración guardada');}
-function exportCSV(){let cols=['created','name','phone','city','barrio','address','origin','campaign','product','operator','plan','value','status','nextFollow','installDate','commission','notes'],esc=v=>'"'+String(v??'').replaceAll('"','""')+'"',csv=[cols.join(','),...leads.map(l=>cols.map(c=>esc(l[c])).join(','))].join('\n'),blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='CRM_MIRED360_'+today()+'.csv';a.click();}
+function exportCSV(){let cols=['created','name','phone','city','barrio','address','origin','campaign','product','operator','plan','value','status','nextFollow','installDate','commission','estadoComision','notes'],esc=v=>'"'+String(v??'').replaceAll('"','""')+'"',csv=[cols.join(','),...leads.map(l=>cols.map(c=>esc(l[c])).join(','))].join('\n'),blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='CRM_MIRED360_'+today()+'.csv';a.click();}
 
 async function migrateLocalLeads(){
   const local=JSON.parse(localStorage.getItem('mired360_crm_v1')||'[]');
@@ -942,4 +1119,3 @@ renderAds();
 <script defer src="mired360-corporativo.js?v=20261029-2"></script>
 </body>
 </html>
-
