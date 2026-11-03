@@ -406,6 +406,8 @@ const selectedLeadIds=new Set();
 
 const STAGES=['Nuevo contacto','Validar cobertura','Cobertura positiva','Oferta enviada','Seguimiento','Venta','Pendiente instalación','Instalado','No interesado'];
 const $=id=>document.getElementById(id);
+$('loginBtn').onclick=loginCRM;
+$('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')loginCRM();});
 const today=()=>new Date().toISOString().slice(0,10);
 const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number(n||0));
 let leads=[];
@@ -463,13 +465,23 @@ function leadToDb(o){
 async function loginCRM(){
   const email=$('loginEmail').value.trim();
   const password=$('loginPassword').value;
-  $('loginError').textContent='';
-  if(!email||!password){$('loginError').textContent='Escribe correo y contraseña.';return;}
-  $('loginBtn').disabled=true;$('loginBtn').textContent='Ingresando...';
-  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
-  $('loginBtn').disabled=false;$('loginBtn').textContent='Ingresar al CRM';
-  if(error){$('loginError').textContent='No fue posible ingresar: '+error.message;return;}
-  await enterCRM(data.user);
+  const errorBox=$('loginError'),button=$('loginBtn');
+  errorBox.textContent='';
+  if(!email||!password){errorBox.textContent='Escribe correo y contraseña.';return;}
+  button.disabled=true;button.textContent='Ingresando...';
+  try{
+    const attempt=supabaseClient.auth.signInWithPassword({email,password});
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('La conexión con Supabase tardó demasiado. Comprueba tu conexión e inténtalo de nuevo.')),18000));
+    const {data,error}=await Promise.race([attempt,timeout]);
+    if(error)throw error;
+    if(!data?.user)throw new Error('No se recibió una sesión válida.');
+    await enterCRM(data.user);
+  }catch(error){
+    console.error('Error al ingresar al CRM:',error);
+    errorBox.textContent='No fue posible ingresar: '+(error?.message||'Error desconocido.');
+  }finally{
+    button.disabled=false;button.textContent='Ingresar al CRM';
+  }
 }
 
 async function logoutCRM(){
@@ -1098,8 +1110,6 @@ async function migrateLocalLeads(){
   alert(`Migración terminada. Nuevos: ${inserted}. Omitidos por posible duplicado: ${skipped}.`);
 }
 
-$('loginBtn').onclick=loginCRM;
-$('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')loginCRM();});
 $('exportBtn').onclick=exportCSV;
 $('status').innerHTML=STAGES.map(s=>`<option>${s}</option>`).join('');
 $('filterStatus').innerHTML+=STAGES.map(s=>`<option>${s}</option>`).join('');
